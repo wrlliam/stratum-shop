@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stratum — Brand Style Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blue: #6CBCE3;
+    --blue-dark: #3a9fd4;
+    --slate: #AEB4BB;
+    --light-gray: #E1E1E1;
+    --charcoal: #333333;
+    --bg: #F8F9FA;
+    --surface: #FFFFFF;
+    --border: #E8EAED;
+    --text: #1a1a2e;
+    --text-muted: #6b7280;
+    --arctic: #F5F5F5;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  .hero {
+    background: var(--charcoal);
+    padding: 80px 60px 60px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -100px; right: -100px;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(108,188,227,0.15) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .hero-inner {
+    max-width: 960px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 48px;
+  }
+  .logo-lockup { display: flex; align-items: center; gap: 20px; }
+  .logo-text h1 {
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 600;
+    font-size: 52px;
+    color: white;
+    letter-spacing: -1px;
+    line-height: 1;
+  }
+  .logo-text span {
+    font-size: 12px;
+    letter-spacing: 3px;
+    color: var(--blue);
+    font-weight: 500;
+    text-transform: uppercase;
+  }
+  .hero-desc { margin-left: auto; text-align: right; }
+  .hero-desc p { color: rgba(255,255,255,0.5); font-size: 13px; font-weight: 300; }
+  .hero-desc strong { display: block; color: rgba(255,255,255,0.9); font-size: 15px; font-weight: 500; margin-bottom: 4px; }
+
+  .container { max-width: 960px; margin: 0 auto; padding: 0 40px; }
+
+  .section { padding: 64px 0 48px; border-bottom: 1px solid var(--border); }
+  .section:last-child { border-bottom: none; }
+
+  .section-label { font-size: 11px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; color: var(--blue); margin-bottom: 8px; }
+  .section-title { font-family: 'DM Sans', sans-serif; font-size: 28px; font-weight: 600; color: var(--charcoal); margin-bottom: 32px; letter-spacing: -0.5px; }
+
+  .logo-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+  .logo-card { border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+  .logo-card.span2 { grid-column: span 2; }
+  .logo-preview { padding: 40px; display: flex; align-items: center; justify-content: center; min-height: 140px; }
+  .logo-preview.light { background: #fff; }
+  .logo-preview.dark { background: var(--charcoal); }
+  .logo-preview.gray { background: var(--light-gray); }
+  .logo-meta { padding: 14px 20px; background: var(--surface); border-top: 1px solid var(--border); font-size: 12px; color: var(--text-muted); font-weight: 500; }
+
+  .inline-logo { display: flex; align-items: center; gap: 14px; }
+  .wordmark-text { font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 28px; letter-spacing: -0.5px; line-height: 1; }
+  .tagline-text { font-size: 9px; letter-spacing: 2.5px; text-transform: uppercase; font-weight: 500; margin-top: 3px; color: var(--blue); }
+
+  .color-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px; }
+  .color-swatch { border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
+  .swatch-block { height: 96px; }
+  .swatch-info { padding: 12px 14px; background: white; }
+  .swatch-name { font-size: 12px; font-weight: 600; color: var(--charcoal); margin-bottom: 3px; }
+  .swatch-hex { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-muted); }
+  .swatch-role { font-size: 10px; color: var(--blue); font-weight: 500; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  .type-showcase { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+  .type-card { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 32px; }
+  .component-title { font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 20px; }
+
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-weight: 500; font-size: 14px; cursor: pointer; border: none; transition: all 0.2s; text-decoration: none; }
+  .btn-primary { background: var(--blue); color: white; }
+  .btn-primary:hover { background: var(--blue-dark); }
+  .btn-secondary { background: transparent; color: var(--charcoal); border: 1.5px solid var(--charcoal); }
+  .btn-ghost { background: var(--arctic); color: var(--charcoal); }
+  .btn-sm { padding: 8px 16px; font-size: 12px; border-radius: 6px; }
+
+  .product-card { border: 1px solid var(--border); border-radius: 12px; overflow: hidden; background: white; }
+  .card-img { height: 120px; background: linear-gradient(135deg, #e8f4fb 0%, #d0e9f5 100%); display: flex; align-items: center; justify-content: center; position: relative; }
+  .card-badge { position: absolute; top: 10px; right: 10px; background: var(--blue); color: white; font-size: 10px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; padding: 4px 10px; border-radius: 4px; }
+  .card-body { padding: 16px; }
+  .card-title { font-weight: 600; font-size: 15px; color: var(--charcoal); margin-bottom: 4px; }
+  .card-desc { font-size: 13px; color: var(--text-muted); margin-bottom: 14px; }
+  .card-footer { display: flex; align-items: center; justify-content: space-between; }
+  .card-price { font-weight: 700; font-size: 18px; color: var(--charcoal); }
+
+  .form-group { margin-bottom: 16px; }
+  .form-label { display: block; font-size: 13px; font-weight: 500; color: var(--charcoal); margin-bottom: 6px; }
+  .form-input { width: 100%; padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--charcoal); background: white; outline: none; }
+
+  .component-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .component-card { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 32px; }
+
+  .spacing-row { display: flex; gap: 24px; align-items: flex-end; flex-wrap: wrap; }
+  .spacing-item { text-align: center; }
+  .spacing-block { background: rgba(108,188,227,0.2); border: 1.5px dashed var(--blue); border-radius: 4px; margin: 0 auto 8px; }
+  .spacing-label { font-size: 11px; font-family: 'DM Mono', monospace; color: var(--text-muted); }
+  .spacing-value { font-size: 13px; font-weight: 600; color: var(--charcoal); margin-bottom: 2px; }
+
+  .guidelines-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .guideline-card { border-radius: 12px; padding: 28px; }
+  .guideline-card.do { background: #f0faf5; border: 1.5px solid #a7f3d0; }
+  .guideline-card.dont { background: #fff5f5; border: 1.5px solid #fca5a5; }
+  .guideline-tag { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 16px; padding: 4px 12px; border-radius: 20px; }
+  .do .guideline-tag { background: #d1fae5; color: #059669; }
+  .dont .guideline-tag { background: #fee2e2; color: #dc2626; }
+  .guideline-title { font-weight: 600; font-size: 15px; margin-bottom: 8px; color: var(--charcoal); }
+  .guideline-desc { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+
+  .voice-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .voice-card { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 24px; }
+  .voice-icon { width: 40px; height: 40px; background: rgba(108,188,227,0.15); border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 14px; font-size: 18px; }
+  .voice-title { font-weight: 600; font-size: 15px; color: var(--charcoal); margin-bottom: 6px; }
+  .voice-desc { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+
+  .guide-footer { background: var(--charcoal); padding: 48px 60px; text-align: center; color: rgba(255,255,255,0.4); font-size: 13px; }
+  .guide-footer span { color: var(--blue); }
+
+  @media (max-width: 700px) {
+    .logo-grid, .color-grid, .type-showcase, .component-grid, .guidelines-grid, .voice-grid { grid-template-columns: 1fr; }
+    .logo-grid .span2 { grid-column: span 1; }
+    .hero-inner { flex-direction: column; gap: 20px; }
+    .hero-desc { text-align: left; margin-left: 0; }
+    .container { padding: 0 20px; }
+    .hero { padding: 48px 24px 40px; }
+    .color-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="logo-lockup">
+      <div style="width:64px;height:64px;flex-shrink:0">
+        <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" width="64" height="64">
+          <ellipse cx="32" cy="51" rx="22" ry="5" fill="#AEB4BB" opacity="0.4"/>
+          <rect x="10" y="45" width="44" height="8" rx="2" fill="#AEB4BB"/>
+          <rect x="10" y="33" width="44" height="9" rx="2" fill="#c8cdd3"/>
+          <rect x="10" y="20" width="44" height="14" rx="3" fill="#6CBCE3"/>
+          <ellipse cx="32" cy="20" rx="22" ry="5" fill="#89cceb"/>
+        </svg>
+      </div>
+      <div class="logo-text">
+        <h1>stratum</h1>
+        <span>3D Printed Products</span>
+      </div>
+    </div>
+    <div class="hero-desc">
+      <strong>Brand Style Guide</strong>
+      <p>Version 1.0 · 2026</p>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- BRAND OVERVIEW -->
+  <div class="section">
+    <div class="section-label">01 — Overview</div>
+    <div class="section-title">Brand Foundation</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px">
+      <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:28px">
+        <div style="font-size:28px;margin-bottom:12px">🎯</div>
+        <div style="font-weight:600;font-size:16px;color:var(--charcoal);margin-bottom:8px">Mission</div>
+        <div style="font-size:14px;color:var(--text-muted);line-height:1.7">Make precision 3D-printed products accessible to everyone — from engineers to everyday creators.</div>
+      </div>
+      <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:28px">
+        <div style="font-size:28px;margin-bottom:12px">💡</div>
+        <div style="font-weight:600;font-size:16px;color:var(--charcoal);margin-bottom:8px">Vision</div>
+        <div style="font-size:14px;color:var(--text-muted);line-height:1.7">A world where custom manufacturing is as easy and personal as ordering anything online.</div>
+      </div>
+      <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:28px">
+        <div style="font-size:28px;margin-bottom:12px">🔷</div>
+        <div style="font-weight:600;font-size:16px;color:var(--charcoal);margin-bottom:8px">Values</div>
+        <div style="font-size:14px;color:var(--text-muted);line-height:1.7">Precision · Transparency · Innovation · Reliability · Craftsmanship</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOGO VARIATIONS -->
+  <div class="section">
+    <div class="section-label">02 — Identity</div>
+    <div class="section-title">Logo Variations</div>
+    <div class="logo-grid">
+      <div class="logo-card span2">
+        <div class="logo-preview light">
+          <div class="inline-logo">
+            <svg viewBox="0 0 64 64" fill="none" width="52" height="52">
+              <ellipse cx="32" cy="51" rx="22" ry="5" fill="#AEB4BB" opacity="0.4"/>
+              <rect x="10" y="45" width="44" height="8" rx="2" fill="#AEB4BB"/>
+              <rect x="10" y="33" width="44" height="9" rx="2" fill="#c8cdd3"/>
+              <rect x="10" y="20" width="44" height="14" rx="3" fill="#6CBCE3"/>
+              <ellipse cx="32" cy="20" rx="22" ry="5" fill="#89cceb"/>
+            </svg>
+            <div>
+              <div class="wordmark-text" style="color:var(--charcoal)">stratum</div>
+              <div class="tagline-text">3D Printed Products</div>
+            </div>
+          </div>
+        </div>
+        <div class="logo-meta">Primary Logo — Full Color on White</div>
+      </div>
+      <div class="logo-card">
+        <div class="logo-preview dark">
+          <div class="inline-logo">
+            <svg viewBox="0 0 64 64" fill="none" width="40" height="40">
+              <rect x="10" y="45" width="44" height="8" rx="2" fill="#AEB4BB"/>
+              <rect x="10" y="33" width="44" height="9" rx="2" fill="#c8cdd3"/>
+              <rect x="10" y="20" width="44" height="14" rx="3" fill="#6CBCE3"/>
+              <ellipse cx="32" cy="20" rx="22" ry="5" fill="#89cceb"/>
+            </svg>
+            <div>
+              <div class="wordmark-text" style="color:white">stratum</div>
+              <div class="tagline-text">3D Printed Products</div>
+            </div>
+          </div>
+        </div>
+        <div class="logo-meta">Reversed — On Dark</div>
+      </div>
+      <div class="logo-card">
+        <div class="logo-preview light">
+          <svg viewBox="0 0 64 64" fill="none" width="56" height="56">
+            <ellipse cx="32" cy="51" rx="22" ry="5" fill="#AEB4BB" opacity="0.4"/>
+            <rect x="10" y="45" width="44" height="8" rx="2" fill="#AEB4BB"/>
+            <rect x="10" y="33" width="44" height="9" rx="2" fill="#c8cdd3"/>
+            <rect x="10" y="20" width="44" height="14" rx="3" fill="#6CBCE3"/>
+            <ellipse cx="32" cy="20" rx="22" ry="5" fill="#89cceb"/>
+          </svg>
+        </div>
+        <div class="logo-meta">Icon Only — App & Favicon</div>
+      </div>
+      <div class="logo-card">
+        <div class="logo-preview gray">
+          <div class="inline-logo">
+            <svg viewBox="0 0 64 64" fill="none" width="40" height="40">
+              <rect x="10" y="45" width="44" height="8" rx="2" fill="#666"/>
+              <rect x="10" y="33" width="44" height="9" rx="2" fill="#888"/>
+              <rect x="10" y="20" width="44" height="14" rx="3" fill="#333"/>
+              <ellipse cx="32" cy="20" rx="22" ry="5" fill="#555"/>
+            </svg>
+            <div class="wordmark-text" style="color:var(--charcoal)">stratum</div>
+          </div>
+        </div>
+        <div class="logo-meta">Monochrome — Print / B&W</div>
+      </div>
+      <div class="logo-card span2">
+        <div class="logo-preview dark" style="min-height:80px">
+          <div style="font-family:'DM Sans',sans-serif;font-weight:700;font-size:40px;color:white;letter-spacing:-1px">stratum</div>
+        </div>
+        <div class="logo-meta">Wordmark Only — When Icon Cannot Be Used</div>
+      </div>
+    </div>
+
+    <div style="margin-top:32px;background:white;border:1px solid var(--border);border-radius:12px;padding:32px">
+      <div class="component-title">Clear Space Rule</div>
+      <div style="display:flex;align-items:center;justify-content:center;padding:20px">
+        <div style="position:relative;padding:24px;border:2px dashed var(--blue);border-radius:4px">
+          <div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:white;padding:0 8px;font-size:11px;font-family:'DM Mono',monospace;color:var(--blue)">1× logo height</div>
+          <div class="inline-logo">
+            <svg viewBox="0 0 64 64" fill="none" width="36" height="36"><rect x="10" y="45" width="44" height="8" rx="2" fill="#AEB4BB"/><rect x="10" y="33" width="44" height="9" rx="2" fill="#c8cdd3"/><rect x="10" y="20" width="44" height="14" rx="3" fill="#6CBCE3"/><ellipse cx="32" cy="20" rx="22" ry="5" fill="#89cceb"/></svg>
+            <div class="wordmark-text" style="color:var(--charcoal);font-size:22px">stratum</div>
+          </div>
+        </div>
+      </div>
+      <p style="font-size:13px;color:var(--text-muted);text-align:center;margin-top:12px">Maintain clear space equal to the height of the "s" in stratum on all sides.</p>
+    </div>
+  </div>
+
+  <!-- COLOR PALETTE -->
+  <div class="section">
+    <div class="section-label">03 — Color</div>
+    <div class="section-title">Color Palette</div>
+    <div class="color-grid">
+      <div class="color-swatch">
+        <div class="swatch-block" style="background:#6CBCE3"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Stratum Blue</div>
+          <div class="swatch-hex">#6CBCE3</div>
+          <div class="swatch-role">Primary</div>
+        </div>
+      </div>
+      <div class="color-swatch">
+        <div class="swatch-block" style="background:#3a9fd4"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Deep Blue</div>
+          <div class="swatch-hex">#3A9FD4</div>
+          <div class="swatch-role">Hover / CTA</div>
+        </div>
+      </div>
+      <div class="color-swatch">
+        <div class="swatch-block" style="background:#AEB4BB"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Slate Gray</div>
+          <div class="swatch-hex">#AEB4BB</div>
+          <div class="swatch-role">Secondary</div>
+        </div>
+      </div>
+      <div class="color-swatch">
+        <div class="swatch-block" style="background:#333333"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Charcoal</div>
+          <div class="swatch-hex">#333333</div>
+          <div class="swatch-role">Text / Dark BG</div>
+        </div>
+      </div>
+      <div class="color-swatch">
+        <div class="swatch-block" style="background:#E1E1E1"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Light Gray</div>
+          <div class="swatch-hex">#E1E1E1</div>
+          <div class="swatch-role">Borders</div>
+        </div>
+      </div>
+      <div class="color-swatch">
+        <div class="swatch-block" style="background:#F5F5F5;border-bottom:1px solid var(--border)"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Arctic White</div>
+          <div class="swatch-hex">#F5F5F5</div>
+          <div class="swatch-role">Backgrounds</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:24px;display:grid;grid-template-columns:1fr 1fr;gap:20px">
+      <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:24px">
+        <div class="component-title">Usage Ratio</div>
+        <div style="display:flex;height:20px;border-radius:6px;overflow:hidden;margin-bottom:12px">
+          <div style="background:#6CBCE3;flex:1.5"></div>
+          <div style="background:#333333;flex:2.5"></div>
+          <div style="background:#E1E1E1;flex:1"></div>
+        </div>
+        <div style="font-size:13px;color:var(--text-muted)">30% Blue · 50% Charcoal · 20% Neutrals</div>
+      </div>
+      <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:24px">
+        <div class="component-title">Accessibility</div>
+        <div style="font-size:13px;color:var(--text-muted);line-height:1.7">Stratum Blue on white: <strong style="color:var(--charcoal)">4.6:1</strong> contrast. Charcoal on white: <strong style="color:var(--charcoal)">12.6:1</strong>. Both meet WCAG AA.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TYPOGRAPHY -->
+  <div class="section">
+    <div class="section-label">04 — Typography</div>
+    <div class="section-title">Type System</div>
+    <div class="type-showcase">
+      <div class="type-card">
+        <div class="component-title" style="margin-bottom:16px">Primary Typeface</div>
+        <div style="font-family:'DM Sans',sans-serif;font-size:56px;font-weight:700;color:var(--charcoal);line-height:1;margin-bottom:8px;letter-spacing:-2px">Aa</div>
+        <div style="font-size:22px;font-weight:600;font-family:'DM Sans',sans-serif;color:var(--charcoal);margin-bottom:6px">DM Sans</div>
+        <div style="font-size:13px;color:var(--text-muted);margin-bottom:16px">Clean, geometric, modern. Used for all headings, UI labels, and the wordmark.</div>
+        <div style="font-size:12px;font-family:'DM Mono',monospace;color:var(--text-muted)">300 · 400 · 500 · 600 · 700</div>
+      </div>
+      <div class="type-card">
+        <div class="component-title" style="margin-bottom:16px">Monospace Accent</div>
+        <div style="font-family:'DM Mono',monospace;font-size:56px;font-weight:400;color:var(--blue);line-height:1;margin-bottom:8px;letter-spacing:-2px">Aa</div>
+        <div style="font-size:22px;font-weight:600;font-family:'DM Sans',sans-serif;color:var(--charcoal);margin-bottom:6px">DM Mono</div>
+        <div style="font-size:13px;color:var(--text-muted);margin-bottom:16px">Technical accent for specs, dimensions, and product identifiers.</div>
+        <div style="font-size:12px;font-family:'DM Mono',monospace;color:var(--text-muted)">400 · 500</div>
+      </div>
+    </div>
+
+    <div style="margin-top:24px;background:white;border:1px solid var(--border);border-radius:12px;padding:32px">
+      <div class="component-title">Type Scale</div>
+      <div style="border-bottom:1px solid var(--border);padding-bottom:20px;margin-bottom:20px;display:flex;align-items:baseline;gap:16px">
+        <div style="font-family:'DM Sans',sans-serif;font-size:48px;font-weight:700;color:var(--charcoal);line-height:1.1;letter-spacing:-1px">Display</div>
+        <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text-muted)">DM Sans 700 · 48px · -1px</div>
+      </div>
+      <div style="border-bottom:1px solid var(--border);padding-bottom:16px;margin-bottom:16px;display:flex;align-items:baseline;gap:16px">
+        <div style="font-family:'DM Sans',sans-serif;font-size:32px;font-weight:600;color:var(--charcoal);letter-spacing:-0.5px">Heading 1</div>
+        <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text-muted)">DM Sans 600 · 32px</div>
+      </div>
+      <div style="border-bottom:1px solid var(--border);padding-bottom:14px;margin-bottom:14px;display:flex;align-items:baseline;gap:16px">
+        <div style="font-family:'DM Sans',sans-serif;font-size:22px;font-weight:600;color:var(--charcoal)">Heading 2</div>
+        <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text-muted)">DM Sans 600 · 22px</div>
+      </div>
+      <div style="border-bottom:1px solid var(--border);padding-bottom:12px;margin-bottom:12px">
+        <div style="font-size:17px;color:var(--charcoal);line-height:1.7">Body Large — For key descriptions and product summaries.</div>
+        <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text-muted);margin-top:4px">DM Sans 400 · 17px · 1.7 leading</div>
+      </div>
+      <div style="border-bottom:1px solid var(--border);padding-bottom:12px;margin-bottom:12px">
+        <div style="font-size:14px;color:var(--text-muted);line-height:1.6">Body Small — Supporting information and metadata across the site.</div>
+        <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text-muted);margin-top:4px">DM Sans 400 · 14px · 1.6 leading</div>
+      </div>
+      <div>
+        <div style="font-size:11px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--blue)">Caption / Label</div>
+        <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text-muted);margin-top:4px">DM Sans 500 · 11px · 2px letter-spacing · ALL CAPS</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMPONENTS -->
+  <div class="section">
+    <div class="section-label">05 — Components</div>
+    <div class="section-title">UI Components</div>
+    <div class="component-grid">
+      <div class="component-card">
+        <div class="component-title">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Order Now</button>
+          <button class="btn btn-secondary">Learn More</button>
+          <button class="btn btn-ghost">Browse</button>
+        </div>
+        <div class="btn-row" style="margin-top:12px">
+          <button class="btn btn-primary btn-sm">Add to Cart</button>
+          <button class="btn btn-ghost btn-sm">Save</button>
+        </div>
+      </div>
+      <div class="component-card">
+        <div class="component-title">Form Inputs</div>
+        <div class="form-group">
+          <label class="form-label">Product Name</label>
+          <input type="text" class="form-input" placeholder="e.g. Custom bracket v2">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Material</label>
+          <input type="text" class="form-input" placeholder="PLA, PETG, Resin...">
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:24px" class="component-grid">
+      <div class="component-card" style="padding:0;overflow:hidden">
+        <div style="padding:20px 24px 16px"><div class="component-title" style="margin-bottom:0">Product Cards</div></div>
+        <div style="padding:0 24px 24px;display:grid;grid-template-columns:1fr 1fr;gap:16px">
+          <div class="product-card">
+            <div class="card-img">
+              <div class="card-badge">New</div>
+              <svg viewBox="0 0 64 64" fill="none" width="60" height="60"><rect x="10" y="45" width="44" height="8" rx="2" fill="#AEB4BB"/><rect x="10" y="33" width="44" height="9" rx="2" fill="#c8cdd3"/><rect x="10" y="20" width="44" height="14" rx="3" fill="#6CBCE3"/><ellipse cx="32" cy="20" rx="22" ry="5" fill="#89cceb"/></svg>
+            </div>
+            <div class="card-body">
+              <div class="card-title">Hex Mount</div>
+              <div class="card-desc">Precision wall bracket</div>
+              <div class="card-footer">
+                <div class="card-price">£12.99</div>
+                <button class="btn btn-primary btn-sm">Add</button>
+              </div>
+            </div>
+          </div>
+          <div class="product-card">
+            <div class="card-img" style="background:linear-gradient(135deg,#e8f0fb,#d0d8f5)">
+              <svg viewBox="0 0 64 64" fill="none" width="60" height="60"><rect x="20" y="20" width="24" height="24" rx="4" fill="#AEB4BB"/><rect x="24" y="24" width="16" height="16" rx="2" fill="#6CBCE3"/></svg>
+            </div>
+            <div class="card-body">
+              <div class="card-title">Cable Clip</div>
+              <div class="card-desc">Set of 6, stackable</div>
+              <div class="card-footer">
+                <div class="card-price">£4.50</div>
+                <button class="btn btn-primary btn-sm">Add</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="component-card">
+        <div class="component-title">Spacing Scale</div>
+        <div class="spacing-row">
+          <div class="spacing-item"><div class="spacing-block" style="width:4px;height:4px"></div><div class="spacing-value">4</div><div class="spacing-label">xs</div></div>
+          <div class="spacing-item"><div class="spacing-block" style="width:8px;height:8px"></div><div class="spacing-value">8</div><div class="spacing-label">sm</div></div>
+          <div class="spacing-item"><div class="spacing-block" style="width:16px;height:16px"></div><div class="spacing-value">16</div><div class="spacing-label">md</div></div>
+          <div class="spacing-item"><div class="spacing-block" style="width:24px;height:24px"></div><div class="spacing-value">24</div><div class="spacing-label">lg</div></div>
+          <div class="spacing-item"><div class="spacing-block" style="width:32px;height:32px"></div><div class="spacing-value">32</div><div class="spacing-label">xl</div></div>
+          <div class="spacing-item"><div class="spacing-block" style="width:48px;height:48px"></div><div class="spacing-value">48</div><div class="spacing-label">2xl</div></div>
+          <div class="spacing-item"><div class="spacing-block" style="width:64px;height:64px"></div><div class="spacing-value">64</div><div class="spacing-label">3xl</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- USAGE GUIDELINES -->
+  <div class="section">
+    <div class="section-label">06 — Guidelines</div>
+    <div class="section-title">Do's & Don'ts</div>
+    <div class="guidelines-grid">
+      <div class="guideline-card do">
+        <div class="guideline-tag">✓ Do</div>
+        <div class="guideline-title">Use the full-color logo on white or light backgrounds</div>
+        <div class="guideline-desc">The primary logo with Stratum Blue icon on white creates maximum clarity and brand recognition.</div>
+      </div>
+      <div class="guideline-card dont">
+        <div class="guideline-tag">✕ Don't</div>
+        <div class="guideline-title">Stretch, rotate, or distort the logo</div>
+        <div class="guideline-desc">Never alter the proportions of the logo mark or wordmark. Never apply drop shadows or outlines to the icon.</div>
+      </div>
+      <div class="guideline-card do">
+        <div class="guideline-tag">✓ Do</div>
+        <div class="guideline-title">Maintain adequate clear space around the logo</div>
+        <div class="guideline-desc">Always keep a buffer of at least one "s" height around the entire logo on all sides.</div>
+      </div>
+      <div class="guideline-card dont">
+        <div class="guideline-tag">✕ Don't</div>
+        <div class="guideline-title">Place the blue logo on a blue background</div>
+        <div class="guideline-desc">Never place the primary logo on Stratum Blue. Use the reversed white version on colored or dark backgrounds.</div>
+      </div>
+      <div class="guideline-card do">
+        <div class="guideline-tag">✓ Do</div>
+        <div class="guideline-title">Use DM Mono for specs and measurements</div>
+        <div class="guideline-desc">Product dimensions, tolerances, and part IDs should always use DM Mono for a precise, engineering feel.</div>
+      </div>
+      <div class="guideline-card dont">
+        <div class="guideline-tag">✕ Don't</div>
+        <div class="guideline-title">Introduce additional typefaces</div>
+        <div class="guideline-desc">Stick to DM Sans + DM Mono only. Never introduce third-party fonts that dilute typographic consistency.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VOICE & TONE -->
+  <div class="section">
+    <div class="section-label">07 — Voice</div>
+    <div class="section-title">Brand Voice & Tone</div>
+    <div class="voice-grid">
+      <div class="voice-card">
+        <div class="voice-icon">🔩</div>
+        <div class="voice-title">Precise</div>
+        <div class="voice-desc">We communicate with accuracy. Specs matter, measurements matter. We don't exaggerate quality — we demonstrate it.</div>
+      </div>
+      <div class="voice-card">
+        <div class="voice-icon">⚡</div>
+        <div class="voice-title">Direct</div>
+        <div class="voice-desc">No jargon, no fluff. We respect our customers' time. Short sentences, clear calls to action, honest product descriptions.</div>
+      </div>
+      <div class="voice-card">
+        <div class="voice-icon">🧠</div>
+        <div class="voice-title">Knowledgeable</div>
+        <div class="voice-desc">We know 3D printing deeply and guide customers confidently through material choices, tolerances, and applications.</div>
+      </div>
+    </div>
+
+    <div style="margin-top:24px;background:white;border:1px solid var(--border);border-radius:12px;padding:32px">
+      <div class="component-title">Sample Copy</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+        <div>
+          <div style="font-size:11px;font-weight:600;color:#059669;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px">✓ On Brand</div>
+          <p style="font-size:14px;line-height:1.7;color:var(--charcoal)">"Layer by layer, built to spec. Upload your file and receive precision-printed parts in 3–5 days."</p>
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:600;color:#dc2626;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px">✕ Off Brand</div>
+          <p style="font-size:14px;line-height:1.7;color:var(--text-muted);text-decoration:line-through">"We're super excited to offer you amazing 3D printing solutions that will absolutely blow your mind!!"</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- IMAGERY -->
+  <div class="section">
+    <div class="section-label">08 — Imagery</div>
+    <div class="section-title">Photography Style</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px">
+      <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:24px">
+        <div style="height:80px;background:linear-gradient(135deg,#e8f4fb,#cde8f5);border-radius:8px;margin-bottom:16px;display:flex;align-items:center;justify-content:center;font-size:28px">📐</div>
+        <div style="font-weight:600;font-size:14px;color:var(--charcoal);margin-bottom:6px">Product Photography</div>
+        <div style="font-size:13px;color:var(--text-muted);line-height:1.6">White or light gray backgrounds, studio lighting. Show texture and layer detail clearly.</div>
+      </div>
+      <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:24px">
+        <div style="height:80px;background:linear-gradient(135deg,#f0eaf6,#e2d5f0);border-radius:8px;margin-bottom:16px;display:flex;align-items:center;justify-content:center;font-size:28px">🏭</div>
+        <div style="font-weight:600;font-size:14px;color:var(--charcoal);margin-bottom:6px">Process Shots</div>
+        <div style="font-size:13px;color:var(--text-muted);line-height:1.6">Printer nozzle close-ups, mid-print build plates, layer-by-layer progress. Technical and honest.</div>
+      </div>
+      <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:24px">
+        <div style="height:80px;background:linear-gradient(135deg,#e8f5ec,#c5eecf);border-radius:8px;margin-bottom:16px;display:flex;align-items:center;justify-content:center;font-size:28px">🧑‍💻</div>
+        <div style="font-weight:600;font-size:14px;color:var(--charcoal);margin-bottom:6px">Lifestyle</div>
+        <div style="font-size:13px;color:var(--text-muted);line-height:1.6">Products in context — on desks, in workshops, in the hands of engineers and makers.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="guide-footer">
+  <div style="margin-bottom:8px"><span>stratum</span> · Brand Style Guide · Version 1.0 · 2026</div>
+  <div>Internal use only. Questions? hello@stratum3d.com</div>
+</div>
+
+</body>
+</html>

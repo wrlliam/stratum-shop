@@ -1,0 +1,55 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@400;500&display=swap');
+
+:root {
+  --font-dm-sans: 'DM Sans', system-ui, sans-serif;
+  --font-dm-mono: 'DM Mono', monospace;
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background-color: #F8F9FA;
+  color: #1a1a2e;
+  font-family: var(--font-dm-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #F5F5F5; }
+::-webkit-scrollbar-thumb { background: #E1E1E1; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #AEB4BB; }
+
+/* Selection */
+::selection { background: rgba(108,188,227,0.25); color: #333333; }
+
+/* Focus ring */
+.focus-ring {
+  @apply focus:outline-none focus:ring-2 focus:ring-brand-blue focus:ring-offset-2 focus:ring-offset-white;
+}
+
+/* Top stripe accent */
+.brand-stripe {
+  height: 3px;
+  background: linear-gradient(90deg, #6CBCE3 0%, #3A9FD4 100%);
+}
+
+/* Skeleton */
+.skeleton {
+  @apply animate-pulse bg-brand-arctic rounded-lg;
+}
+
+/* Admin sidebar link */
+.admin-link {
+  @apply flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 text-brand-muted hover:text-brand-text hover:bg-brand-arctic;
+}
+.admin-link.active {
+  @apply text-brand-blue bg-brand-blue-light font-semibold;
+}

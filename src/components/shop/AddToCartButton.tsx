@@ -1,0 +1,230 @@
+'use client'
+
+import { useState, useRef, useEffect } from 'react'
+import { PlusIcon, MinusIcon, ChevronDownIcon, CheckIcon } from '@radix-ui/react-icons'
+import { useCart } from '@/components/providers/CartProvider'
+import { Button } from '@/components/ui/Button'
+import { formatPrice } from '@/lib/utils'
+import { cn } from '@/lib/utils'
+import type { ProductWithImagesAndOptions, SelectedOption } from '@/types'
+
+interface AddToCartButtonProps {
+  product: ProductWithImagesAndOptions
+}
+
+function OptionDropdown({
+  group,
+  selectedIndex,
+  onSelect,
+}: {
+  group: ProductWithImagesAndOptions['optionGroups'][number]
+  selectedIndex: number
+  onSelect: (index: number) => void
+}) {
+  const [open, setOpen] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setOpen(false)
+      }
+    }
+    if (open) {
+      document.addEventListener('mousedown', handleClickOutside)
+      return () => document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [open])
+
+  const selected = group.choices[selectedIndex]
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        className={cn(
+          'w-full flex items-center justify-between px-3.5 py-2.5 text-sm border rounded-xl bg-white text-brand-text transition-all',
+          open
+            ? 'border-brand-blue ring-2 ring-brand-blue/20'
+            : 'border-brand-border hover:border-brand-slate'
+        )}
+      >
+        <span>
+          {selected.label}
+          {selected.priceModifier > 0 && (
+            <span className="text-brand-muted ml-1.5">(+{formatPrice(selected.priceModifier)})</span>
+          )}
+          {selected.priceModifier < 0 && (
+            <span className="text-brand-muted ml-1.5">({formatPrice(selected.priceModifier)})</span>
+          )}
+        </span>
+        <ChevronDownIcon
+          className={cn(
+            'w-4 h-4 text-brand-muted transition-transform duration-200',
+            open && 'rotate-180'
+          )}
+        />
+      </button>
+
+      {open && (
+        <div className="absolute z-20 mt-1 w-full bg-white border border-brand-border rounded-xl shadow-card-lg overflow-hidden animate-fade-in">
+          {group.choices.map((choice, ci) => (
+            <button
+              key={choice.id}
+              type="button"
+              onClick={() => {
+                onSelect(ci)
+                setOpen(false)
+              }}
+              className={cn(
+                'w-full flex items-center justify-between px-3.5 py-2.5 text-sm text-left transition-colors',
+                ci === selectedIndex
+                  ? 'bg-brand-blue-light text-brand-blue font-semibold'
+                  : 'text-brand-text hover:bg-brand-arctic'
+              )}
+            >
+              <span>
+                {choice.label}
+                {choice.priceModifier > 0 && (
+                  <span className="text-brand-muted font-normal ml-1.5">
+                    (+{formatPrice(choice.priceModifier)})
+                  </span>
+                )}
+                {choice.priceModifier < 0 && (
+                  <span className="text-brand-muted font-normal ml-1.5">
+                    ({formatPrice(choice.priceModifier)})
+                  </span>
+                )}
+              </span>
+              {ci === selectedIndex && <CheckIcon className="w-4 h-4 text-brand-blue" />}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+export function AddToCartButton({ product }: AddToCartButtonProps) {
+  const { addItem } = useCart()
+  const [quantity, setQuantity] = useState(1)
+
+  const optionGroups = product.optionGroups || []
+
+  // Initialize selections with first choice of each group
+  const [selections, setSelections] = useState<Record<string, number>>(() => {
+    const initial: Record<string, number> = {}
+    for (const group of optionGroups) {
+      if (group.choices.length > 0) {
+        initial[group.id] = 0
+      }
+    }
+    return initial
+  })
+
+  const selectedOptions: SelectedOption[] = optionGroups
+    .filter((g) => g.choices.length > 0)
+    .map((g) => {
+      const choiceIdx = selections[g.id] ?? 0
+      const choice = g.choices[choiceIdx]
+      return {
+        groupName: g.name,
+        choiceLabel: choice.label,
+        priceModifier: choice.priceModifier,
+      }
+    })
+
+  const optionsModifier = selectedOptions.reduce(
+    (sum, o) => sum + o.priceModifier,
+    0
+  )
+  const totalPrice = product.price + optionsModifier
+
+  const handleAdd = () => {
+    addItem({
+      productId: product.id,
+      name: product.name,
+      price: totalPrice,
+      quantity,
+      imageUrl: product.images[0]?.url,
+      isBundle: false,
+      slug: product.slug,
+      selectedOptions: selectedOptions.length > 0 ? selectedOptions : undefined,
+    })
+  }
+
+  const isOutOfStock = product.stock === 0
+
+  return (
+    <div className="space-y-4">
+      {/* Option selectors */}
+      {optionGroups.map((group) => (
+        <div key={group.id}>
+          <label className="text-xs font-semibold text-brand-muted uppercase tracking-wider mb-1.5 block">
+            {group.name}
+          </label>
+          <OptionDropdown
+            group={group}
+            selectedIndex={selections[group.id] ?? 0}
+            onSelect={(idx) =>
+              setSelections((prev) => ({
+                ...prev,
+                [group.id]: idx,
+              }))
+            }
+          />
+        </div>
+      ))}
+
+      {/* Quantity selector */}
+      <div className="flex items-center gap-3">
+        <span className="text-xs font-semibold text-brand-muted uppercase tracking-wider">
+          Quantity
+        </span>
+        <div className="flex items-center border border-brand-border rounded-xl overflow-hidden bg-white">
+          <button
+            onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+            className="p-2.5 text-brand-muted hover:text-brand-blue hover:bg-brand-arctic transition-colors"
+            disabled={quantity <= 1}
+            aria-label="Decrease quantity"
+          >
+            <MinusIcon className="w-3.5 h-3.5" />
+          </button>
+          <span className="w-10 text-center text-sm font-semibold text-brand-text">
+            {quantity}
+          </span>
+          <button
+            onClick={() => setQuantity((q) => Math.min(product.stock || 99, q + 1))}
+            className="p-2.5 text-brand-muted hover:text-brand-blue hover:bg-brand-arctic transition-colors"
+            disabled={isOutOfStock || quantity >= (product.stock || 99)}
+            aria-label="Increase quantity"
+          >
+            <PlusIcon className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      </div>
+
+      {/* Live total */}
+      <div className="text-sm text-brand-text font-semibold">
+        Total: {formatPrice(totalPrice * quantity)}
+        {quantity > 1 && (
+          <span className="text-brand-muted font-normal ml-2">
+            ({formatPrice(totalPrice)} each)
+          </span>
+        )}
+      </div>
+
+      <Button
+        variant="primary"
+        size="lg"
+        fullWidth
+        onClick={handleAdd}
+        disabled={isOutOfStock}
+      >
+        <PlusIcon className="w-4 h-4" />
+        {isOutOfStock ? 'Out of Stock' : 'Add to Cart'}
+      </Button>
+    </div>
+  )
+}
