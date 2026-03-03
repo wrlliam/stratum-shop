@@ -83,6 +83,7 @@ export default function CheckoutPage() {
       })
 
       const data = await res.json()
+      
 
       if (!res.ok) {
         throw new Error(String(data.error || 'Checkout failed'))

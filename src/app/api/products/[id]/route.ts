@@ -12,6 +12,7 @@ const optionChoiceSchema = z.object({
 
 const optionGroupSchema = z.object({
   name: z.string().min(1),
+  type: z.enum(['select', 'boolean', 'text']).default('select'),
   choices: z.array(optionChoiceSchema).min(1),
 })
 
@@ -29,6 +30,7 @@ const updateProductSchema = z.object({
   material: z.string().nullable().optional(),
   color: z.string().nullable().optional(),
   printTime: z.number().int().nullable().optional(),
+  sku: z.string().nullable().optional(),
   images: z.array(z.object({ url: z.string(), alt: z.string().optional() })).optional(),
   optionGroups: z.array(optionGroupSchema).optional(),
 })
@@ -114,7 +116,7 @@ export async function PATCH(
         const group = optionGroups[gi]
         const [insertedGroup] = await db
           .insert(productOptionGroups)
-          .values({ productId: id, name: group.name, order: gi })
+          .values({ productId: id, name: group.name, type: group.type, order: gi })
           .returning()
         if (group.choices.length > 0) {
           await db.insert(productOptionChoices).values(

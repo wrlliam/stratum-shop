@@ -8,6 +8,8 @@ import { AddToCartButton } from '@/components/shop/AddToCartButton'
 import { formatPrice } from '@/lib/utils'
 import { Badge } from '@/components/ui/Badge'
 import { CubeIcon, LightningBoltIcon, LockClosedIcon, StackIcon } from '@radix-ui/react-icons'
+import { ProductViewTracker } from '@/components/shop/ProductViewTracker'
+import { RecentlyViewed } from '@/components/shop/RecentlyViewed'
 import type { ProductWithImagesAndOptions } from '@/types'
 
 interface Props {
@@ -18,17 +20,34 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
   const product = await db.query.products.findFirst({
     where: eq(products.slug, slug),
+    with: { images: { orderBy: asc(productImages.order), limit: 1 } },
   })
 
   if (!product) return {}
 
+  const description = product.shortDescription || product.description || undefined
+  const priceStr = formatPrice(product.price)
+  const descWithPrice = description ? `${description} — ${priceStr}` : `${product.name} — ${priceStr}`
+  const imageUrl = product.images?.[0]?.url
+
   return {
     title: product.name,
-    description: product.shortDescription || product.description || undefined,
+    description: descWithPrice,
     keywords: product.tags,
+    alternates: {
+      canonical: `/products/${slug}`,
+    },
     openGraph: {
       title: product.name,
-      description: product.shortDescription || product.description || undefined,
+      description: descWithPrice,
+      type: 'website',
+      ...(imageUrl && { images: [{ url: imageUrl, alt: product.name }] }),
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: product.name,
+      description: descWithPrice,
+      ...(imageUrl && { images: [imageUrl] }),
     },
   }
 }
@@ -64,8 +83,40 @@ export default async function ProductPage({ params }: Props) {
     g.choices.some((c) => c.priceModifier > 0)
   )
 
+  const allImageUrls = product.images.map((img) => img.url)
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: product.name,
+    description: product.shortDescription || product.description || product.name,
+    image: allImageUrls,
+    ...(product.sku && { sku: product.sku }),
+    brand: { '@type': 'Brand', name: 'Stratum' },
+    ...(product.material && { material: product.material }),
+    offers: {
+      '@type': 'Offer',
+      price: (product.price / 100).toFixed(2),
+      priceCurrency: 'GBP',
+      availability: product.stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+      url: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/products/${slug}`,
+    },
+  }
+
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/` },
+      { '@type': 'ListItem', position: 2, name: 'Products', item: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/products` },
+      { '@type': 'ListItem', position: 3, name: product.name },
+    ],
+  }
+
   return (
     <div className="min-h-screen pt-24 pb-16">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
+      <ProductViewTracker slug={slug} />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Breadcrumb */}
         <nav className="flex items-center gap-2 text-xs text-brand-muted mb-8">
@@ -216,6 +267,9 @@ export default async function ProductPage({ params }: Props) {
             </div>
           </div>
         )}
+
+        {/* Recently Viewed */}
+        <RecentlyViewed excludeSlug={slug} />
       </div>
     </div>
   )

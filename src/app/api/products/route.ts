@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db, products, productImages, productOptionGroups, productOptionChoices } from '@/lib/db'
-import { eq, ilike, or, desc, asc, and, sql } from 'drizzle-orm'
+import { eq, ilike, or, desc, asc, and, sql, gte, lte, gt } from 'drizzle-orm'
 import { auth } from '@/lib/auth'
 import { headers } from 'next/headers'
 import { createSlug } from '@/lib/utils'
@@ -13,6 +13,7 @@ const optionChoiceSchema = z.object({
 
 const optionGroupSchema = z.object({
   name: z.string().min(1),
+  type: z.enum(['select', 'boolean', 'text']).default('select'),
   choices: z.array(optionChoiceSchema).min(1),
 })
 
@@ -30,6 +31,7 @@ const createProductSchema = z.object({
   material: z.string().optional(),
   color: z.string().optional(),
   printTime: z.number().int().optional(),
+  sku: z.string().optional(),
   images: z.array(z.object({ url: z.string(), alt: z.string().optional() })).default([]),
   optionGroups: z.array(optionGroupSchema).default([]),
 })
@@ -41,6 +43,10 @@ export async function GET(request: NextRequest) {
   const order = searchParams.get('order') || 'desc'
   const featured = searchParams.get('featured')
   const tag = searchParams.get('tag')
+  const material = searchParams.get('material')
+  const minPrice = searchParams.get('minPrice')
+  const maxPrice = searchParams.get('maxPrice')
+  const inStock = searchParams.get('inStock')
   const limit = Math.min(Math.max(parseInt(searchParams.get('limit') || '24') || 24, 1), 100)
   const offset = Math.max(parseInt(searchParams.get('offset') || '0') || 0, 0)
   const adminView = searchParams.get('admin') === 'true'
@@ -62,6 +68,10 @@ export async function GET(request: NextRequest) {
         or(
           ilike(products.name, `%${search}%`),
           ilike(products.description, `%${search}%`),
+          ilike(products.shortDescription, `%${search}%`),
+          ilike(products.material, `%${search}%`),
+          ilike(products.color, `%${search}%`),
+          ilike(products.sku, `%${search}%`),
           sql`${products.tags}::text ilike ${'%' + search + '%'}`
         )
       )
@@ -73,6 +83,22 @@ export async function GET(request: NextRequest) {
 
     if (tag) {
       conditions.push(sql`${tag} = ANY(${products.tags})`)
+    }
+
+    if (material) {
+      conditions.push(eq(products.material, material))
+    }
+
+    if (minPrice) {
+      conditions.push(gte(products.price, parseInt(minPrice)))
+    }
+
+    if (maxPrice) {
+      conditions.push(lte(products.price, parseInt(maxPrice)))
+    }
+
+    if (inStock === 'true') {
+      conditions.push(gt(products.stock, 0))
     }
 
     const orderFn = order === 'asc' ? asc : desc
@@ -138,6 +164,7 @@ export async function POST(request: NextRequest) {
         material: data.material,
         color: data.color,
         printTime: data.printTime,
+        sku: data.sku,
       })
       .returning()
 
@@ -157,7 +184,7 @@ export async function POST(request: NextRequest) {
       const group = data.optionGroups[gi]
       const [insertedGroup] = await db
         .insert(productOptionGroups)
-        .values({ productId: product.id, name: group.name, order: gi })
+        .values({ productId: product.id, name: group.name, type: group.type, order: gi })
         .returning()
       if (group.choices.length > 0) {
         await db.insert(productOptionChoices).values(

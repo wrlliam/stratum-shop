@@ -7,8 +7,14 @@ import { formatPrice } from '@/lib/utils'
 import toast from 'react-hot-toast'
 import type { Coupon } from '@/lib/db/schema'
 
+type CouponWithRestrictions = Coupon & {
+  productRestrictions: { productId: string; productName: string }[]
+}
+
+type SimpleProduct = { id: string; name: string }
+
 export default function AdminCouponsPage() {
-  const [coupons, setCoupons] = useState<Coupon[]>([])
+  const [coupons, setCoupons] = useState<CouponWithRestrictions[]>([])
   const [loading, setLoading] = useState(true)
   const [showCreate, setShowCreate] = useState(false)
 
@@ -72,7 +78,7 @@ export default function AdminCouponsPage() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-brand-border bg-brand-arctic">
-                  {['Code', 'Type', 'Value', 'Min Order', 'Usage', 'Status', 'Expires', 'Actions'].map(
+                  {['Code', 'Type', 'Value', 'Min Order', 'Usage', 'Applies To', 'Status', 'Expires', 'Actions'].map(
                     (col) => (
                       <th
                         key={col}
@@ -103,6 +109,17 @@ export default function AdminCouponsPage() {
                     </td>
                     <td className="px-4 py-4 text-xs text-brand-muted">
                       {coupon.usedCount}{coupon.maxUses ? ` / ${coupon.maxUses}` : ''}
+                    </td>
+                    <td className="px-4 py-4 text-xs text-brand-muted max-w-[160px]">
+                      {coupon.productRestrictions.length === 0 ? (
+                        <span className="text-green-700 font-medium">All products</span>
+                      ) : (
+                        <span title={coupon.productRestrictions.map((r) => r.productName).join(', ')}>
+                          {coupon.productRestrictions.length === 1
+                            ? coupon.productRestrictions[0].productName
+                            : `${coupon.productRestrictions.length} products`}
+                        </span>
+                      )}
                     </td>
                     <td className="px-4 py-4">
                       <button onClick={() => toggleActive(coupon.id, coupon.active)}>
@@ -136,7 +153,7 @@ export default function AdminCouponsPage() {
 
                 {coupons.length === 0 && (
                   <tr>
-                    <td colSpan={8} className="px-4 py-12 text-center text-brand-muted">
+                    <td colSpan={9} className="px-4 py-12 text-center text-brand-muted">
                       No coupons yet. Create one to get started.
                     </td>
                   </tr>
@@ -164,6 +181,24 @@ function CreateCouponForm({
   const [minOrderAmount, setMinOrderAmount] = useState('')
   const [maxUses, setMaxUses] = useState('')
   const [expiresAt, setExpiresAt] = useState('')
+  const [allProducts, setAllProducts] = useState<SimpleProduct[]>([])
+  const [selectedProductIds, setSelectedProductIds] = useState<string[]>([])
+
+  useEffect(() => {
+    fetch('/api/products?limit=200')
+      .then((r) => r.json())
+      .then((data) => {
+        const items = Array.isArray(data) ? data : (data.products ?? [])
+        setAllProducts(items.map((p: SimpleProduct) => ({ id: p.id, name: p.name })))
+      })
+      .catch(() => {})
+  }, [])
+
+  const toggleProduct = (id: string) => {
+    setSelectedProductIds((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+    )
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -180,6 +215,7 @@ function CreateCouponForm({
           minOrderAmount: minOrderAmount ? Math.round(parseFloat(minOrderAmount) * 100) : null,
           maxUses: maxUses ? parseInt(maxUses) : null,
           expiresAt: expiresAt || null,
+          productIds: selectedProductIds,
         }),
       })
 
@@ -200,61 +236,118 @@ function CreateCouponForm({
   return (
     <div className="bg-white border border-brand-border rounded-2xl p-6 shadow-card mb-6">
       <h2 className="text-base font-bold text-brand-text mb-4">Create Coupon</h2>
-      <form onSubmit={handleSubmit} className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <Input
-          label="Code"
-          placeholder="e.g. SUMMER20"
-          value={code}
-          onChange={(e) => setCode(e.target.value)}
-          required
-        />
-        <div>
-          <label className="block text-xs font-semibold text-brand-text uppercase tracking-wider mb-1.5">
-            Type
-          </label>
-          <select
-            value={type}
-            onChange={(e) => setType(e.target.value as 'fixed' | 'percentage')}
-            className="w-full bg-white border border-brand-border rounded-lg px-3 py-2.5 text-sm text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-blue"
-          >
-            <option value="percentage">Percentage</option>
-            <option value="fixed">Fixed Amount</option>
-          </select>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <Input
+            label="Code"
+            placeholder="e.g. SUMMER20"
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
+            required
+          />
+          <div>
+            <label className="block text-xs font-semibold text-brand-text uppercase tracking-wider mb-1.5">
+              Type
+            </label>
+            <select
+              value={type}
+              onChange={(e) => setType(e.target.value as 'fixed' | 'percentage')}
+              className="w-full bg-white border border-brand-border rounded-lg px-3 py-2.5 text-sm text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-blue"
+            >
+              <option value="percentage">Percentage</option>
+              <option value="fixed">Fixed Amount</option>
+            </select>
+          </div>
+          <Input
+            label={type === 'percentage' ? 'Value (%)' : 'Value (£)'}
+            type="number"
+            step={type === 'fixed' ? '0.01' : '1'}
+            min="1"
+            placeholder={type === 'percentage' ? '10' : '5.00'}
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+            required
+          />
+          <Input
+            label="Min Order (£)"
+            type="number"
+            step="0.01"
+            min="0"
+            placeholder="Optional"
+            value={minOrderAmount}
+            onChange={(e) => setMinOrderAmount(e.target.value)}
+          />
+          <Input
+            label="Max Uses"
+            type="number"
+            min="1"
+            placeholder="Unlimited"
+            value={maxUses}
+            onChange={(e) => setMaxUses(e.target.value)}
+          />
+          <Input
+            label="Expires At"
+            type="date"
+            value={expiresAt}
+            onChange={(e) => setExpiresAt(e.target.value)}
+          />
         </div>
-        <Input
-          label={type === 'percentage' ? 'Value (%)' : 'Value (£)'}
-          type="number"
-          step={type === 'fixed' ? '0.01' : '1'}
-          min="1"
-          placeholder={type === 'percentage' ? '10' : '5.00'}
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          required
-        />
-        <Input
-          label="Min Order (£)"
-          type="number"
-          step="0.01"
-          min="0"
-          placeholder="Optional"
-          value={minOrderAmount}
-          onChange={(e) => setMinOrderAmount(e.target.value)}
-        />
-        <Input
-          label="Max Uses"
-          type="number"
-          min="1"
-          placeholder="Unlimited"
-          value={maxUses}
-          onChange={(e) => setMaxUses(e.target.value)}
-        />
-        <Input
-          label="Expires At"
-          type="date"
-          value={expiresAt}
-          onChange={(e) => setExpiresAt(e.target.value)}
-        />
-        <div className="col-span-2 flex items-end gap-3">
+
+        {/* Product restrictions */}
+        <div>
+          <label className="block text-xs font-semibold text-brand-text uppercase tracking-wider mb-2">
+            Applies To
+          </label>
+          <p className="text-xs text-brand-muted mb-3">
+            Leave all unchecked to apply to every product. Select specific products to restrict this coupon.
+          </p>
+          {allProducts.length === 0 ? (
+            <p className="text-xs text-brand-muted">Loading products…</p>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 max-h-48 overflow-y-auto p-1">
+              {allProducts.map((product) => {
+                const checked = selectedProductIds.includes(product.id)
+                return (
+                  <label
+                    key={product.id}
+                    className={`flex items-center gap-2 px-3 py-2 rounded-lg border cursor-pointer text-xs transition-colors ${
+                      checked
+                        ? 'border-brand-blue bg-brand-blue/5 text-brand-blue font-medium'
+                        : 'border-brand-border text-brand-muted hover:border-brand-blue/40 hover:text-brand-text'
+                    }`}
+                  >
+                    <input
+                      type="checkbox"
+                      className="sr-only"
+                      checked={checked}
+                      onChange={() => toggleProduct(product.id)}
+                    />
+                    <span className={`w-3.5 h-3.5 rounded border flex-shrink-0 flex items-center justify-center ${
+                      checked ? 'border-brand-blue bg-brand-blue' : 'border-current'
+                    }`}>
+                      {checked && (
+                        <svg viewBox="0 0 10 8" className="w-2.5 h-2 text-white fill-current">
+                          <path d="M1 4l3 3 5-6" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      )}
+                    </span>
+                    <span className="truncate">{product.name}</span>
+                  </label>
+                )
+              })}
+            </div>
+          )}
+          {selectedProductIds.length > 0 && (
+            <p className="text-xs text-brand-blue mt-2 font-medium">
+              Restricted to {selectedProductIds.length} product{selectedProductIds.length !== 1 ? 's' : ''}.{' '}
+              <button type="button" className="underline" onClick={() => setSelectedProductIds([])}>
+                Clear selection
+              </button>
+            </p>
+          )}
+        </div>
+
+        <div className="flex items-center gap-3 pt-2">
           <Button type="submit" loading={loading}>
             Create
           </Button>

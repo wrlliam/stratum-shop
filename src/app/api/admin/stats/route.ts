@@ -1,9 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db, orders, orderItems, products, user } from '@/lib/db'
-import { sql, desc, eq, gte, lte, and } from 'drizzle-orm'
+import { sql, desc, eq, gte, lte, and, inArray, ne } from 'drizzle-orm'
 import { auth } from '@/lib/auth'
 import { headers } from 'next/headers'
 import { subMonths, subDays, startOfMonth, startOfDay, format } from 'date-fns'
+
+// Statuses that represent completed/paid orders (not pending, cancelled, or refunded)
+const PAID_STATUSES = ['paid', 'processing', 'shipped', 'delivered']
 
 export async function GET(_request: NextRequest) {
   const session = await auth.api.getSession({ headers: await headers() })
@@ -12,18 +15,19 @@ export async function GET(_request: NextRequest) {
   }
 
   try {
-    // Total revenue (paid orders only)
+    // Total revenue (all paid/completed orders)
     const revenueResult = await db
       .select({ total: sql<number>`COALESCE(SUM(total), 0)` })
       .from(orders)
-      .where(eq(orders.status, 'paid'))
+      .where(inArray(orders.status, PAID_STATUSES))
 
     const totalRevenue = Number(revenueResult[0].total)
 
-    // Total orders
+    // Total orders (exclude pending/cancelled)
     const ordersResult = await db
       .select({ count: sql<number>`count(*)` })
       .from(orders)
+      .where(inArray(orders.status, PAID_STATUSES))
     const totalOrders = Number(ordersResult[0].count)
 
     // Total products
@@ -32,18 +36,18 @@ export async function GET(_request: NextRequest) {
       .from(products)
     const totalProducts = Number(productsResult[0].count)
 
-    // Total customers
+    // Total customers (unique emails from paid orders)
     const customersResult = await db
-      .select({ count: sql<number>`count(*)` })
-      .from(user)
-      .where(eq(user.role, 'customer'))
+      .select({ count: sql<number>`COUNT(DISTINCT email)` })
+      .from(orders)
+      .where(inArray(orders.status, PAID_STATUSES))
     const totalCustomers = Number(customersResult[0].count)
 
     // Average order value (paid orders)
     const avgResult = await db
       .select({ avg: sql<number>`COALESCE(AVG(total), 0)` })
       .from(orders)
-      .where(eq(orders.status, 'paid'))
+      .where(inArray(orders.status, PAID_STATUSES))
     const avgOrderValue = Math.round(Number(avgResult[0].avg))
 
     // Revenue change % (this month vs last month)
@@ -54,14 +58,14 @@ export async function GET(_request: NextRequest) {
     const thisMonthRevenue = await db
       .select({ total: sql<number>`COALESCE(SUM(total), 0)` })
       .from(orders)
-      .where(and(eq(orders.status, 'paid'), gte(orders.createdAt, thisMonthStart)))
+      .where(and(inArray(orders.status, PAID_STATUSES), gte(orders.createdAt, thisMonthStart)))
 
     const lastMonthRevenue = await db
       .select({ total: sql<number>`COALESCE(SUM(total), 0)` })
       .from(orders)
       .where(
         and(
-          eq(orders.status, 'paid'),
+          inArray(orders.status, PAID_STATUSES),
           gte(orders.createdAt, lastMonthStart),
           lte(orders.createdAt, thisMonthStart)
         )

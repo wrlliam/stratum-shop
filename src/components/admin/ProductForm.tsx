@@ -16,6 +16,7 @@ interface OptionChoiceForm {
 
 interface OptionGroupForm {
   name: string
+  type: 'select' | 'boolean' | 'text'
   choices: OptionChoiceForm[]
 }
 
@@ -49,6 +50,7 @@ export function ProductForm({ product }: ProductFormProps) {
     color: product?.color || '',
     weight: product?.weight ? String(product.weight) : '',
     printTime: product?.printTime ? String(product.printTime) : '',
+    sku: product?.sku || '',
   })
 
   const [images, setImages] = useState<ImageItem[]>(
@@ -58,6 +60,7 @@ export function ProductForm({ product }: ProductFormProps) {
   const [optionGroups, setOptionGroups] = useState<OptionGroupForm[]>(
     product?.optionGroups?.map((g) => ({
       name: g.name,
+      type: (g.type as 'select' | 'boolean' | 'text') || 'select',
       choices: g.choices.map((c) => ({
         label: c.label,
         priceModifier: String(c.priceModifier / 100),
@@ -134,11 +137,13 @@ export function ProductForm({ product }: ProductFormProps) {
         color: form.color || undefined,
         weight: form.weight ? Number(form.weight) : undefined,
         printTime: form.printTime ? Number(form.printTime) : undefined,
+        sku: form.sku || undefined,
         images: images.map((img) => ({ url: img.url, alt: img.alt })),
         optionGroups: optionGroups
           .filter((g) => g.name.trim() && g.choices.some((c) => c.label.trim()))
           .map((g) => ({
             name: g.name.trim(),
+            type: g.type,
             choices: g.choices
               .filter((c) => c.label.trim())
               .map((c) => ({
@@ -268,6 +273,18 @@ export function ProductForm({ product }: ProductFormProps) {
             </p>
           </div>
 
+          {/* SKU */}
+          <div className="bg-white border border-brand-border rounded-2xl p-6 shadow-card">
+            <h2 className="text-sm font-bold text-brand-text mb-4">Identifier</h2>
+            <Input
+              label="SKU"
+              placeholder="STR-DRG-001"
+              value={form.sku}
+              onChange={(e) => set('sku', e.target.value)}
+              hint="Optional stock keeping unit"
+            />
+          </div>
+
           {/* Details */}
           <div className="bg-white border border-brand-border rounded-2xl p-6 shadow-card">
             <h2 className="text-sm font-bold text-brand-text mb-4">Print Details</h2>
@@ -309,7 +326,7 @@ export function ProductForm({ product }: ProductFormProps) {
                 onClick={() =>
                   setOptionGroups((prev) => [
                     ...prev,
-                    { name: '', choices: [{ label: '', priceModifier: '0' }] },
+                    { name: '', type: 'select', choices: [{ label: '', priceModifier: '0' }] },
                   ])
                 }
                 className="text-xs font-semibold text-brand-blue hover:underline"
@@ -342,6 +359,30 @@ export function ProductForm({ product }: ProductFormProps) {
                         )
                       }
                     />
+                    <select
+                      value={group.type}
+                      onChange={(e) => {
+                        const newType = e.target.value as 'select' | 'boolean' | 'text'
+                        setOptionGroups((prev) =>
+                          prev.map((g, i) =>
+                            i === gi
+                              ? {
+                                  ...g,
+                                  type: newType,
+                                  choices: newType !== 'select'
+                                    ? [g.choices[0] || { label: '', priceModifier: '0' }]
+                                    : g.choices,
+                                }
+                              : g
+                          )
+                        )
+                      }}
+                      className="px-2 py-2 text-sm border border-brand-border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue shrink-0"
+                    >
+                      <option value="select">Select</option>
+                      <option value="boolean">Boolean</option>
+                      <option value="text">Text</option>
+                    </select>
                     <button
                       type="button"
                       onClick={() =>
@@ -353,24 +394,18 @@ export function ProductForm({ product }: ProductFormProps) {
                     </button>
                   </div>
 
-                  <div className="space-y-2 pl-2">
-                    {group.choices.map((choice, ci) => (
-                      <div key={ci} className="flex items-center gap-2">
+                  {group.type === 'boolean' && (
+                    <div className="space-y-2 pl-2">
+                      <p className="text-xs text-brand-muted">Toggle option &mdash; shown as a switch to customers</p>
+                      <div className="flex items-center gap-2">
                         <input
-                          placeholder="Choice label"
-                          value={choice.label}
+                          placeholder="Label (e.g. Gift wrap)"
+                          value={group.choices[0]?.label || ''}
                           onChange={(e) =>
                             setOptionGroups((prev) =>
                               prev.map((g, i) =>
                                 i === gi
-                                  ? {
-                                      ...g,
-                                      choices: g.choices.map((c, j) =>
-                                        j === ci
-                                          ? { ...c, label: e.target.value }
-                                          : c
-                                      ),
-                                    }
+                                  ? { ...g, choices: [{ ...g.choices[0], label: e.target.value }] }
                                   : g
                               )
                             )
@@ -383,19 +418,12 @@ export function ProductForm({ product }: ProductFormProps) {
                             type="number"
                             step="0.01"
                             placeholder="0"
-                            value={choice.priceModifier}
+                            value={group.choices[0]?.priceModifier || '0'}
                             onChange={(e) =>
                               setOptionGroups((prev) =>
                                 prev.map((g, i) =>
                                   i === gi
-                                    ? {
-                                        ...g,
-                                        choices: g.choices.map((c, j) =>
-                                          j === ci
-                                            ? { ...c, priceModifier: e.target.value }
-                                            : c
-                                        ),
-                                      }
+                                    ? { ...g, choices: [{ ...g.choices[0], label: g.choices[0]?.label || '', priceModifier: e.target.value }] }
                                     : g
                                 )
                               )
@@ -403,52 +431,151 @@ export function ProductForm({ product }: ProductFormProps) {
                             className="w-20 px-2 py-2 text-sm border border-brand-border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue"
                           />
                         </div>
-                        <button
-                          type="button"
-                          onClick={() =>
+                      </div>
+                    </div>
+                  )}
+
+                  {group.type === 'text' && (
+                    <div className="space-y-2 pl-2">
+                      <p className="text-xs text-brand-muted">Text input &mdash; customers type custom text (e.g. engraving)</p>
+                      <div className="flex items-center gap-2">
+                        <input
+                          placeholder="Placeholder text (e.g. Enter engraving text)"
+                          value={group.choices[0]?.label || ''}
+                          onChange={(e) =>
                             setOptionGroups((prev) =>
                               prev.map((g, i) =>
                                 i === gi
-                                  ? {
-                                      ...g,
-                                      choices: g.choices.filter(
-                                        (_, j) => j !== ci
-                                      ),
-                                    }
+                                  ? { ...g, choices: [{ ...g.choices[0], label: e.target.value }] }
                                   : g
                               )
                             )
                           }
-                          className="p-1.5 text-red-400 hover:text-red-500"
-                          disabled={group.choices.length <= 1}
-                        >
-                          <Cross1Icon className="w-3 h-3" />
-                        </button>
+                          className="flex-1 px-3 py-2 text-sm border border-brand-border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue"
+                        />
+                        <div className="flex items-center gap-1">
+                          <span className="text-xs text-brand-muted">+£</span>
+                          <input
+                            type="number"
+                            step="0.01"
+                            placeholder="0"
+                            value={group.choices[0]?.priceModifier || '0'}
+                            onChange={(e) =>
+                              setOptionGroups((prev) =>
+                                prev.map((g, i) =>
+                                  i === gi
+                                    ? { ...g, choices: [{ ...g.choices[0], label: g.choices[0]?.label || '', priceModifier: e.target.value }] }
+                                    : g
+                                )
+                              )
+                            }
+                            className="w-20 px-2 py-2 text-sm border border-brand-border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue"
+                          />
+                        </div>
                       </div>
-                    ))}
-                  </div>
+                    </div>
+                  )}
 
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setOptionGroups((prev) =>
-                        prev.map((g, i) =>
-                          i === gi
-                            ? {
-                                ...g,
-                                choices: [
-                                  ...g.choices,
-                                  { label: '', priceModifier: '0' },
-                                ],
+                  {group.type === 'select' && (
+                    <>
+                      <div className="space-y-2 pl-2">
+                        {group.choices.map((choice, ci) => (
+                          <div key={ci} className="flex items-center gap-2">
+                            <input
+                              placeholder="Choice label"
+                              value={choice.label}
+                              onChange={(e) =>
+                                setOptionGroups((prev) =>
+                                  prev.map((g, i) =>
+                                    i === gi
+                                      ? {
+                                          ...g,
+                                          choices: g.choices.map((c, j) =>
+                                            j === ci
+                                              ? { ...c, label: e.target.value }
+                                              : c
+                                          ),
+                                        }
+                                      : g
+                                  )
+                                )
                               }
-                            : g
-                        )
-                      )
-                    }
-                    className="text-xs font-medium text-brand-blue hover:underline ml-2"
-                  >
-                    + Add Choice
-                  </button>
+                              className="flex-1 px-3 py-2 text-sm border border-brand-border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue"
+                            />
+                            <div className="flex items-center gap-1">
+                              <span className="text-xs text-brand-muted">+£</span>
+                              <input
+                                type="number"
+                                step="0.01"
+                                placeholder="0"
+                                value={choice.priceModifier}
+                                onChange={(e) =>
+                                  setOptionGroups((prev) =>
+                                    prev.map((g, i) =>
+                                      i === gi
+                                        ? {
+                                            ...g,
+                                            choices: g.choices.map((c, j) =>
+                                              j === ci
+                                                ? { ...c, priceModifier: e.target.value }
+                                                : c
+                                            ),
+                                          }
+                                        : g
+                                    )
+                                  )
+                                }
+                                className="w-20 px-2 py-2 text-sm border border-brand-border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue"
+                              />
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setOptionGroups((prev) =>
+                                  prev.map((g, i) =>
+                                    i === gi
+                                      ? {
+                                          ...g,
+                                          choices: g.choices.filter(
+                                            (_, j) => j !== ci
+                                          ),
+                                        }
+                                      : g
+                                  )
+                                )
+                              }
+                              className="p-1.5 text-red-400 hover:text-red-500"
+                              disabled={group.choices.length <= 1}
+                            >
+                              <Cross1Icon className="w-3 h-3" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setOptionGroups((prev) =>
+                            prev.map((g, i) =>
+                              i === gi
+                                ? {
+                                    ...g,
+                                    choices: [
+                                      ...g.choices,
+                                      { label: '', priceModifier: '0' },
+                                    ],
+                                  }
+                                : g
+                            )
+                          )
+                        }
+                        className="text-xs font-medium text-brand-blue hover:underline ml-2"
+                      >
+                        + Add Choice
+                      </button>
+                    </>
+                  )}
                 </div>
               ))}
             </div>

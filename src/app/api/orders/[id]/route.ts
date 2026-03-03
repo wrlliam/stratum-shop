@@ -4,6 +4,10 @@ import { eq } from 'drizzle-orm'
 import { auth } from '@/lib/auth'
 import { headers } from 'next/headers'
 import { z } from 'zod'
+import { renderAsync } from '@react-email/components'
+import { resend, FROM_EMAIL, APP_URL } from '@/lib/resend'
+import { OrderShippedEmail } from '@/lib/email/order-shipped'
+import { OrderStatusUpdateEmail } from '@/lib/email/order-status-update'
 
 export async function GET(
   _request: NextRequest,
@@ -54,6 +58,18 @@ export async function PATCH(
     })
     const data = updateSchema.parse(body)
 
+    // Get current order before update
+    const currentOrder = await db.query.orders.findFirst({
+      where: eq(orders.id, id),
+      with: { items: true },
+    })
+
+    if (!currentOrder) {
+      return NextResponse.json({ error: 'Order not found' }, { status: 404 })
+    }
+
+    const previousStatus = currentOrder.status
+
     await db
       .update(orders)
       .set({
@@ -68,6 +84,45 @@ export async function PATCH(
       where: eq(orders.id, id),
       with: { items: true },
     })
+
+    // Send email notifications on status changes
+    if (data.status && data.status !== previousStatus && updated) {
+      try {
+        if (data.status === 'shipped') {
+          const html = await renderAsync(
+            OrderShippedEmail({
+              order: updated,
+              trackingNumber: updated.trackingNumber,
+              appUrl: APP_URL,
+            }) as React.ReactElement
+          )
+          await resend.emails.send({
+            from: FROM_EMAIL,
+            to: updated.email,
+            subject: `Your Order Has Been Shipped: ${updated.orderNumber} — Stratum`,
+            html,
+          })
+        } else if (['processing', 'delivered'].includes(data.status)) {
+          const emailComponent = OrderStatusUpdateEmail({
+            orderNumber: updated.orderNumber,
+            status: data.status,
+            appUrl: APP_URL,
+          })
+          if (emailComponent) {
+            const html = await renderAsync(emailComponent as React.ReactElement)
+            await resend.emails.send({
+              from: FROM_EMAIL,
+              to: updated.email,
+              subject: `Order Update: ${updated.orderNumber} — Stratum`,
+              html,
+            })
+          }
+        }
+      } catch (emailErr) {
+        console.error('Failed to send status update email:', emailErr)
+        // Don't fail the status update if email fails
+      }
+    }
 
     return NextResponse.json(updated)
   } catch (error) {

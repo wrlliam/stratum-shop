@@ -1,9 +1,9 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import {
   HamburgerMenuIcon,
   Cross1Icon,
@@ -12,10 +12,13 @@ import {
   ExitIcon,
   DashboardIcon,
   PersonIcon,
+  MagnifyingGlassIcon,
 } from '@radix-ui/react-icons'
 import { useCart } from '@/components/providers/CartProvider'
 import { useSession, signOut } from '@/lib/auth-client'
 import { cn } from '@/lib/utils'
+import { formatPrice } from '@/lib/utils'
+import { AnnouncementBanner } from '@/components/layout/AnnouncementBanner'
 
 const navLinks = [
   { href: '/products', label: 'Shop' },
@@ -23,15 +26,30 @@ const navLinks = [
   { href: '/recommendations', label: 'Request a Print' },
 ]
 
+interface SearchResult {
+  id: string
+  name: string
+  slug: string
+  price: number
+  images: { url: string; alt?: string }[]
+}
+
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
+  const [searchOpen, setSearchOpen] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([])
+  const [searchLoading, setSearchLoading] = useState(false)
+  const searchRef = useRef<HTMLDivElement>(null)
+  const searchInputRef = useRef<HTMLInputElement>(null)
   const pathname = usePathname()
+  const router = useRouter()
   const { cart, toggleCart } = useCart()
   const { data: session } = useSession()
 
-  if (pathname.startsWith('/admin')) return null
+  const isAdmin = pathname.startsWith('/admin')
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 10)
@@ -42,12 +60,78 @@ export function Navbar() {
   useEffect(() => {
     setMenuOpen(false)
     setUserMenuOpen(false)
+    setSearchOpen(false)
+    setSearchQuery('')
   }, [pathname])
 
+  // Search debounce
+  useEffect(() => {
+    if (!searchQuery.trim()) {
+      setSearchResults([])
+      return
+    }
+    setSearchLoading(true)
+    const timer = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/products?search=${encodeURIComponent(searchQuery)}&limit=5`)
+        const data = await res.json()
+        setSearchResults(data.products || [])
+      } catch {
+        setSearchResults([])
+      } finally {
+        setSearchLoading(false)
+      }
+    }, 300)
+    return () => clearTimeout(timer)
+  }, [searchQuery])
+
+  // Close search on outside click
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
+        setSearchOpen(false)
+      }
+    }
+    if (searchOpen) {
+      document.addEventListener('mousedown', handleClick)
+      return () => document.removeEventListener('mousedown', handleClick)
+    }
+  }, [searchOpen])
+
+  // Focus input when search opens
+  useEffect(() => {
+    if (searchOpen) {
+      setTimeout(() => searchInputRef.current?.focus(), 100)
+    }
+  }, [searchOpen])
+
+  // Close on Escape
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setSearchOpen(false)
+    }
+    if (searchOpen) {
+      document.addEventListener('keydown', handleKey)
+      return () => document.removeEventListener('keydown', handleKey)
+    }
+  }, [searchOpen])
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (searchQuery.trim()) {
+      router.push(`/products?search=${encodeURIComponent(searchQuery.trim())}`)
+      setSearchOpen(false)
+    }
+  }
+
+  if (isAdmin) return null
+
   return (
+    <div className="fixed top-0 left-0 right-0 z-30">
+      <AnnouncementBanner />
     <nav
       className={cn(
-        'fixed top-0 left-0 right-0 z-30 transition-all duration-300',
+        'transition-all duration-300',
         scrolled
           ? 'bg-white/95 backdrop-blur-xl border-b border-brand-border shadow-card'
           : 'bg-white/80 backdrop-blur-sm border-b border-brand-border'
@@ -89,6 +173,84 @@ export function Navbar() {
 
           {/* Right */}
           <div className="flex items-center gap-2">
+            {/* Search */}
+            <div ref={searchRef} className="relative">
+              {searchOpen ? (
+                <form onSubmit={handleSearchSubmit} className="flex items-center">
+                  <input
+                    ref={searchInputRef}
+                    type="text"
+                    placeholder="Search prints..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-40 sm:w-56 px-3 py-2 text-sm bg-white border border-brand-border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => { setSearchOpen(false); setSearchQuery('') }}
+                    className="p-2 text-brand-muted hover:text-brand-text ml-1"
+                  >
+                    <Cross1Icon className="w-3.5 h-3.5" />
+                  </button>
+                </form>
+              ) : (
+                <button
+                  onClick={() => setSearchOpen(true)}
+                  aria-label="Search"
+                  className="p-2.5 rounded-xl text-brand-muted hover:text-brand-blue hover:bg-brand-arctic transition-all duration-200"
+                >
+                  <MagnifyingGlassIcon className="w-5 h-5" />
+                </button>
+              )}
+
+              {/* Search results dropdown */}
+              {searchOpen && searchQuery.trim() && (
+                <div className="absolute right-0 top-full mt-1 w-72 sm:w-80 bg-white border border-brand-border rounded-xl shadow-card-lg overflow-hidden z-50 animate-fade-in">
+                  {searchLoading ? (
+                    <div className="px-4 py-6 text-center">
+                      <div className="animate-spin w-5 h-5 border-2 border-brand-blue border-t-transparent rounded-full mx-auto" />
+                    </div>
+                  ) : searchResults.length === 0 ? (
+                    <div className="px-4 py-6 text-center text-sm text-brand-muted">
+                      No results for &ldquo;{searchQuery}&rdquo;
+                    </div>
+                  ) : (
+                    <>
+                      {searchResults.map((product) => (
+                        <Link
+                          key={product.id}
+                          href={`/products/${product.slug}`}
+                          onClick={() => setSearchOpen(false)}
+                          className="flex items-center gap-3 px-4 py-3 hover:bg-brand-arctic transition-colors"
+                        >
+                          {product.images[0] && (
+                            <Image
+                              src={product.images[0].url}
+                              alt={product.name}
+                              width={36}
+                              height={36}
+                              className="rounded-lg object-cover w-9 h-9"
+                            />
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-brand-text truncate">{product.name}</p>
+                            <p className="text-xs text-brand-blue font-semibold">{formatPrice(product.price)}</p>
+                          </div>
+                        </Link>
+                      ))}
+                      <Link
+                        href={`/products?search=${encodeURIComponent(searchQuery)}`}
+                        onClick={() => setSearchOpen(false)}
+                        className="block px-4 py-2.5 text-center text-xs font-medium text-brand-blue bg-brand-arctic hover:bg-brand-blue-light transition-colors border-t border-brand-border"
+                      >
+                        View all results
+                      </Link>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
+
             {/* Cart */}
             <button
               onClick={toggleCart}
@@ -251,5 +413,6 @@ export function Navbar() {
         </div>
       )}
     </nav>
+    </div>
   )
 }

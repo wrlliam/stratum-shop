@@ -65,7 +65,13 @@ export default function RecommendationsPage() {
       const res = await fetch('/api/recommendations', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body: JSON.stringify({
+          name: form.name,
+          email: form.email,
+          description: form.description,
+          ...(form.imageUrl && { imageUrl: form.imageUrl }),
+          ...(form.referenceUrl && { referenceUrl: form.referenceUrl }),
+        }),
       })
 
       if (!res.ok) throw new Error('Submission failed')

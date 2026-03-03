@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import type Stripe from 'stripe'
 import { stripe, getDeliveryOption, VAT_RATE } from '@/lib/stripe'
-import { db, products, bundles, orders, orderItems, productOptionGroups, productOptionChoices, coupons } from '@/lib/db'
-import { eq, asc, sql } from 'drizzle-orm'
+import { db, products, bundles, orders, orderItems, productOptionGroups, productOptionChoices, coupons, couponProducts } from '@/lib/db'
+import { eq, asc, sql, inArray } from 'drizzle-orm'
 import { auth } from '@/lib/auth'
 import { headers } from 'next/headers'
 import { generateOrderNumber } from '@/lib/utils'
@@ -91,14 +91,34 @@ export async function POST(request: NextRequest) {
           for (const sel of item.selectedOptions) {
             const group = product.optionGroups?.find((g) => g.name === sel.groupName)
             if (!group) continue
-            const choice = group.choices.find((c) => c.label === sel.choiceLabel)
-            if (!choice) continue
-            verifiedModifier += choice.priceModifier
-            verifiedOptions.push({
-              groupName: group.name,
-              choiceLabel: choice.label,
-              priceModifier: choice.priceModifier,
-            })
+            const groupType = (group.type as string) || 'select'
+
+            if (groupType === 'select') {
+              const choice = group.choices.find((c) => c.label === sel.choiceLabel)
+              if (!choice) continue
+              verifiedModifier += choice.priceModifier
+              verifiedOptions.push({
+                groupName: group.name,
+                choiceLabel: choice.label,
+                priceModifier: choice.priceModifier,
+              })
+            } else if (groupType === 'boolean' && group.choices[0]) {
+              // Boolean: client sends the choice label when toggled on
+              verifiedModifier += group.choices[0].priceModifier
+              verifiedOptions.push({
+                groupName: group.name,
+                choiceLabel: group.choices[0].label,
+                priceModifier: group.choices[0].priceModifier,
+              })
+            } else if (groupType === 'text' && group.choices[0] && sel.choiceLabel) {
+              // Text: client sends user-typed text as choiceLabel
+              verifiedModifier += group.choices[0].priceModifier
+              verifiedOptions.push({
+                groupName: group.name,
+                choiceLabel: sel.choiceLabel,
+                priceModifier: group.choices[0].priceModifier,
+              })
+            }
           }
         }
 
@@ -178,14 +198,40 @@ export async function POST(request: NextRequest) {
       if (couponRecord.maxUses && couponRecord.usedCount >= couponRecord.maxUses) {
         return NextResponse.json({ error: 'Coupon usage limit reached' }, { status: 400 })
       }
-      if (couponRecord.minOrderAmount && subtotal < couponRecord.minOrderAmount) {
+
+      // Check product restrictions — empty = applies to everything
+      const restrictions = await db
+        .select({ productId: couponProducts.productId })
+        .from(couponProducts)
+        .where(eq(couponProducts.couponId, couponRecord.id))
+      const restrictedIds = restrictions.map((r) => r.productId)
+
+      // Compute subtotal eligible for discount
+      const eligibleSubtotal =
+        restrictedIds.length === 0
+          ? subtotal
+          : lineItems.reduce((sum, item) => {
+              if (item.productId && restrictedIds.includes(item.productId)) {
+                return sum + item.price * item.quantity
+              }
+              return sum
+            }, 0)
+
+      if (eligibleSubtotal === 0) {
+        return NextResponse.json(
+          { error: 'This coupon is not valid for the items in your cart' },
+          { status: 400 }
+        )
+      }
+
+      if (couponRecord.minOrderAmount && eligibleSubtotal < couponRecord.minOrderAmount) {
         return NextResponse.json({ error: 'Order does not meet minimum amount for this coupon' }, { status: 400 })
       }
 
       if (couponRecord.type === 'percentage') {
-        discountAmount = Math.round(subtotal * (couponRecord.value / 100))
+        discountAmount = Math.round(eligibleSubtotal * (couponRecord.value / 100))
       } else {
-        discountAmount = Math.min(couponRecord.value, subtotal)
+        discountAmount = Math.min(couponRecord.value, eligibleSubtotal)
       }
 
       couponId = couponRecord.id
@@ -243,15 +289,22 @@ export async function POST(request: NextRequest) {
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
 
     // Build Stripe line items
+    // Stripe requires publicly accessible HTTPS image URLs
+    const isPublicUrl = appUrl.startsWith('https://')
+    const getStripeImages = (imageUrl?: string): string[] => {
+      if (!imageUrl) return []
+      if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) return [imageUrl]
+      if (imageUrl.startsWith('/') && isPublicUrl) return [`${appUrl}${imageUrl}`]
+      return []
+    }
+
     const stripeLineItems = [
       ...lineItems.map((item) => ({
         price_data: {
           currency: 'gbp',
           product_data: {
             name: item.name,
-            images: item.imageUrl
-              ? [item.imageUrl.startsWith('/') ? `${appUrl}${item.imageUrl}` : item.imageUrl]
-              : [],
+            images: getStripeImages(item.imageUrl),
           },
           unit_amount: item.price,
         },
@@ -289,27 +342,19 @@ export async function POST(request: NextRequest) {
       cancel_url: `${appUrl}/cart`,
     }
 
-    // Apply discount in Stripe if coupon used
-    if (discountAmount > 0 && couponRecord) {
-      const stripeCoupon = await stripe.coupons.create(
-        couponRecord.type === 'percentage'
-          ? { percent_off: couponRecord.value, duration: 'once' }
-          : { amount_off: discountAmount, currency: 'gbp', duration: 'once' }
-      )
+    // Apply discount in Stripe if coupon used — always amount_off since we pre-compute it
+    if (discountAmount > 0) {
+      const stripeCoupon = await stripe.coupons.create({
+        amount_off: discountAmount,
+        currency: 'gbp',
+        duration: 'once',
+      })
       stripeSessionParams.discounts = [{ coupon: stripeCoupon.id }]
     }
 
     const stripeSession = await stripe.checkout.sessions.create(stripeSessionParams)
 
-    console.log('[Checkout] Stripe session created:', {
-      id: stripeSession.id,
-      url: stripeSession.url,
-      status: stripeSession.status,
-      payment_status: stripeSession.payment_status,
-    })
-
     if (!stripeSession.url) {
-      console.error('[Checkout] Stripe session has no URL!')
       return NextResponse.json({ error: 'Failed to create payment session' }, { status: 500 })
     }
 

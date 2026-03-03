@@ -88,7 +88,7 @@ export default async function AdminOrdersPage({ searchParams }: Props) {
                       <p className="text-brand-text truncate text-xs">{order.email}</p>
                     </div>
                   </td>
-                  <td className="px-4 py-4 text-brand-muted">{order.items.length}</td>
+                  <td className="px-4 py-4 text-brand-muted">{order.items.reduce((sum, i) => sum + i.quantity, 0)}</td>
                   <td className="px-4 py-4">
                     <span className="text-xs text-brand-muted">
                       {order.deliveryMethod.replace('royal_mail_', '').replace(/_/g, ' ')}

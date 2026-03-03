@@ -16,7 +16,8 @@ type QRType = 'public' | 'inventory'
 export default function ProductLabelsPage() {
   const appUrl = typeof window !== 'undefined' ? window.location.origin : ''
   const [products, setProducts] = useState<ProductItem[]>([])
-  const [selected, setSelected] = useState<Set<string>>(new Set())
+  // Map of product id → quantity (0 = not selected)
+  const [quantities, setQuantities] = useState<Record<string, number>>({})
   const [loading, setLoading] = useState(true)
   const [qrType, setQrType] = useState<QRType>('public')
 
@@ -24,45 +25,49 @@ export default function ProductLabelsPage() {
     fetch('/api/products?admin=true&limit=100')
       .then((res) => res.json())
       .then((data) => {
-        setProducts(
-          (data.products || []).map((p: ProductItem) => ({
-            id: p.id,
-            name: p.name,
-            slug: p.slug,
-          }))
-        )
+        const items = (data.products || []).map((p: ProductItem) => ({
+          id: p.id,
+          name: p.name,
+          slug: p.slug,
+        }))
+        setProducts(items)
+        const init: Record<string, number> = {}
+        for (const p of items) init[p.id] = 0
+        setQuantities(init)
       })
       .finally(() => setLoading(false))
   }, [])
 
+  const setQty = (id: string, value: number) => {
+    setQuantities((prev) => ({ ...prev, [id]: Math.max(0, value) }))
+  }
+
   const toggleProduct = (id: string) => {
-    setSelected((prev) => {
-      const next = new Set(prev)
-      if (next.has(id)) {
-        next.delete(id)
-      } else {
-        next.add(id)
-      }
-      return next
-    })
+    setQuantities((prev) => ({
+      ...prev,
+      [id]: prev[id] > 0 ? 0 : 1,
+    }))
   }
 
   const selectAll = () => {
-    if (selected.size === products.length) {
-      setSelected(new Set())
-    } else {
-      setSelected(new Set(products.map((p) => p.id)))
-    }
+    const anySelected = Object.values(quantities).some((q) => q > 0)
+    const next: Record<string, number> = {}
+    for (const p of products) next[p.id] = anySelected ? 0 : 1
+    setQuantities(next)
   }
 
-  const selectedProducts = products.filter((p) => selected.has(p.id))
+  const selectedCount = Object.values(quantities).filter((q) => q > 0).length
+  const totalLabels = Object.values(quantities).reduce((sum, q) => sum + q, 0)
 
   const getQRValue = (product: ProductItem) => {
-    if (qrType === 'public') {
-      return `${appUrl}/products/${product.slug}`
-    }
+    if (qrType === 'public') return `${appUrl}/products/${product.slug}`
     return `${appUrl}/admin/inventory/scan?product=${product.id}`
   }
+
+  // Expand: repeat each product label by its quantity
+  const labelList = products.flatMap((p) =>
+    Array.from({ length: quantities[p.id] ?? 0 }, (_, i) => ({ ...p, key: `${p.id}-${i}` }))
+  )
 
   if (loading) {
     return (
@@ -74,7 +79,7 @@ export default function ProductLabelsPage() {
 
   return (
     <div className="p-8">
-      {/* Header - hidden in print */}
+      {/* Controls — hidden during print */}
       <div className="print:hidden">
         <div className="flex items-center gap-4 mb-8">
           <Link
@@ -86,10 +91,10 @@ export default function ProductLabelsPage() {
           <h1 className="text-xl font-bold text-brand-text">Print Product QR Labels</h1>
           <button
             onClick={() => window.print()}
-            disabled={selected.size === 0}
+            disabled={totalLabels === 0}
             className="ml-auto px-4 py-2 text-sm font-medium bg-brand-blue text-white rounded-lg hover:bg-brand-blue/90 transition-colors disabled:opacity-50"
           >
-            Print ({selected.size})
+            Print {totalLabels > 0 ? `(${totalLabels} label${totalLabels !== 1 ? 's' : ''})` : ''}
           </button>
         </div>
 
@@ -97,26 +102,19 @@ export default function ProductLabelsPage() {
         <div className="bg-white border border-brand-border rounded-2xl p-6 shadow-card mb-6">
           <h2 className="text-sm font-bold text-brand-text mb-3">QR Code Type</h2>
           <div className="flex gap-2">
-            <button
-              onClick={() => setQrType('public')}
-              className={`px-4 py-2 text-sm font-medium rounded-xl border transition-colors ${
-                qrType === 'public'
-                  ? 'border-brand-blue bg-brand-blue-light text-brand-blue'
-                  : 'border-brand-border text-brand-muted hover:bg-brand-arctic'
-              }`}
-            >
-              Public Link
-            </button>
-            <button
-              onClick={() => setQrType('inventory')}
-              className={`px-4 py-2 text-sm font-medium rounded-xl border transition-colors ${
-                qrType === 'inventory'
-                  ? 'border-brand-blue bg-brand-blue-light text-brand-blue'
-                  : 'border-brand-border text-brand-muted hover:bg-brand-arctic'
-              }`}
-            >
-              Inventory Link
-            </button>
+            {(['public', 'inventory'] as const).map((type) => (
+              <button
+                key={type}
+                onClick={() => setQrType(type)}
+                className={`px-4 py-2 text-sm font-medium rounded-xl border transition-colors ${
+                  qrType === type
+                    ? 'border-brand-blue bg-brand-blue-light text-brand-blue'
+                    : 'border-brand-border text-brand-muted hover:bg-brand-arctic'
+                }`}
+              >
+                {type === 'public' ? 'Public Link' : 'Inventory Link'}
+              </button>
+            ))}
           </div>
           <p className="text-xs text-brand-muted mt-2">
             {qrType === 'public'
@@ -125,73 +123,104 @@ export default function ProductLabelsPage() {
           </p>
         </div>
 
-        {/* Product selector */}
+        {/* Product selector with quantity inputs */}
         <div className="bg-white border border-brand-border rounded-2xl p-6 shadow-card mb-8">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-sm font-bold text-brand-text">Select Products</h2>
+            <h2 className="text-sm font-bold text-brand-text">Select Products &amp; Quantities</h2>
             <button
               onClick={selectAll}
               className="text-xs font-medium text-brand-blue hover:underline"
             >
-              {selected.size === products.length ? 'Deselect All' : 'Select All'}
+              {selectedCount > 0 ? 'Deselect All' : 'Select All'}
             </button>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
-            {products.map((product) => (
-              <label
-                key={product.id}
-                className={`flex items-center gap-2 p-3 rounded-xl border cursor-pointer transition-colors ${
-                  selected.has(product.id)
-                    ? 'border-brand-blue bg-brand-blue/5'
-                    : 'border-brand-border hover:bg-brand-arctic'
-                }`}
-              >
-                <input
-                  type="checkbox"
-                  checked={selected.has(product.id)}
-                  onChange={() => toggleProduct(product.id)}
-                  className="rounded border-brand-border text-brand-blue focus:ring-brand-blue"
-                />
-                <span className="text-sm font-medium text-brand-text truncate">
-                  {product.name}
-                </span>
-              </label>
-            ))}
+          <div className="space-y-2">
+            {products.map((product) => {
+              const qty = quantities[product.id] ?? 0
+              const isSelected = qty > 0
+              return (
+                <div
+                  key={product.id}
+                  className={`flex items-center gap-3 p-3 rounded-xl border transition-colors ${
+                    isSelected
+                      ? 'border-brand-blue bg-brand-blue/5'
+                      : 'border-brand-border hover:bg-brand-arctic'
+                  }`}
+                >
+                  <input
+                    type="checkbox"
+                    checked={isSelected}
+                    onChange={() => toggleProduct(product.id)}
+                    className="rounded border-brand-border text-brand-blue focus:ring-brand-blue shrink-0"
+                  />
+                  <span className="text-sm font-medium text-brand-text flex-1 truncate">
+                    {product.name}
+                  </span>
+                  {isSelected && (
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className="text-xs text-brand-muted">Qty:</span>
+                      <input
+                        type="number"
+                        min={1}
+                        max={99}
+                        value={qty}
+                        onChange={(e) => setQty(product.id, parseInt(e.target.value) || 1)}
+                        className="w-16 px-2 py-1 text-sm border border-brand-border rounded-lg text-center focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue"
+                      />
+                    </div>
+                  )}
+                </div>
+              )
+            })}
           </div>
+          {totalLabels > 0 && (
+            <p className="text-xs text-brand-muted mt-3">
+              {totalLabels} label{totalLabels !== 1 ? 's' : ''} will be printed
+            </p>
+          )}
         </div>
       </div>
 
-      {/* Printable label grid */}
-      {selectedProducts.length > 0 && (
-        <div className="grid grid-cols-2 sm:grid-cols-3 print:grid-cols-3 gap-6 print:gap-4">
-          {selectedProducts.map((product) => (
+      {/* Printable label area — visibility-isolated so ONLY this prints */}
+      {labelList.length > 0 && (
+        <div className="label-print-area grid grid-cols-3 gap-4 print:gap-3">
+          {labelList.map((item) => (
             <div
-              key={product.id}
-              className="border border-brand-border print:border-gray-300 rounded-xl p-4 text-center space-y-2 break-inside-avoid"
+              key={item.key}
+              className="border border-brand-border print:border-gray-400 rounded-xl p-4 text-center space-y-2 break-inside-avoid"
             >
               <QRCodeDisplay
-                value={getQRValue(product)}
+                value={getQRValue(item)}
                 size={120}
               />
-              <p className="text-sm font-bold text-brand-text">{product.name}</p>
-              <p className="text-xs text-brand-muted font-mono">{product.id.slice(0, 8)}</p>
+              <p className="text-sm font-bold text-brand-text print:text-black">{item.name}</p>
+              <p className="text-xs text-brand-muted print:text-gray-500 font-mono">{item.id.slice(0, 8)}</p>
             </div>
           ))}
         </div>
       )}
 
-      {/* Print styles */}
       <style jsx global>{`
         @media print {
-          nav, aside, header, .print\\:hidden {
-            display: none !important;
+          /* Hide everything */
+          body * {
+            visibility: hidden;
+          }
+          /* Show only the label area */
+          .label-print-area,
+          .label-print-area * {
+            visibility: visible;
+          }
+          .label-print-area {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 16px;
+            background: white;
           }
           body {
             background: white !important;
-          }
-          main {
-            margin: 0 !important;
-            padding: 0 !important;
           }
         }
       `}</style>

@@ -170,7 +170,7 @@ export default async function AdminDashboard() {
                         </span>
                       </td>
                       <td className="py-3 pr-4 text-brand-muted">
-                        {order.items.length}
+                        {order.items.reduce((sum, i) => sum + i.quantity, 0)}
                       </td>
                       <td className="py-3 pr-4 font-semibold text-brand-text">
                         {formatPrice(order.total)}

@@ -61,7 +61,7 @@ export default async function AdminProductsPage({ searchParams }: Props) {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-brand-border bg-brand-arctic">
-                {['Product', 'Price', 'Stock', 'Status', 'Tags', 'Actions'].map((col) => (
+                {['Product', 'SKU', 'Price', 'Stock', 'Status', 'Tags', 'Actions'].map((col) => (
                   <th
                     key={col}
                     className="px-4 py-3 text-left text-xs font-medium text-brand-muted uppercase tracking-wider"
@@ -94,6 +94,12 @@ export default async function AdminProductsPage({ searchParams }: Props) {
                         <p className="text-xs text-brand-muted font-mono">{product.slug}</p>
                       </div>
                     </div>
+                  </td>
+
+                  <td className="px-4 py-4">
+                    <span className="text-xs font-mono text-brand-muted">
+                      {product.sku || '—'}
+                    </span>
                   </td>
 
                   <td className="px-4 py-4">
@@ -166,7 +172,7 @@ export default async function AdminProductsPage({ searchParams }: Props) {
 
               {allProducts.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="px-4 py-12 text-center text-brand-muted">
+                  <td colSpan={7} className="px-4 py-12 text-center text-brand-muted">
                     No products yet.{' '}
                     <Link href="/admin/products/new" className="text-brand-blue hover:underline">
                       Create your first product

@@ -5,7 +5,7 @@ import * as motion from 'motion/react-client'
 
 const stats = [
   { value: 'FDM', label: 'Print Technology' },
-  { value: '0.12mm', label: 'Layer Resolution' },
+  { value: '0.4mm', label: 'Layer Resolution' },
   { value: '48hr', label: 'Avg. Turnaround' },
 ]
 

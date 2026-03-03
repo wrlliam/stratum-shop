@@ -7,7 +7,10 @@ import { orders, orderItems, orderMessages } from '@/lib/db/schema'
 import { eq, desc } from 'drizzle-orm'
 import { formatPrice } from '@/lib/utils'
 import { StatusBadge } from '@/components/ui/Badge'
+import { CancelOrderButton } from '@/components/orders/CancelOrderButton'
 import type { Metadata } from 'next'
+
+const CANCEL_WINDOW_MS = 24 * 60 * 60 * 1000
 
 export const metadata: Metadata = {
   title: 'My Orders',
@@ -83,6 +86,10 @@ export default async function OrdersPage() {
                     </span>
                   )}
                   <span className="font-bold text-brand-text">{formatPrice(order.total)}</span>
+                  {['paid', 'processing'].includes(order.status) &&
+                    Date.now() - new Date(order.createdAt).getTime() < CANCEL_WINDOW_MS && (
+                      <CancelOrderButton orderId={order.id} orderNumber={order.orderNumber} />
+                    )}
                 </div>
               </div>
 

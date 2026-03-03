@@ -9,6 +9,7 @@ import {
   serial,
   index,
   uniqueIndex,
+  primaryKey,
 } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm'
 
@@ -80,6 +81,7 @@ export const products = pgTable(
     featured: boolean('featured').notNull().default(false),
     active: boolean('active').notNull().default(true),
     weight: integer('weight'), // grams, for shipping
+    sku: text('sku'),
     material: text('material'), // e.g. PLA, PETG, ABS
     color: text('color'),
     printTime: integer('print_time'), // minutes
@@ -90,6 +92,7 @@ export const products = pgTable(
     index('products_slug_idx').on(t.slug),
     index('products_active_idx').on(t.active),
     index('products_featured_idx').on(t.featured),
+    index('products_created_at_idx').on(t.createdAt),
   ]
 )
 
@@ -145,6 +148,20 @@ export const coupons = pgTable(
   (t) => [uniqueIndex('coupons_code_idx').on(t.code)]
 )
 
+// ─── Coupon Product Restrictions ─────────────────────────────────────────────
+export const couponProducts = pgTable(
+  'coupon_products',
+  {
+    couponId: uuid('coupon_id')
+      .notNull()
+      .references(() => coupons.id, { onDelete: 'cascade' }),
+    productId: uuid('product_id')
+      .notNull()
+      .references(() => products.id, { onDelete: 'cascade' }),
+  },
+  (t) => [primaryKey({ columns: [t.couponId, t.productId] })]
+)
+
 // ─── Orders ───────────────────────────────────────────────────────────────────
 export const orders = pgTable(
   'orders',
@@ -174,6 +191,7 @@ export const orders = pgTable(
     index('orders_user_id_idx').on(t.userId),
     index('orders_status_idx').on(t.status),
     index('orders_created_at_idx').on(t.createdAt),
+    index('orders_email_idx').on(t.email),
   ]
 )
 
@@ -199,6 +217,7 @@ export const productOptionGroups = pgTable('product_option_groups', {
     .notNull()
     .references(() => products.id, { onDelete: 'cascade' }),
   name: text('name').notNull(),
+  type: text('type').notNull().default('select'), // 'select' | 'boolean' | 'text'
   order: integer('order').notNull().default(0),
 })
 
@@ -257,6 +276,21 @@ export const orderMessages = pgTable('order_messages', {
   createdAt: timestamp('created_at').defaultNow().notNull(),
 })
 
+// ─── Announcement Banners ─────────────────────────────────────────────────────
+export const banners = pgTable('banners', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  message: text('message').notNull(),
+  type: text('type').notNull().default('info'), // 'info' | 'sale' | 'warning' | 'success'
+  link: text('link'),
+  linkText: text('link_text'),
+  active: boolean('active').notNull().default(true),
+  dismissible: boolean('dismissible').notNull().default(true),
+  expiresAt: timestamp('expires_at'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+})
+
+export type Banner = typeof banners.$inferSelect
+
 // ─── Recommendations ──────────────────────────────────────────────────────────
 export const recommendations = pgTable('recommendations', {
   id: uuid('id').defaultRandom().primaryKey(),
@@ -276,6 +310,7 @@ export const productsRelations = relations(products, ({ many }) => ({
   optionGroups: many(productOptionGroups),
   bundleProducts: many(bundleProducts),
   orderItems: many(orderItems),
+  couponProducts: many(couponProducts),
 }))
 
 export const productImagesRelations = relations(productImages, ({ one }) => ({
@@ -303,6 +338,18 @@ export const bundleProductsRelations = relations(bundleProducts, ({ one }) => ({
 
 export const couponsRelations = relations(coupons, ({ many }) => ({
   orders: many(orders),
+  couponProducts: many(couponProducts),
+}))
+
+export const couponProductsRelations = relations(couponProducts, ({ one }) => ({
+  coupon: one(coupons, {
+    fields: [couponProducts.couponId],
+    references: [coupons.id],
+  }),
+  product: one(products, {
+    fields: [couponProducts.productId],
+    references: [products.id],
+  }),
 }))
 
 export const ordersRelations = relations(orders, ({ many, one }) => ({
@@ -429,3 +476,4 @@ export type PrintBatch = typeof printBatches.$inferSelect
 export type InventoryLogEntry = typeof inventoryLog.$inferSelect
 export type OrderMessage = typeof orderMessages.$inferSelect
 export type Coupon = typeof coupons.$inferSelect
+export type CouponProduct = typeof couponProducts.$inferSelect

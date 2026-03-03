@@ -22,46 +22,50 @@ export function OrderMessageEmail({ orderNumber, subject, body, appUrl }: OrderM
   return (
     <Html>
       <Head />
-      <Preview>Update on your Stratum order #{orderNumber}</Preview>
+      <Preview>Re: Order #{orderNumber} — {subject}</Preview>
       <Body style={main}>
         <Container style={container}>
-          {/* Header */}
+          <Section style={accentBar} />
+
           <Section style={header}>
             <Heading style={logo}>STRATUM</Heading>
             <Text style={tagline}>Precision 3D Prints</Text>
           </Section>
 
-          <Hr style={divider} />
-
-          {/* Content */}
           <Section style={content}>
             <Text style={orderRef}>Re: Order #{orderNumber}</Text>
-            <Heading as="h2" style={h2}>
-              {subject}
-            </Heading>
-            <Text style={paragraph}>{body}</Text>
+            <Heading as="h2" style={h2}>{subject}</Heading>
+
+            <Section style={messageBox}>
+              <Text style={messageText}>{body}</Text>
+            </Section>
 
             <Hr style={divider} />
 
-            <Section style={{ textAlign: 'center' as const }}>
-              <Link href={`${appUrl}/orders`} style={button}>
-                View Your Orders
-              </Link>
+            <Section style={replyBox}>
+              <Text style={replyTitle}>Need to reply?</Text>
+              <Text style={replyText}>
+                Simply reply to this email and we&apos;ll get back to you, or visit our{' '}
+                <Link href={`${appUrl}/contact`} style={inlineLink}>contact page</Link>.
+              </Text>
             </Section>
 
-            <Text style={footer}>
-              Questions? Reply to this email or visit{' '}
-              <Link href={appUrl} style={link}>{appUrl}</Link>
-            </Text>
+            <Hr style={divider} />
+
+            <Section style={{ textAlign: 'center' }}>
+              <Link href={`${appUrl}/orders`} style={button}>
+                View Your Order
+              </Link>
+            </Section>
           </Section>
 
-          {/* Footer */}
           <Section style={footerSection}>
             <Text style={footerText}>
-              © {new Date().getFullYear()} Stratum. All rights reserved.
+              Questions? Email{' '}
+              <Link href="mailto:hello@stratum3d.co.uk" style={footerLink}>hello@stratum3d.co.uk</Link>
             </Text>
             <Text style={footerText}>
-              Precision 3D Prints • Made with care
+              © {new Date().getFullYear()} Stratum · Precision 3D Prints
             </Text>
           </Section>
         </Container>
@@ -70,54 +74,102 @@ export function OrderMessageEmail({ orderNumber, subject, body, appUrl }: OrderM
   )
 }
 
-// Styles (matching order-confirmation.tsx)
+// ─── Styles ──────────────────────────────────────────────────────────────────
+
 const main = {
-  backgroundColor: '#0a0a10',
-  fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+  backgroundColor: '#F8F9FA',
+  fontFamily: 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif',
 }
 const container = {
   maxWidth: '600px',
   margin: '0 auto',
-  backgroundColor: '#111127',
+  backgroundColor: '#FFFFFF',
   borderRadius: '12px',
   overflow: 'hidden',
+  border: '1px solid #E8EAED',
+}
+const accentBar = {
+  backgroundColor: '#6CBCE3',
+  height: '4px',
+  lineHeight: '4px',
+  fontSize: '0px',
 }
 const header = {
-  backgroundColor: '#0d0d1a',
-  padding: '32px',
+  backgroundColor: '#1a1a2e',
+  padding: '28px 32px',
   textAlign: 'center' as const,
-  borderBottom: '1px solid #2d2d55',
 }
 const logo = {
-  color: '#f59e0b',
-  fontSize: '28px',
+  color: '#FFFFFF',
+  fontSize: '26px',
   fontWeight: '900',
   letterSpacing: '8px',
   margin: '0',
 }
 const tagline = {
-  color: '#9ca3af',
-  fontSize: '12px',
+  color: '#6CBCE3',
+  fontSize: '11px',
   letterSpacing: '3px',
-  margin: '4px 0 0',
+  margin: '6px 0 0',
   textTransform: 'uppercase' as const,
 }
 const content = { padding: '32px' }
-const orderRef = { color: '#9ca3af', fontSize: '12px', textTransform: 'uppercase' as const, letterSpacing: '1px', margin: '0 0 8px' }
-const h2 = { color: '#f9fafb', fontSize: '24px', fontWeight: '700', margin: '0 0 16px' }
-const paragraph = { color: '#c8c8f0', fontSize: '14px', lineHeight: '1.6', margin: '0 0 16px', whiteSpace: 'pre-wrap' as const }
-const divider = { borderColor: '#2d2d55', margin: '24px 0' }
+const orderRef = {
+  color: '#6b7280',
+  fontSize: '12px',
+  textTransform: 'uppercase' as const,
+  letterSpacing: '1px',
+  margin: '0 0 8px',
+}
+const h2 = {
+  color: '#1a1a2e',
+  fontSize: '22px',
+  fontWeight: '700',
+  margin: '0 0 20px',
+}
+const divider = { borderColor: '#E8EAED', margin: '24px 0' }
+
+const messageBox = {
+  backgroundColor: '#EBF6FC',
+  borderRadius: '10px',
+  padding: '20px',
+  borderLeft: '3px solid #6CBCE3',
+  border: '1px solid #6CBCE3',
+}
+const messageText = {
+  color: '#1a1a2e',
+  fontSize: '14px',
+  lineHeight: '1.7',
+  margin: '0',
+  whiteSpace: 'pre-wrap' as const,
+}
+
+const replyBox = {
+  backgroundColor: '#F5F5F5',
+  borderRadius: '10px',
+  padding: '16px',
+  border: '1px solid #E8EAED',
+}
+const replyTitle = { color: '#1a1a2e', fontSize: '13px', fontWeight: '600', margin: '0 0 6px' }
+const replyText = { color: '#6b7280', fontSize: '12px', lineHeight: '1.6', margin: '0' }
+const inlineLink = { color: '#3A9FD4', textDecoration: 'underline' }
+
 const button = {
-  backgroundColor: '#f59e0b',
-  color: '#0a0a10',
-  padding: '12px 32px',
+  backgroundColor: '#6CBCE3',
+  color: '#1a1a2e',
+  padding: '13px 36px',
   borderRadius: '8px',
   fontWeight: '700',
   fontSize: '14px',
   textDecoration: 'none',
   display: 'inline-block',
 }
-const link = { color: '#f59e0b', textDecoration: 'underline' }
-const footer = { color: '#6b7280', fontSize: '12px', textAlign: 'center' as const, marginTop: '24px' }
-const footerSection = { backgroundColor: '#0d0d1a', padding: '24px', textAlign: 'center' as const, borderTop: '1px solid #2d2d55' }
+
+const footerSection = {
+  backgroundColor: '#F5F5F5',
+  padding: '24px 32px',
+  textAlign: 'center' as const,
+  borderTop: '1px solid #E8EAED',
+}
 const footerText = { color: '#6b7280', fontSize: '12px', margin: '4px 0' }
+const footerLink = { color: '#3A9FD4', textDecoration: 'underline' }

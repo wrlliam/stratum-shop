@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { db, coupons } from '@/lib/db'
+import { db, coupons, couponProducts } from '@/lib/db'
 import { eq } from 'drizzle-orm'
 import { auth } from '@/lib/auth'
 import { headers } from 'next/headers'
@@ -22,13 +22,15 @@ export async function PATCH(
       active: z.boolean().optional(),
       maxUses: z.number().int().positive().nullable().optional(),
       expiresAt: z.string().nullable().optional(),
+      productIds: z.array(z.string().uuid()).optional(),
     })
     const data = updateSchema.parse(body)
 
     const updateValues: Record<string, unknown> = {}
     if (data.active !== undefined) updateValues.active = data.active
     if (data.maxUses !== undefined) updateValues.maxUses = data.maxUses
-    if (data.expiresAt !== undefined) updateValues.expiresAt = data.expiresAt ? new Date(data.expiresAt) : null
+    if (data.expiresAt !== undefined)
+      updateValues.expiresAt = data.expiresAt ? new Date(data.expiresAt) : null
 
     const [updated] = await db
       .update(coupons)
@@ -38,6 +40,16 @@ export async function PATCH(
 
     if (!updated) {
       return NextResponse.json({ error: 'Coupon not found' }, { status: 404 })
+    }
+
+    // Replace product restrictions if provided
+    if (data.productIds !== undefined) {
+      await db.delete(couponProducts).where(eq(couponProducts.couponId, id))
+      if (data.productIds.length > 0) {
+        await db.insert(couponProducts).values(
+          data.productIds.map((productId) => ({ couponId: id, productId }))
+        )
+      }
     }
 
     return NextResponse.json(updated)

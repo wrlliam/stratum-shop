@@ -112,28 +112,46 @@ export function AddToCartButton({ product }: AddToCartButtonProps) {
 
   const optionGroups = product.optionGroups || []
 
-  // Initialize selections with first choice of each group
+  // Initialize selections: select → index, boolean → false, text → ''
   const [selections, setSelections] = useState<Record<string, number>>(() => {
     const initial: Record<string, number> = {}
     for (const group of optionGroups) {
-      if (group.choices.length > 0) {
+      if (group.choices.length > 0 && (group.type || 'select') === 'select') {
         initial[group.id] = 0
       }
     }
     return initial
   })
 
-  const selectedOptions: SelectedOption[] = optionGroups
-    .filter((g) => g.choices.length > 0)
-    .map((g) => {
+  const [booleanSelections, setBooleanSelections] = useState<Record<string, boolean>>({})
+  const [textSelections, setTextSelections] = useState<Record<string, string>>({})
+
+  const selectedOptions: SelectedOption[] = []
+
+  for (const g of optionGroups) {
+    const type = (g.type as string) || 'select'
+    if (type === 'select' && g.choices.length > 0) {
       const choiceIdx = selections[g.id] ?? 0
       const choice = g.choices[choiceIdx]
-      return {
+      selectedOptions.push({
         groupName: g.name,
         choiceLabel: choice.label,
         priceModifier: choice.priceModifier,
-      }
-    })
+      })
+    } else if (type === 'boolean' && booleanSelections[g.id] && g.choices[0]) {
+      selectedOptions.push({
+        groupName: g.name,
+        choiceLabel: g.choices[0].label,
+        priceModifier: g.choices[0].priceModifier,
+      })
+    } else if (type === 'text' && textSelections[g.id]?.trim() && g.choices[0]) {
+      selectedOptions.push({
+        groupName: g.name,
+        choiceLabel: textSelections[g.id].trim(),
+        priceModifier: g.choices[0].priceModifier,
+      })
+    }
+  }
 
   const optionsModifier = selectedOptions.reduce(
     (sum, o) => sum + o.priceModifier,
@@ -159,23 +177,86 @@ export function AddToCartButton({ product }: AddToCartButtonProps) {
   return (
     <div className="space-y-4">
       {/* Option selectors */}
-      {optionGroups.map((group) => (
-        <div key={group.id}>
-          <label className="text-xs font-semibold text-brand-muted uppercase tracking-wider mb-1.5 block">
-            {group.name}
-          </label>
-          <OptionDropdown
-            group={group}
-            selectedIndex={selections[group.id] ?? 0}
-            onSelect={(idx) =>
-              setSelections((prev) => ({
-                ...prev,
-                [group.id]: idx,
-              }))
-            }
-          />
-        </div>
-      ))}
+      {optionGroups.map((group) => {
+        const type = (group.type as string) || 'select'
+        return (
+          <div key={group.id}>
+            <label className="text-xs font-semibold text-brand-muted uppercase tracking-wider mb-1.5 block">
+              {group.name}
+            </label>
+
+            {type === 'select' && (
+              <OptionDropdown
+                group={group}
+                selectedIndex={selections[group.id] ?? 0}
+                onSelect={(idx) =>
+                  setSelections((prev) => ({
+                    ...prev,
+                    [group.id]: idx,
+                  }))
+                }
+              />
+            )}
+
+            {type === 'boolean' && group.choices[0] && (
+              <button
+                type="button"
+                onClick={() =>
+                  setBooleanSelections((prev) => ({
+                    ...prev,
+                    [group.id]: !prev[group.id],
+                  }))
+                }
+                className="w-full flex items-center justify-between px-3.5 py-2.5 text-sm border rounded-xl bg-white text-brand-text transition-all border-brand-border hover:border-brand-slate"
+              >
+                <span>
+                  {group.choices[0].label}
+                  {group.choices[0].priceModifier > 0 && (
+                    <span className="text-brand-muted ml-1.5">(+{formatPrice(group.choices[0].priceModifier)})</span>
+                  )}
+                </span>
+                <div
+                  className={cn(
+                    'relative w-10 h-5 rounded-full transition-colors duration-200',
+                    booleanSelections[group.id]
+                      ? 'bg-brand-blue'
+                      : 'bg-gray-200'
+                  )}
+                >
+                  <div
+                    className={cn(
+                      'absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform duration-200',
+                      booleanSelections[group.id] ? 'translate-x-5' : 'translate-x-0.5'
+                    )}
+                  />
+                </div>
+              </button>
+            )}
+
+            {type === 'text' && group.choices[0] && (
+              <div>
+                <input
+                  type="text"
+                  placeholder={group.choices[0].label}
+                  value={textSelections[group.id] || ''}
+                  onChange={(e) =>
+                    setTextSelections((prev) => ({
+                      ...prev,
+                      [group.id]: e.target.value,
+                    }))
+                  }
+                  className="w-full px-3.5 py-2.5 text-sm border border-brand-border rounded-xl bg-white text-brand-text placeholder:text-brand-muted focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all"
+                />
+                {group.choices[0].priceModifier > 0 && (
+                  <p className="text-xs text-brand-muted mt-1">
+                    +{formatPrice(group.choices[0].priceModifier)} when provided
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
+        )
+      })}
 
       {/* Quantity selector */}
       <div className="flex items-center gap-3">

@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { db, coupons } from '@/lib/db'
+import { db, coupons, couponProducts, products } from '@/lib/db'
 import { auth } from '@/lib/auth'
 import { headers } from 'next/headers'
-import { desc } from 'drizzle-orm'
+import { desc, eq, inArray } from 'drizzle-orm'
 import { z } from 'zod'
 
 export async function GET() {
@@ -12,7 +12,36 @@ export async function GET() {
   }
 
   const allCoupons = await db.select().from(coupons).orderBy(desc(coupons.createdAt))
-  return NextResponse.json(allCoupons)
+
+  // Fetch product restrictions for all coupons
+  const couponIds = allCoupons.map((c) => c.id)
+  const restrictions =
+    couponIds.length > 0
+      ? await db
+          .select({
+            couponId: couponProducts.couponId,
+            productId: couponProducts.productId,
+            productName: products.name,
+          })
+          .from(couponProducts)
+          .innerJoin(products, eq(couponProducts.productId, products.id))
+          .where(inArray(couponProducts.couponId, couponIds))
+      : []
+
+  const restrictionsByCoupon = restrictions.reduce<
+    Record<string, { productId: string; productName: string }[]>
+  >((acc, r) => {
+    if (!acc[r.couponId]) acc[r.couponId] = []
+    acc[r.couponId].push({ productId: r.productId, productName: r.productName })
+    return acc
+  }, {})
+
+  const result = allCoupons.map((c) => ({
+    ...c,
+    productRestrictions: restrictionsByCoupon[c.id] ?? [],
+  }))
+
+  return NextResponse.json(result)
 }
 
 const createSchema = z.object({
@@ -22,6 +51,7 @@ const createSchema = z.object({
   minOrderAmount: z.number().int().positive().nullable().optional(),
   maxUses: z.number().int().positive().nullable().optional(),
   expiresAt: z.string().nullable().optional(),
+  productIds: z.array(z.string().uuid()).optional(), // empty = all products
 })
 
 export async function POST(request: NextRequest) {
@@ -45,6 +75,12 @@ export async function POST(request: NextRequest) {
         expiresAt: data.expiresAt ? new Date(data.expiresAt) : null,
       })
       .returning()
+
+    if (data.productIds && data.productIds.length > 0) {
+      await db.insert(couponProducts).values(
+        data.productIds.map((productId) => ({ couponId: coupon.id, productId }))
+      )
+    }
 
     return NextResponse.json(coupon, { status: 201 })
   } catch (error) {
