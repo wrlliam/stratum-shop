@@ -2,8 +2,8 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import { ArrowLeftIcon } from '@radix-ui/react-icons'
-import { db, orders } from '@/lib/db'
-import { eq } from 'drizzle-orm'
+import { db, orders, customOrderSubmissions } from '@/lib/db'
+import { eq, inArray } from 'drizzle-orm'
 import { formatPrice } from '@/lib/utils'
 import { StatusBadge } from '@/components/ui/Badge'
 import { OrderStatusSelect } from '@/components/admin/OrderStatusSelect'
@@ -11,6 +11,7 @@ import { PrintLabelButton } from '@/components/admin/PrintLabelButton'
 import { TrackingForm } from '@/components/admin/TrackingForm'
 import { MessageForm } from '@/components/admin/MessageForm'
 import { RefundButton } from '@/components/admin/RefundButton'
+import { ResendConfirmationButton } from '@/components/admin/ResendConfirmationButton'
 import { getDeliveryOption } from '@/lib/stripe'
 import type { DeliveryAddress } from '@/types'
 
@@ -23,10 +24,23 @@ export default async function AdminOrderDetailPage({ params }: Props) {
 
   const order = await db.query.orders.findFirst({
     where: eq(orders.id, id),
-    with: { items: true, messages: true },
+    with: {
+      items: {
+        with: {
+          product: { columns: { productType: true, customOrderFields: true } },
+        },
+      },
+      messages: true,
+    },
   })
 
   if (!order) notFound()
+
+  const itemIds = order.items.map((i) => i.id)
+  const submissions = itemIds.length
+    ? await db.select().from(customOrderSubmissions).where(inArray(customOrderSubmissions.orderItemId, itemIds))
+    : []
+  const submissionsByItemId = Object.fromEntries(submissions.map((s) => [s.orderItemId, s.fields as Record<string, string>]))
 
   const deliveryOption = getDeliveryOption(order.deliveryMethod)
   const address = order.deliveryAddress as DeliveryAddress | null
@@ -48,6 +62,7 @@ export default async function AdminOrderDetailPage({ params }: Props) {
           <p className="text-brand-muted text-sm mt-0.5">{order.email}</p>
         </div>
         <div className="ml-auto flex items-center gap-3">
+          <ResendConfirmationButton orderId={order.id} />
           <OrderStatusSelect orderId={order.id} currentStatus={order.status} />
           <RefundButton orderId={order.id} orderStatus={order.status} />
         </div>
@@ -60,37 +75,65 @@ export default async function AdminOrderDetailPage({ params }: Props) {
             <h2 className="text-sm font-bold text-brand-text mb-4">Order Items</h2>
 
             <div className="space-y-4">
-              {order.items.map((item) => (
-                <div key={item.id} className="flex items-center gap-4">
-                  <div className="relative w-14 h-14 rounded-xl overflow-hidden bg-brand-arctic shrink-0 border border-brand-border">
-                    {item.imageUrl ? (
-                      <Image src={item.imageUrl} alt={item.name} fill className="object-cover" sizes="56px" />
-                    ) : (
-                      <div className="flex items-center justify-center h-full text-xl">🖨️</div>
-                    )}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium text-brand-text">{item.name}</p>
-                    {item.isBundle && (
-                      <span className="text-[10px] text-brand-blue uppercase tracking-wider font-semibold">Bundle</span>
-                    )}
-                    {(() => {
-                      const opts = item.selectedOptions as { groupName: string; choiceLabel: string }[] | null
-                      return opts && Array.isArray(opts) && opts.length > 0 ? (
-                        <p className="text-xs text-brand-muted mt-0.5">
-                          {opts.map((o) => `${o.groupName}: ${o.choiceLabel}`).join(' · ')}
+              {order.items.map((item) => {
+                const sub = submissionsByItemId[item.id]
+                const fields = (item.product?.customOrderFields ?? []) as { type: string; label: string }[]
+                return (
+                  <div key={item.id}>
+                    <div className="flex items-center gap-4">
+                      <div className="relative w-14 h-14 rounded-xl overflow-hidden bg-brand-arctic shrink-0 border border-brand-border">
+                        {item.imageUrl ? (
+                          <Image src={item.imageUrl} alt={item.name} fill className="object-cover" sizes="56px" />
+                        ) : (
+                          <div className="flex items-center justify-center h-full text-xl">🖨️</div>
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-brand-text">{item.name}</p>
+                        {item.isBundle && (
+                          <span className="text-[10px] text-brand-blue uppercase tracking-wider font-semibold">Bundle</span>
+                        )}
+                        {(() => {
+                          const opts = item.selectedOptions as { groupName: string; choiceLabel: string }[] | null
+                          return opts && Array.isArray(opts) && opts.length > 0 ? (
+                            <p className="text-xs text-brand-muted mt-0.5">
+                              {opts.map((o) => `${o.groupName}: ${o.choiceLabel}`).join(' · ')}
+                            </p>
+                          ) : null
+                        })()}
+                      </div>
+                      <div className="text-right">
+                        <p className="font-bold text-brand-text">{formatPrice(item.price * item.quantity)}</p>
+                        <p className="text-xs text-brand-muted">
+                          {formatPrice(item.price)} × {item.quantity}
                         </p>
-                      ) : null
-                    })()}
+                      </div>
+                    </div>
+                    {sub && (
+                      <div className="mt-3 ml-18 pl-4 border-l-2 border-brand-blue/20 space-y-2">
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-brand-blue">Customer Submission</p>
+                        {fields.map((f) => {
+                          const val = sub[f.label]
+                          if (!val) return null
+                          return (
+                            <div key={f.label}>
+                              <p className="text-[10px] font-semibold text-brand-muted uppercase tracking-wider">{f.label}</p>
+                              {f.type === 'image' ? (
+                                <div className="mt-1 rounded-lg overflow-hidden border border-brand-border bg-brand-arctic">
+                                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                                  <img src={val} alt={f.label} className="w-full h-auto object-contain" />
+                                </div>
+                              ) : (
+                                <p className="text-sm text-brand-text mt-0.5">{val}</p>
+                              )}
+                            </div>
+                          )
+                        })}
+                      </div>
+                    )}
                   </div>
-                  <div className="text-right">
-                    <p className="font-bold text-brand-text">{formatPrice(item.price * item.quantity)}</p>
-                    <p className="text-xs text-brand-muted">
-                      {formatPrice(item.price)} × {item.quantity}
-                    </p>
-                  </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
           </div>
 

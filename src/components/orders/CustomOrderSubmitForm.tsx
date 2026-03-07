@@ -143,9 +143,9 @@ export function CustomOrderSubmitForm({ orderId, itemId, itemName, fields, exist
           {field.type === 'image' && (
             <div>
               {values[field.label] ? (
-                <div className="flex items-center gap-3">
-                  <div className="w-40 h-40 rounded-xl overflow-hidden border border-brand-border bg-white flex-shrink-0">
-                    <img src={values[field.label]} alt={field.label} className="w-full h-full object-cover" />
+                <div className="flex flex-col gap-2">
+                  <div className="w-full rounded-xl overflow-hidden border border-brand-border bg-white">
+                    <img src={values[field.label]} alt={field.label} className="w-full h-auto object-contain" />
                   </div>
                   <button
                     type="button"
