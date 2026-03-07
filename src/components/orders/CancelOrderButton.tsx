@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/Button'
 import toast from 'react-hot-toast'
+import { useConfirm } from '@/components/providers/ConfirmProvider'
 
 interface Props {
   orderId: string
@@ -13,11 +14,16 @@ interface Props {
 export function CancelOrderButton({ orderId, orderNumber }: Props) {
   const [loading, setLoading] = useState(false)
   const router = useRouter()
+  const confirm = useConfirm()
 
   const handleCancel = async () => {
-    if (!confirm(`Are you sure you want to cancel order #${orderNumber}? You will receive a full refund.`)) {
-      return
-    }
+    const ok = await confirm({
+      title: 'Cancel order?',
+      message: `Are you sure you want to cancel order #${orderNumber}? You will receive a full refund.`,
+      confirmLabel: 'Cancel Order',
+      danger: true,
+    })
+    if (!ok) return
 
     setLoading(true)
     try {

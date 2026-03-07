@@ -4,6 +4,7 @@ import './globals.css'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
 import { CartProvider } from '@/components/providers/CartProvider'
+import { ConfirmProvider } from '@/components/providers/ConfirmProvider'
 import { CartDrawer } from '@/components/shop/CartDrawer'
 import { Toaster } from 'react-hot-toast'
 
@@ -56,6 +57,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${dmSans.variable} ${dmMono.variable}`}>
       <body className="bg-brand-bg text-brand-text antialiased font-sans">
+        <ConfirmProvider>
         <CartProvider>
           <Navbar />
           <CartDrawer />
@@ -76,6 +78,7 @@ export default function RootLayout({
             }}
           />
         </CartProvider>
+        </ConfirmProvider>
       </body>
     </html>
   )

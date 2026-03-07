@@ -1,11 +1,30 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { useConfirm } from '@/components/providers/ConfirmProvider'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { formatPrice } from '@/lib/utils'
 import toast from 'react-hot-toast'
 import type { Coupon } from '@/lib/db/schema'
+import { PRESET_CONDITIONS, conditionToLabel, type CouponCondition } from '@/lib/coupon-conditions'
+
+const CONDITION_FIELDS = [
+  { value: 'account.orderCount', label: 'Order count' },
+  { value: 'account.totalSpent', label: 'Total spent (pence)' },
+  { value: 'account.createdAt', label: 'Account age (days)' },
+  { value: 'cart.itemCount', label: 'Cart item count' },
+  { value: 'cart.hasProduct', label: 'Cart has product ID' },
+]
+
+const OPERATORS = [
+  { value: 'lt', label: '<' },
+  { value: 'lte', label: '≤' },
+  { value: 'gt', label: '>' },
+  { value: 'gte', label: '≥' },
+  { value: 'eq', label: '=' },
+  { value: 'neq', label: '≠' },
+]
 
 type CouponWithRestrictions = Coupon & {
   productRestrictions: { productId: string; productName: string }[]
@@ -17,6 +36,7 @@ export default function AdminCouponsPage() {
   const [coupons, setCoupons] = useState<CouponWithRestrictions[]>([])
   const [loading, setLoading] = useState(true)
   const [showCreate, setShowCreate] = useState(false)
+  const confirm = useConfirm()
 
   const fetchCoupons = useCallback(async () => {
     const res = await fetch('/api/admin/coupons')
@@ -41,7 +61,7 @@ export default function AdminCouponsPage() {
   }
 
   const deleteCoupon = async (id: string) => {
-    if (!confirm('Delete this coupon?')) return
+    if (!await confirm({ message: 'Delete this coupon?', confirmLabel: 'Delete', danger: true })) return
     const res = await fetch(`/api/admin/coupons/${id}`, { method: 'DELETE' })
     if (res.ok) {
       toast.success('Coupon deleted')
@@ -183,6 +203,10 @@ function CreateCouponForm({
   const [expiresAt, setExpiresAt] = useState('')
   const [allProducts, setAllProducts] = useState<SimpleProduct[]>([])
   const [selectedProductIds, setSelectedProductIds] = useState<string[]>([])
+  const [conditions, setConditions] = useState<CouponCondition[]>([])
+  const [condField, setCondField] = useState('account.orderCount')
+  const [condOperator, setCondOperator] = useState<CouponCondition['operator']>('lt')
+  const [condValue, setCondValue] = useState('')
 
   useEffect(() => {
     fetch('/api/products?limit=200')
@@ -193,6 +217,15 @@ function CreateCouponForm({
       })
       .catch(() => {})
   }, [])
+
+  const addCondition = () => {
+    if (!condValue) return
+    const parsed = isNaN(Number(condValue)) ? condValue : Number(condValue)
+    setConditions((prev) => [...prev, { field: condField, operator: condOperator, value: parsed } as CouponCondition])
+    setCondValue('')
+  }
+
+  const removeCondition = (i: number) => setConditions((prev) => prev.filter((_, idx) => idx !== i))
 
   const toggleProduct = (id: string) => {
     setSelectedProductIds((prev) =>
@@ -216,6 +249,7 @@ function CreateCouponForm({
           maxUses: maxUses ? parseInt(maxUses) : null,
           expiresAt: expiresAt || null,
           productIds: selectedProductIds,
+          conditions: conditions.length > 0 ? conditions : undefined,
         }),
       })
 
@@ -345,6 +379,91 @@ function CreateCouponForm({
               </button>
             </p>
           )}
+        </div>
+
+        {/* Conditions builder */}
+        <div>
+          <label className="block text-xs font-semibold text-brand-text uppercase tracking-wider mb-2">
+            Conditions
+          </label>
+          <p className="text-xs text-brand-muted mb-3">
+            Optional rules the customer must meet to use this coupon.
+          </p>
+
+          {/* Preset chips */}
+          <div className="flex flex-wrap gap-2 mb-3">
+            {PRESET_CONDITIONS.map((preset) => (
+              <button
+                key={preset.label}
+                type="button"
+                onClick={() => setConditions((prev) => [...prev, ...preset.conditions] as CouponCondition[])}
+                className="px-2.5 py-1 rounded-full text-xs border border-brand-blue/30 bg-brand-blue/5 text-brand-blue hover:bg-brand-blue/10 transition-colors"
+              >
+                + {preset.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Active conditions */}
+          {conditions.length > 0 && (
+            <div className="flex flex-wrap gap-2 mb-3">
+              {conditions.map((cond, i) => (
+                <span
+                  key={i}
+                  className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs bg-brand-arctic border border-brand-border text-brand-text"
+                >
+                  {conditionToLabel(cond)}
+                  <button
+                    type="button"
+                    onClick={() => removeCondition(i)}
+                    className="text-brand-muted hover:text-red-500 transition-colors"
+                  >
+                    ×
+                  </button>
+                </span>
+              ))}
+            </div>
+          )}
+
+          {/* Custom condition row */}
+          <div className="flex items-end gap-2 flex-wrap">
+            <div>
+              <label className="block text-[10px] text-brand-muted mb-1">Field</label>
+              <select
+                value={condField}
+                onChange={(e) => setCondField(e.target.value)}
+                className="bg-white border border-brand-border rounded-lg px-2 py-2 text-xs text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-blue"
+              >
+                {CONDITION_FIELDS.map((f) => (
+                  <option key={f.value} value={f.value}>{f.label}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-[10px] text-brand-muted mb-1">Operator</label>
+              <select
+                value={condOperator}
+                onChange={(e) => setCondOperator(e.target.value as CouponCondition['operator'])}
+                className="bg-white border border-brand-border rounded-lg px-2 py-2 text-xs text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-blue"
+              >
+                {OPERATORS.map((op) => (
+                  <option key={op.value} value={op.value}>{op.label}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-[10px] text-brand-muted mb-1">Value</label>
+              <input
+                value={condValue}
+                onChange={(e) => setCondValue(e.target.value)}
+                placeholder="e.g. 1"
+                className="bg-white border border-brand-border rounded-lg px-2 py-2 text-xs text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-blue w-24"
+              />
+            </div>
+            <Button type="button" variant="outline" size="sm" onClick={addCondition}>
+              Add
+            </Button>
+          </div>
         </div>
 
         <div className="flex items-center gap-3 pt-2">

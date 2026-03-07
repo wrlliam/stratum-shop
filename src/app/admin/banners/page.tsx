@@ -1,9 +1,11 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useConfirm } from '@/components/providers/ConfirmProvider'
 import { TrashIcon, Pencil1Icon, Cross1Icon, CheckIcon } from '@radix-ui/react-icons'
 import toast from 'react-hot-toast'
 import type { Banner } from '@/lib/db/schema'
+import { OptionDropdown } from '@/components/shop/AddToCartButton'
 
 const TYPE_META: Record<string, { label: string; colors: string }> = {
   info:    { label: 'Info',    colors: 'bg-blue-100 text-blue-800 border-blue-200' },
@@ -19,6 +21,7 @@ const EMPTY_FORM = {
   linkText: '',
   active: true,
   dismissible: true,
+  opacity: 100,
   expiresAt: '',
 }
 
@@ -29,6 +32,7 @@ export default function BannersPage() {
   const [form, setForm] = useState(EMPTY_FORM)
   const [saving, setSaving] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
+  const confirm = useConfirm()
 
   const fetchBanners = async () => {
     try {
@@ -60,6 +64,7 @@ export default function BannersPage() {
       linkText: banner.linkText ?? '',
       active: banner.active,
       dismissible: banner.dismissible,
+      opacity: banner.opacity ?? 100,
       expiresAt: banner.expiresAt
         ? new Date(banner.expiresAt).toISOString().slice(0, 16)
         : '',
@@ -116,7 +121,7 @@ export default function BannersPage() {
   }
 
   const deleteBanner = async (id: string) => {
-    if (!confirm('Delete this banner?')) return
+    if (!await confirm({ message: 'Delete this banner?', confirmLabel: 'Delete', danger: true })) return
     try {
       await fetch(`/api/admin/banners/${id}`, { method: 'DELETE' })
       toast.success('Banner deleted')
@@ -173,6 +178,7 @@ export default function BannersPage() {
               {/* Type */}
               <div>
                 <label className="block text-xs font-medium text-brand-muted mb-1.5">Type</label>
+               
                 <select
                   value={form.type}
                   onChange={(e) => set('type', e.target.value)}
@@ -209,7 +215,7 @@ export default function BannersPage() {
               </div>
             </div>
 
-            {/* Expires at */}
+            {/* Expires at + Opacity */}
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-medium text-brand-muted mb-1.5">
@@ -220,6 +226,20 @@ export default function BannersPage() {
                   value={form.expiresAt}
                   onChange={(e) => set('expiresAt', e.target.value)}
                   className="w-full px-3 py-2.5 text-sm border border-brand-border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-brand-muted mb-1.5">
+                  Background Opacity ({form.opacity}%)
+                </label>
+                <input
+                  type="range"
+                  min="10"
+                  max="100"
+                  step="5"
+                  value={form.opacity}
+                  onChange={(e) => set('opacity', Number(e.target.value))}
+                  className="w-full mt-2"
                 />
               </div>
             </div>
