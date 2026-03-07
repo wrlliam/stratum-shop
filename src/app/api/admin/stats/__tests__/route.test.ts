@@ -19,6 +19,7 @@ vi.mock('@/lib/auth', () => ({
 // Mock db - chain pattern for complex select queries
 const mockSelectResult = vi.fn()
 const mockFindMany = vi.fn()
+const mockUserFindFirst = vi.fn()
 
 vi.mock('@/lib/db', () => {
   const chain = {
@@ -40,6 +41,9 @@ vi.mock('@/lib/db', () => {
       query: {
         orders: {
           findMany: (...args: unknown[]) => mockFindMany(...args),
+        },
+        user: {
+          findFirst: (...args: unknown[]) => mockUserFindFirst(...args),
         },
       },
       select: vi.fn(() => selectChain),
@@ -69,15 +73,17 @@ vi.mock('date-fns', () => ({
 describe('GET /api/admin/stats', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    mockUserFindFirst.mockResolvedValue({ id: 'admin-1', role: 'admin' })
   })
 
-  it('returns 401 for non-admin users', async () => {
-    mockGetSession.mockResolvedValue({ user: { role: 'customer' } })
+  it('returns 403 for non-admin users', async () => {
+    mockGetSession.mockResolvedValue({ user: { id: 'user-1', role: 'customer' } })
+    mockUserFindFirst.mockResolvedValue({ id: 'user-1', role: 'customer' })
 
     const { GET } = await import('../route')
     const req = new NextRequest('http://localhost:3000/api/admin/stats')
     const res = await GET(req)
-    expect(res.status).toBe(401)
+    expect(res.status).toBe(403)
   })
 
   it('returns 401 for unauthenticated users', async () => {

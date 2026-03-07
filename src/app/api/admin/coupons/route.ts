@@ -1,15 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db, coupons, couponProducts, products } from '@/lib/db'
-import { auth } from '@/lib/auth'
-import { headers } from 'next/headers'
+import { requireAdmin, requireJsonContentType } from '@/lib/api-guard'
+import { logAuditEvent } from '@/lib/audit'
 import { desc, eq, inArray } from 'drizzle-orm'
 import { z } from 'zod'
 
 export async function GET() {
-  const session = await auth.api.getSession({ headers: await headers() })
-  if (!session?.user || session.user.role !== 'admin') {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+  const authResult = await requireAdmin()
+  if (authResult instanceof NextResponse) return authResult
 
   const allCoupons = await db.select().from(coupons).orderBy(desc(coupons.createdAt))
 
@@ -52,13 +50,19 @@ const createSchema = z.object({
   maxUses: z.number().int().positive().nullable().optional(),
   expiresAt: z.string().nullable().optional(),
   productIds: z.array(z.string().uuid()).optional(), // empty = all products
+  conditions: z.array(z.object({
+    field: z.string(),
+    operator: z.enum(['lt', 'lte', 'gt', 'gte', 'eq', 'neq']),
+    value: z.union([z.string(), z.number(), z.boolean()]),
+  })).optional(),
 })
 
 export async function POST(request: NextRequest) {
-  const session = await auth.api.getSession({ headers: await headers() })
-  if (!session?.user || session.user.role !== 'admin') {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+  const authResult = await requireAdmin()
+  if (authResult instanceof NextResponse) return authResult
+
+  const ctErr = requireJsonContentType(request)
+  if (ctErr) return ctErr
 
   try {
     const body = await request.json()
@@ -73,6 +77,7 @@ export async function POST(request: NextRequest) {
         minOrderAmount: data.minOrderAmount ?? null,
         maxUses: data.maxUses ?? null,
         expiresAt: data.expiresAt ? new Date(data.expiresAt) : null,
+        conditions: data.conditions ?? null,
       })
       .returning()
 
@@ -81,6 +86,14 @@ export async function POST(request: NextRequest) {
         data.productIds.map((productId) => ({ couponId: coupon.id, productId }))
       )
     }
+
+    await logAuditEvent({
+      adminId: authResult.userId,
+      action: 'coupon.created',
+      entityType: 'coupon',
+      entityId: coupon.id,
+      metadata: { code: data.code, type: data.type, value: data.value },
+    })
 
     return NextResponse.json(coupon, { status: 201 })
   } catch (error) {

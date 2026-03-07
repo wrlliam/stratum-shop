@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db, banners } from '@/lib/db'
 import { eq } from 'drizzle-orm'
-import { auth } from '@/lib/auth'
-import { headers } from 'next/headers'
+import { requireAdmin, requireJsonContentType } from '@/lib/api-guard'
+import { logAuditEvent } from '@/lib/audit'
 import { z } from 'zod'
 
 const updateBannerSchema = z.object({
@@ -12,6 +12,7 @@ const updateBannerSchema = z.object({
   linkText: z.string().optional().nullable(),
   active: z.boolean().optional(),
   dismissible: z.boolean().optional(),
+  opacity: z.number().int().min(0).max(100).optional(),
   expiresAt: z.string().datetime().optional().nullable(),
 })
 
@@ -19,10 +20,11 @@ export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await auth.api.getSession({ headers: await headers() })
-  if (!session?.user || session.user.role !== 'admin') {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+  const authResult = await requireAdmin()
+  if (authResult instanceof NextResponse) return authResult
+
+  const ctErr = requireJsonContentType(request)
+  if (ctErr) return ctErr
 
   const { id } = await params
   try {
@@ -44,6 +46,14 @@ export async function PATCH(
       .returning()
 
     if (!banner) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+
+    await logAuditEvent({
+      adminId: authResult.userId,
+      action: 'banner.updated',
+      entityType: 'banner',
+      entityId: id,
+    })
+
     return NextResponse.json(banner)
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -58,14 +68,20 @@ export async function DELETE(
   _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await auth.api.getSession({ headers: await headers() })
-  if (!session?.user || session.user.role !== 'admin') {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+  const authResult = await requireAdmin()
+  if (authResult instanceof NextResponse) return authResult
 
   const { id } = await params
   try {
     await db.delete(banners).where(eq(banners.id, id))
+
+    await logAuditEvent({
+      adminId: authResult.userId,
+      action: 'banner.deleted',
+      entityType: 'banner',
+      entityId: id,
+    })
+
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error(error)

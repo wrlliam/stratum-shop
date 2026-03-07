@@ -1,18 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db, coupons, couponProducts } from '@/lib/db'
 import { eq } from 'drizzle-orm'
-import { auth } from '@/lib/auth'
-import { headers } from 'next/headers'
+import { requireAdmin, requireJsonContentType } from '@/lib/api-guard'
+import { logAuditEvent } from '@/lib/audit'
 import { z } from 'zod'
 
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await auth.api.getSession({ headers: await headers() })
-  if (!session?.user || session.user.role !== 'admin') {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+  const authResult = await requireAdmin()
+  if (authResult instanceof NextResponse) return authResult
+
+  const ctErr = requireJsonContentType(request)
+  if (ctErr) return ctErr
 
   const { id } = await params
 
@@ -52,6 +53,13 @@ export async function PATCH(
       }
     }
 
+    await logAuditEvent({
+      adminId: authResult.userId,
+      action: 'coupon.updated',
+      entityType: 'coupon',
+      entityId: id,
+    })
+
     return NextResponse.json(updated)
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -66,13 +74,19 @@ export async function DELETE(
   _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await auth.api.getSession({ headers: await headers() })
-  if (!session?.user || session.user.role !== 'admin') {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+  const authResult = await requireAdmin()
+  if (authResult instanceof NextResponse) return authResult
 
   const { id } = await params
 
   await db.delete(coupons).where(eq(coupons.id, id))
+
+  await logAuditEvent({
+    adminId: authResult.userId,
+    action: 'coupon.deleted',
+    entityType: 'coupon',
+    entityId: id,
+  })
+
   return NextResponse.json({ ok: true })
 }

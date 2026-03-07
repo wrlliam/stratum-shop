@@ -1,18 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { db, orders, orderItems, products, user } from '@/lib/db'
-import { sql, desc, eq, gte, lte, and, inArray, ne } from 'drizzle-orm'
-import { auth } from '@/lib/auth'
-import { headers } from 'next/headers'
+import { db, orders, orderItems, products } from '@/lib/db'
+import { sql, desc, eq, gte, lte, and, inArray } from 'drizzle-orm'
+import { requireAdmin } from '@/lib/api-guard'
 import { subMonths, subDays, startOfMonth, startOfDay, format } from 'date-fns'
 
 // Statuses that represent completed/paid orders (not pending, cancelled, or refunded)
 const PAID_STATUSES = ['paid', 'processing', 'shipped', 'delivered']
 
 export async function GET(_request: NextRequest) {
-  const session = await auth.api.getSession({ headers: await headers() })
-  if (!session?.user || session.user.role !== 'admin') {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+  const authResult = await requireAdmin()
+  if (authResult instanceof NextResponse) return authResult
 
   try {
     // Total revenue (all paid/completed orders)

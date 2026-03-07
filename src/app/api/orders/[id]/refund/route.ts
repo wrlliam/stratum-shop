@@ -2,11 +2,11 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db, orders, products, bundleProducts, inventoryLog } from '@/lib/db'
 import { eq, sql } from 'drizzle-orm'
 import { stripe } from '@/lib/stripe'
-import { auth } from '@/lib/auth'
-import { headers } from 'next/headers'
+import { requireAdmin } from '@/lib/api-guard'
 import { resend, FROM_EMAIL, APP_URL } from '@/lib/resend'
 import { renderAsync } from '@react-email/components'
 import { OrderCancellationEmail } from '@/lib/email/order-cancellation'
+import { logAuditEvent } from '@/lib/audit'
 
 const REFUNDABLE_STATUSES = ['paid', 'processing', 'shipped', 'delivered']
 
@@ -14,10 +14,8 @@ export async function POST(
   _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await auth.api.getSession({ headers: await headers() })
-  if (!session?.user || session.user.role !== 'admin') {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+  const authResult = await requireAdmin()
+  if (authResult instanceof NextResponse) return authResult
 
   const { id } = await params
 
@@ -26,8 +24,6 @@ export async function POST(
       where: eq(orders.id, id),
       with: { items: true },
     })
-
-    
 
     if (!order) {
       return NextResponse.json({ error: 'Order not found' }, { status: 404 })
@@ -50,23 +46,21 @@ export async function POST(
         );
       }
 
-      const session = await stripe.checkout.sessions.retrieve(
+      const stripeSession = await stripe.checkout.sessions.retrieve(
         order.stripeSessionId,
       );
 
-      if (!session.payment_intent) {
+      if (!stripeSession.payment_intent) {
         return NextResponse.json(
-          {
-            error: "Could not resolve a payment intent from the Stripe session",
-          },
+          { error: "Could not resolve a payment intent from the Stripe session" },
           { status: 400 },
         );
       }
 
       paymentIntentId =
-        typeof session.payment_intent === "string"
-          ? session.payment_intent
-          : session.payment_intent.id;
+        typeof stripeSession.payment_intent === "string"
+          ? stripeSession.payment_intent
+          : stripeSession.payment_intent.id;
 
       // Persist it so future calls don't need to hit Stripe again
       await db
@@ -83,9 +77,8 @@ export async function POST(
     } catch (stripeErr: unknown) {
       const code = (stripeErr as { code?: string }).code
       if (code !== 'charge_already_refunded') {
-        // Surface the actual Stripe error message to the admin
-        const message = stripeErr instanceof Error ? stripeErr.message : 'Stripe refund failed'
-        return NextResponse.json({ error: message }, { status: 502 })
+        console.error('Stripe refund error:', stripeErr)
+        return NextResponse.json({ error: 'Payment processing error. Please contact support.' }, { status: 502 })
       }
       // charge_already_refunded: refund already exists in Stripe — fall through to sync DB state
     }
@@ -107,7 +100,7 @@ export async function POST(
           productId: item.productId,
           quantityChange: item.quantity,
           reason: 'refund',
-          userId: session.user.id,
+          userId: authResult.userId,
         })
       } else if (item.bundleId) {
         const bps = await db.query.bundleProducts.findMany({
@@ -122,11 +115,19 @@ export async function POST(
             productId: bp.productId,
             quantityChange: bp.quantity * item.quantity,
             reason: 'refund',
-            userId: session.user.id,
+            userId: authResult.userId,
           })
         }
       }
     }
+
+    await logAuditEvent({
+      adminId: authResult.userId,
+      action: 'order.refunded',
+      entityType: 'order',
+      entityId: id,
+      metadata: { orderNumber: order.orderNumber, amount: order.total },
+    })
 
     // Send refund confirmation email
     try {

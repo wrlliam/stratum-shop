@@ -21,6 +21,8 @@ export const user = pgTable('user', {
   emailVerified: boolean('email_verified').notNull(),
   image: text('image'),
   role: text('role').notNull().default('customer'),
+  tosAcceptedAt: timestamp('tos_accepted_at'),
+  marketingEmails: boolean('marketing_emails').notNull().default(true),
   createdAt: timestamp('created_at').notNull(),
   updatedAt: timestamp('updated_at').notNull(),
 })
@@ -85,6 +87,18 @@ export const products = pgTable(
     material: text('material'), // e.g. PLA, PETG, ABS
     color: text('color'),
     printTime: integer('print_time'), // minutes
+    productType: text('product_type').notNull().default('physical'), // 'physical' | 'digital' | 'custom_order' | '3d_model'
+    modelUrl: text('model_url'),
+    digitalFileUrl: text('digital_file_url'),
+    digitalFilePath: text('digital_file_path'), // internal path for uploaded digital files
+    customOrderFields: jsonb('custom_order_fields'), // [{type, label, required, placeholder, options}]
+    lowStockThreshold: integer('low_stock_threshold'),
+    lowStockAlerts: boolean('low_stock_alerts').notNull().default(false),
+    filamentCostPence: integer('filament_cost_pence'),
+    estimatedMinutes: integer('estimated_minutes'),
+    filamentId: uuid('filament_id'), // reference to filaments table
+    saleEndsAt: timestamp('sale_ends_at'),
+    saleStopAtStock: integer('sale_stop_at_stock'),
     createdAt: timestamp('created_at').defaultNow().notNull(),
     updatedAt: timestamp('updated_at').defaultNow().notNull(),
   },
@@ -143,6 +157,7 @@ export const coupons = pgTable(
     usedCount: integer('used_count').notNull().default(0),
     active: boolean('active').notNull().default(true),
     expiresAt: timestamp('expires_at'),
+    conditions: jsonb('conditions'), // [{field, operator, value}]
     createdAt: timestamp('created_at').defaultNow().notNull(),
   },
   (t) => [uniqueIndex('coupons_code_idx').on(t.code)]
@@ -192,6 +207,7 @@ export const orders = pgTable(
     index('orders_status_idx').on(t.status),
     index('orders_created_at_idx').on(t.createdAt),
     index('orders_email_idx').on(t.email),
+    index('orders_stripe_payment_intent_idx').on(t.stripePaymentIntentId),
   ]
 )
 
@@ -285,6 +301,7 @@ export const banners = pgTable('banners', {
   linkText: text('link_text'),
   active: boolean('active').notNull().default(true),
   dismissible: boolean('dismissible').notNull().default(true),
+  opacity: integer('opacity').notNull().default(100), // 0-100
   expiresAt: timestamp('expires_at'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 })
@@ -301,6 +318,136 @@ export const recommendations = pgTable('recommendations', {
   referenceUrl: text('reference_url'),
   status: text('status').notNull().default('pending'), // pending, reviewing, accepted, declined
   adminNotes: text('admin_notes'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+})
+
+// ─── Settings ────────────────────────────────────────────────────────────────
+export const settings = pgTable('settings', {
+  key: text('key').primaryKey(),
+  value: text('value').notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+})
+
+// ─── Audit Log ────────────────────────────────────────────────────────────────
+export const auditLog = pgTable(
+  'audit_log',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    adminId: text('admin_id').references(() => user.id),
+    action: text('action').notNull(),
+    entityType: text('entity_type').notNull(),
+    entityId: text('entity_id'),
+    metadata: jsonb('metadata'),
+    ipAddress: text('ip_address'),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+  },
+  (t) => [
+    index('audit_log_created_at_idx').on(t.createdAt),
+    index('audit_log_admin_id_idx').on(t.adminId),
+  ]
+)
+
+// ─── Error Log ────────────────────────────────────────────────────────────────
+export const errorLog = pgTable(
+  'error_log',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    path: text('path').notNull(),
+    method: text('method'),
+    message: text('message').notNull(),
+    stack: text('stack'),
+    userId: text('user_id').references(() => user.id),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+  },
+  (t) => [index('error_log_created_at_idx').on(t.createdAt)]
+)
+
+// ─── Time & Cost Entries ──────────────────────────────────────────────────────
+export const timeEntries = pgTable('time_entries', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  adminId: text('admin_id').references(() => user.id),
+  description: text('description').notNull(),
+  minutes: integer('minutes').notNull(),
+  orderId: uuid('order_id').references(() => orders.id),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+})
+
+export const costEntries = pgTable('cost_entries', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  adminId: text('admin_id').references(() => user.id),
+  type: text('type').notNull(), // 'electricity' | 'filament' | 'shipping' | 'other'
+  description: text('description').notNull(),
+  amountPence: integer('amount_pence').notNull(),
+  orderId: uuid('order_id').references(() => orders.id),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+})
+
+// ─── Support Tickets ──────────────────────────────────────────────────────────
+export const supportTickets = pgTable(
+  'support_tickets',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    userId: text('user_id').references(() => user.id),
+    email: text('email').notNull(),
+    name: text('name').notNull(),
+    subject: text('subject').notNull(),
+    status: text('status').notNull().default('open'), // 'open' | 'in_progress' | 'resolved' | 'closed'
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at').defaultNow().notNull(),
+  },
+  (t) => [
+    index('support_tickets_status_idx').on(t.status),
+    index('support_tickets_created_at_idx').on(t.createdAt),
+  ]
+)
+
+export const supportMessages = pgTable('support_messages', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  ticketId: uuid('ticket_id')
+    .notNull()
+    .references(() => supportTickets.id, { onDelete: 'cascade' }),
+  senderUserId: text('sender_user_id').references(() => user.id),
+  senderEmail: text('sender_email').notNull(),
+  body: text('body').notNull(),
+  attachmentUrl: text('attachment_url'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+})
+
+// ─── Filaments Inventory ──────────────────────────────────────────────────────
+export const filaments = pgTable('filaments', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  brand: text('brand'),
+  material: text('material').notNull(), // PLA, PETG, ABS, ASA, TPU, etc.
+  color: text('color').notNull(),
+  colorHex: text('color_hex'), // e.g. "#FFD700"
+  pricePerKgPence: integer('price_per_kg_pence').notNull(), // pence per kg
+  weightRemainingGrams: integer('weight_remaining_grams').notNull().default(1000),
+  notes: text('notes'),
+  active: boolean('active').notNull().default(true),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+})
+
+// ─── Custom Order Submissions (post-purchase) ─────────────────────────────────
+export const customOrderSubmissions = pgTable('custom_order_submissions', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  orderItemId: uuid('order_item_id')
+    .notNull()
+    .references(() => orderItems.id, { onDelete: 'cascade' }),
+  userId: text('user_id').references(() => user.id, { onDelete: 'set null' }),
+  fields: jsonb('fields').notNull(), // { [fieldLabel]: value }
+  submittedAt: timestamp('submitted_at').defaultNow().notNull(),
+})
+
+// ─── Print Items (physical-to-digital tracking) ───────────────────────────────
+export const printItems = pgTable('print_items', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  productId: uuid('product_id')
+    .notNull()
+    .references(() => products.id),
+  batchId: uuid('batch_id').references(() => printBatches.id),
+  orderId: uuid('order_id').references(() => orders.id),
+  scannedAt: timestamp('scanned_at'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 })
 
@@ -366,7 +513,7 @@ export const ordersRelations = relations(orders, ({ many, one }) => ({
   }),
 }))
 
-export const orderItemsRelations = relations(orderItems, ({ one }) => ({
+export const orderItemsRelations = relations(orderItems, ({ one, many }) => ({
   order: one(orders, {
     fields: [orderItems.orderId],
     references: [orders.id],
@@ -379,6 +526,7 @@ export const orderItemsRelations = relations(orderItems, ({ one }) => ({
     fields: [orderItems.bundleId],
     references: [bundles.id],
   }),
+  customOrderSubmission: many(customOrderSubmissions),
 }))
 
 export const orderMessagesRelations = relations(orderMessages, ({ one }) => ({
@@ -461,6 +609,37 @@ export const userRelations = relations(user, ({ many }) => ({
   orderMessages: many(orderMessages, { relationName: 'userOrderMessages' }),
 }))
 
+export const supportTicketsRelations = relations(supportTickets, ({ one, many }) => ({
+  user: one(user, { fields: [supportTickets.userId], references: [user.id] }),
+  messages: many(supportMessages),
+}))
+
+export const supportMessagesRelations = relations(supportMessages, ({ one }) => ({
+  ticket: one(supportTickets, { fields: [supportMessages.ticketId], references: [supportTickets.id] }),
+  sender: one(user, { fields: [supportMessages.senderUserId], references: [user.id] }),
+}))
+
+export const timeEntriesRelations = relations(timeEntries, ({ one }) => ({
+  admin: one(user, { fields: [timeEntries.adminId], references: [user.id] }),
+  order: one(orders, { fields: [timeEntries.orderId], references: [orders.id] }),
+}))
+
+export const costEntriesRelations = relations(costEntries, ({ one }) => ({
+  admin: one(user, { fields: [costEntries.adminId], references: [user.id] }),
+  order: one(orders, { fields: [costEntries.orderId], references: [orders.id] }),
+}))
+
+export const printItemsRelations = relations(printItems, ({ one }) => ({
+  product: one(products, { fields: [printItems.productId], references: [products.id] }),
+  batch: one(printBatches, { fields: [printItems.batchId], references: [printBatches.id] }),
+  order: one(orders, { fields: [printItems.orderId], references: [orders.id] }),
+}))
+
+export const customOrderSubmissionsRelations = relations(customOrderSubmissions, ({ one }) => ({
+  orderItem: one(orderItems, { fields: [customOrderSubmissions.orderItemId], references: [orderItems.id] }),
+  user: one(user, { fields: [customOrderSubmissions.userId], references: [user.id] }),
+}))
+
 // ─── Types ────────────────────────────────────────────────────────────────────
 export type User = typeof user.$inferSelect
 export type Product = typeof products.$inferSelect
@@ -477,3 +656,13 @@ export type InventoryLogEntry = typeof inventoryLog.$inferSelect
 export type OrderMessage = typeof orderMessages.$inferSelect
 export type Coupon = typeof coupons.$inferSelect
 export type CouponProduct = typeof couponProducts.$inferSelect
+export type AuditLog = typeof auditLog.$inferSelect
+export type Filament = typeof filaments.$inferSelect
+export type CustomOrderSubmission = typeof customOrderSubmissions.$inferSelect
+export type ErrorLog = typeof errorLog.$inferSelect
+export type TimeEntry = typeof timeEntries.$inferSelect
+export type CostEntry = typeof costEntries.$inferSelect
+export type SupportTicket = typeof supportTickets.$inferSelect
+export type SupportMessage = typeof supportMessages.$inferSelect
+export type PrintItem = typeof printItems.$inferSelect
+export type Setting = typeof settings.$inferSelect

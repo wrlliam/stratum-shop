@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db, banners } from '@/lib/db'
-import { auth } from '@/lib/auth'
-import { headers } from 'next/headers'
+import { requireAdmin, requireJsonContentType } from '@/lib/api-guard'
+import { logAuditEvent } from '@/lib/audit'
 import { desc } from 'drizzle-orm'
 import { z } from 'zod'
 
@@ -12,14 +12,13 @@ const createBannerSchema = z.object({
   linkText: z.string().nullable().optional(),
   active: z.boolean().default(true),
   dismissible: z.boolean().default(true),
+  opacity: z.number().int().min(0).max(100).default(100),
   expiresAt: z.string().datetime().optional().nullable(),
 })
 
 export async function GET() {
-  const session = await auth.api.getSession({ headers: await headers() })
-  if (!session?.user || session.user.role !== 'admin') {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+  const authResult = await requireAdmin()
+  if (authResult instanceof NextResponse) return authResult
 
   try {
     const all = await db.select().from(banners).orderBy(desc(banners.createdAt))
@@ -31,10 +30,11 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
-  const session = await auth.api.getSession({ headers: await headers() })
-  if (!session?.user || session.user.role !== 'admin') {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+  const authResult = await requireAdmin()
+  if (authResult instanceof NextResponse) return authResult
+
+  const ctErr = requireJsonContentType(request)
+  if (ctErr) return ctErr
 
   try {
     const body = await request.json()
@@ -49,9 +49,18 @@ export async function POST(request: NextRequest) {
         linkText: data.linkText || null,
         active: data.active,
         dismissible: data.dismissible,
+        opacity: data.opacity,
         expiresAt: data.expiresAt ? new Date(data.expiresAt) : null,
       })
       .returning()
+
+    await logAuditEvent({
+      adminId: authResult.userId,
+      action: 'banner.created',
+      entityType: 'banner',
+      entityId: banner.id,
+      metadata: { message: data.message, type: data.type },
+    })
 
     return NextResponse.json(banner)
   } catch (error) {

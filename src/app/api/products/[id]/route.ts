@@ -1,20 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db, products, productImages, productOptionGroups, productOptionChoices } from '@/lib/db'
 import { eq, asc } from 'drizzle-orm'
-import { auth } from '@/lib/auth'
-import { headers } from 'next/headers'
+import { requireAdmin, requireJsonContentType } from '@/lib/api-guard'
 import { z } from 'zod'
-
-const optionChoiceSchema = z.object({
-  label: z.string().min(1),
-  priceModifier: z.number().int().default(0),
-})
-
-const optionGroupSchema = z.object({
-  name: z.string().min(1),
-  type: z.enum(['select', 'boolean', 'text']).default('select'),
-  choices: z.array(optionChoiceSchema).min(1),
-})
+import { optionGroupSchema, customOrderFieldSchema } from '../_schemas'
 
 const updateProductSchema = z.object({
   name: z.string().min(1).optional(),
@@ -31,6 +20,18 @@ const updateProductSchema = z.object({
   color: z.string().nullable().optional(),
   printTime: z.number().int().nullable().optional(),
   sku: z.string().nullable().optional(),
+  lowStockThreshold: z.number().int().min(0).nullable().optional(),
+  lowStockAlerts: z.boolean().optional(),
+  filamentCostPence: z.number().int().min(0).nullable().optional(),
+  estimatedMinutes: z.number().int().min(0).nullable().optional(),
+  productType: z.enum(['physical', 'digital', '3d_model', 'custom_order']).optional(),
+  modelUrl: z.string().nullable().optional(),
+  digitalFileUrl: z.string().nullable().optional(),
+  filamentId: z.string().uuid().nullable().optional(),
+  digitalFilePath: z.string().nullable().optional(),
+  saleEndsAt: z.string().nullable().optional(),
+  saleStopAtStock: z.number().int().min(0).nullable().optional(),
+  customOrderFields: z.array(customOrderFieldSchema).nullable().optional(),
   images: z.array(z.object({ url: z.string(), alt: z.string().optional() })).optional(),
   optionGroups: z.array(optionGroupSchema).optional(),
 })
@@ -75,23 +76,27 @@ export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await auth.api.getSession({ headers: await headers() })
-  if (!session?.user || session.user.role !== 'admin') {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+  const authResult = await requireAdmin()
+  if (authResult instanceof NextResponse) return authResult
+
+  const ctErr = requireJsonContentType(request)
+  if (ctErr) return ctErr
 
   const { id } = await params
   try {
     const body = await request.json()
     const data = updateProductSchema.parse(body)
 
-    const { images, optionGroups, ...rest } = data
+    const { images, optionGroups, saleEndsAt, ...rest } = data
 
-    if (Object.keys(rest).length > 0) {
-      await db
-        .update(products)
-        .set({ ...rest, updatedAt: new Date() })
-        .where(eq(products.id, id))
+    const setData = {
+      ...rest,
+      ...(saleEndsAt !== undefined ? { saleEndsAt: saleEndsAt ? new Date(saleEndsAt) : null } : {}),
+      updatedAt: new Date(),
+    }
+
+    if (Object.keys(setData).length > 1) {
+      await db.update(products).set(setData).where(eq(products.id, id))
     }
 
     if (images !== undefined) {
@@ -156,10 +161,8 @@ export async function DELETE(
   _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await auth.api.getSession({ headers: await headers() })
-  if (!session?.user || session.user.role !== 'admin') {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+  const authResult = await requireAdmin()
+  if (authResult instanceof NextResponse) return authResult
 
   const { id } = await params
   try {
