@@ -12,6 +12,7 @@ import { TrackingForm } from '@/components/admin/TrackingForm'
 import { MessageForm } from '@/components/admin/MessageForm'
 import { RefundButton } from '@/components/admin/RefundButton'
 import { ResendConfirmationButton } from '@/components/admin/ResendConfirmationButton'
+import { SubmissionFields } from '@/components/admin/SubmissionFields'
 import { getDeliveryOption } from '@/lib/stripe'
 import type { DeliveryAddress } from '@/types'
 
@@ -109,28 +110,7 @@ export default async function AdminOrderDetailPage({ params }: Props) {
                         </p>
                       </div>
                     </div>
-                    {sub && (
-                      <div className="mt-3 ml-18 pl-4 border-l-2 border-brand-blue/20 space-y-2">
-                        <p className="text-[10px] font-bold uppercase tracking-wider text-brand-blue">Customer Submission</p>
-                        {fields.map((f) => {
-                          const val = sub[f.label]
-                          if (!val) return null
-                          return (
-                            <div key={f.label}>
-                              <p className="text-[10px] font-semibold text-brand-muted uppercase tracking-wider">{f.label}</p>
-                              {f.type === 'image' ? (
-                                <div className="mt-1 rounded-lg overflow-hidden border border-brand-border bg-brand-arctic">
-                                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                                  <img src={val} alt={f.label} className="w-full h-auto object-contain" />
-                                </div>
-                              ) : (
-                                <p className="text-sm text-brand-text mt-0.5">{val}</p>
-                              )}
-                            </div>
-                          )
-                        })}
-                      </div>
-                    )}
+                    {sub && <SubmissionFields fields={fields} submission={sub} />}
                   </div>
                 )
               })}

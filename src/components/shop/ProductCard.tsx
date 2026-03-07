@@ -7,7 +7,7 @@ import type { ProductWithImages } from '@/types'
 import { formatPrice } from '@/lib/utils'
 import { useCart } from '@/components/providers/CartProvider'
 import { Badge } from '@/components/ui/Badge'
-import { cn } from '@/lib/utils'
+import { cn, isSaleActive } from '@/lib/utils'
 
 interface ProductCardProps {
   product: ProductWithImages
@@ -18,6 +18,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
   const { addItem } = useCart()
   const primaryImage = product.images[0]
   const hoverImage = product.images[1]
+  const saleActive = isSaleActive(product)
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault()
@@ -33,8 +34,8 @@ export function ProductCard({ product, className }: ProductCardProps) {
   }
 
   return (
-    <Link href={`/products/${product.slug}`} className={cn('group block', className)}>
-      <div className="overflow-hidden rounded-2xl bg-white border border-brand-border transition-all duration-300 hover:shadow-card-hover hover:border-brand-blue/30">
+    <Link href={`/products/${product.slug}`} className={cn('group block h-full', className)}>
+      <div className="h-full flex flex-col overflow-hidden rounded-2xl bg-white border border-brand-border transition-all duration-300 hover:shadow-card-hover hover:border-brand-blue/30">
         {/* Image */}
         <div className="relative aspect-square overflow-hidden bg-brand-arctic">
           {primaryImage ? (
@@ -68,7 +69,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
           {/* Overlay badges */}
           <div className="absolute top-3 left-3 flex flex-col gap-1.5">
             {product.featured && <Badge variant="blue" size="sm">Featured</Badge>}
-            {product.compareAtPrice && product.compareAtPrice > product.price && (
+            {saleActive && product.compareAtPrice && (
               <Badge variant="red" size="sm">
                 -{Math.round((1 - product.price / product.compareAtPrice) * 100)}% OFF
               </Badge>
@@ -99,7 +100,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
         </div>
 
         {/* Info */}
-        <div className="p-4">
+        <div className="p-4 flex flex-col flex-1">
           {product.tags && product.tags.length > 0 && (
             <div className="flex flex-wrap gap-1 mb-2">
               {product.tags.slice(0, 3).map((tag) => (
@@ -126,12 +127,12 @@ export function ProductCard({ product, className }: ProductCardProps) {
             </p>
           )}
 
-          <div className="flex items-center justify-between mt-2">
+          <div className="flex items-center justify-between mt-auto pt-2">
             <div className="flex items-baseline gap-2">
               <span className="text-base font-bold text-brand-blue">
                 {formatPrice(product.price)}
               </span>
-              {product.compareAtPrice && product.compareAtPrice > product.price && (
+              {saleActive && product.compareAtPrice && (
                 <span className="text-xs text-brand-muted line-through">
                   {formatPrice(product.compareAtPrice)}
                 </span>
