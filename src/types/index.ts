@@ -67,6 +67,13 @@ export type AdminStats = {
   totalCustomers: number
   avgOrderValue: number
   revenueChangePercent: number
+  // Today vs yesterday (live Shopify-style KPIs)
+  todayRevenue: number
+  yesterdayRevenue: number
+  todayOrders: number
+  pendingOrders: number
+  openTickets: number
+  lowStockCount: number
   revenueByMonth: { month: string; revenue: number; orders: number }[]
   dailyOrders: { date: string; orders: number; revenue: number }[]
   recentOrders: OrderWithItems[]

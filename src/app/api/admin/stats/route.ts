@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { db, orders, orderItems, products } from '@/lib/db'
+import { db, orders, orderItems, products, supportTickets } from '@/lib/db'
 import { sql, desc, eq, gte, lte, and, inArray } from 'drizzle-orm'
 import { requireAdmin } from '@/lib/api-guard'
 import { subMonths, subDays, startOfMonth, startOfDay, format } from 'date-fns'
+import { cacheGet, cacheSet, STATS_CACHE_KEY, STATS_TTL } from '@/lib/redis'
 
 // Statuses that represent completed/paid orders (not pending, cancelled, or refunded)
 const PAID_STATUSES = ['paid', 'processing', 'shipped', 'delivered']
@@ -12,6 +13,10 @@ export async function GET(_request: NextRequest) {
   if (authResult instanceof NextResponse) return authResult
 
   try {
+    // Serve from cache if available
+    const cached = await cacheGet(STATS_CACHE_KEY)
+    if (cached) return NextResponse.json(cached)
+
     // Total revenue (all paid/completed orders)
     const revenueResult = await db
       .select({ total: sql<number>`COALESCE(SUM(total), 0)` })
@@ -161,6 +166,48 @@ export async function GET(_request: NextRequest) {
       .orderBy(products.stock)
       .limit(10)
 
+    // --- Live / today metrics ---
+    const todayStart = startOfDay(now)
+    const yesterdayStart = startOfDay(subDays(now, 1))
+
+    const todayRevenueResult = await db
+      .select({ total: sql<number>`COALESCE(SUM(total), 0)`, count: sql<number>`count(*)` })
+      .from(orders)
+      .where(and(inArray(orders.status, PAID_STATUSES), gte(orders.createdAt, todayStart)))
+
+    const yesterdayRevenueResult = await db
+      .select({ total: sql<number>`COALESCE(SUM(total), 0)` })
+      .from(orders)
+      .where(
+        and(
+          inArray(orders.status, PAID_STATUSES),
+          gte(orders.createdAt, yesterdayStart),
+          lte(orders.createdAt, todayStart),
+        ),
+      )
+
+    const pendingOrdersResult = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(orders)
+      .where(inArray(orders.status, ['paid', 'processing']))
+
+    const openTicketsResult = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(supportTickets)
+      .where(inArray(supportTickets.status, ['open', 'in_progress']))
+
+    const lowStockCountResult = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(products)
+      .where(and(eq(products.active, true), lte(products.stock, 5)))
+
+    const todayRevenue = Number(todayRevenueResult[0].total)
+    const todayOrders = Number(todayRevenueResult[0].count)
+    const yesterdayRevenue = Number(yesterdayRevenueResult[0].total)
+    const pendingOrders = Number(pendingOrdersResult[0].count)
+    const openTickets = Number(openTicketsResult[0].count)
+    const lowStockCount = Number(lowStockCountResult[0].count)
+
     // Repeat customer rate
     const emailCounts = await db
       .select({
@@ -176,13 +223,19 @@ export async function GET(_request: NextRequest) {
       ? Math.round((repeatCustomers / totalUniqueCustomers) * 100)
       : 0
 
-    return NextResponse.json({
+    const payload = {
       totalRevenue,
       totalOrders,
       totalProducts,
       totalCustomers,
       avgOrderValue,
       revenueChangePercent,
+      todayRevenue,
+      yesterdayRevenue,
+      todayOrders,
+      pendingOrders,
+      openTickets,
+      lowStockCount,
       revenueByMonth,
       dailyOrders,
       recentOrders,
@@ -197,7 +250,10 @@ export async function GET(_request: NextRequest) {
       })),
       lowStockProducts,
       repeatCustomerRate,
-    })
+    }
+
+    await cacheSet(STATS_CACHE_KEY, payload, STATS_TTL)
+    return NextResponse.json(payload)
   } catch (error) {
     console.error('Stats error:', error)
     return NextResponse.json({ error: 'Failed to fetch stats' }, { status: 500 })

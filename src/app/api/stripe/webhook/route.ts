@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
 import { resend, FROM_EMAIL, APP_URL } from "@/lib/resend";
+import { publishEvent, cacheDel, STATS_CACHE_KEY } from "@/lib/redis";
 import {
   db,
   orders,
@@ -8,8 +9,10 @@ import {
   products,
   bundleProducts,
   inventoryLog,
+  costEntries,
+  timeEntries,
 } from "@/lib/db";
-import { eq, sql } from "drizzle-orm";
+import { eq, sql, and } from "drizzle-orm";
 import { OrderConfirmationEmail } from "@/lib/email/order-confirmation";
 import { renderAsync } from "@react-email/components";
 import type Stripe from "stripe";
@@ -82,6 +85,62 @@ export async function POST(request: NextRequest) {
               quantityChange: -item.quantity,
               reason: "order_paid",
             });
+            // Fetch product data once for cost tracking + sale/stock checks
+            const updatedProduct = await db.query.products.findFirst({
+              where: eq(products.id, item.productId),
+              columns: { filamentCostPence: true, estimatedMinutes: true, name: true, stock: true, lowStockThreshold: true, lowStockAlerts: true, saleStopAtStock: true, compareAtPrice: true },
+            })
+
+            if (updatedProduct?.filamentCostPence) {
+              await db.insert(costEntries).values({
+                type: 'filament',
+                description: `Auto: order ${orderId} item × ${item.quantity}`,
+                amountPence: updatedProduct.filamentCostPence * item.quantity,
+                orderId,
+              }).catch(() => {})
+            }
+            if (updatedProduct?.estimatedMinutes) {
+              await db.insert(timeEntries).values({
+                description: `Auto: order ${orderId} item × ${item.quantity}`,
+                minutes: updatedProduct.estimatedMinutes * item.quantity,
+                orderId,
+              }).catch(() => {})
+            }
+
+            // Auto-expire sale when stock hits saleStopAtStock
+            if (
+              updatedProduct?.saleStopAtStock != null &&
+              updatedProduct.stock <= updatedProduct.saleStopAtStock &&
+              updatedProduct.compareAtPrice
+            ) {
+              await db
+                .update(products)
+                .set({ compareAtPrice: null, saleEndsAt: null, saleStopAtStock: null })
+                .where(eq(products.id, item.productId))
+            }
+
+            if (
+              updatedProduct?.lowStockAlerts &&
+              updatedProduct.lowStockThreshold !== null &&
+              updatedProduct.lowStockThreshold !== undefined &&
+              updatedProduct.stock <= updatedProduct.lowStockThreshold
+            ) {
+              await publishEvent({
+                type: 'low_stock',
+                productId: item.productId,
+                name: updatedProduct.name,
+                stock: updatedProduct.stock,
+              })
+              const adminEmail = process.env.ADMIN_EMAIL
+              if (adminEmail) {
+                await resend.emails.send({
+                  from: FROM_EMAIL,
+                  to: adminEmail,
+                  subject: `Low Stock Alert: ${updatedProduct.name} — Stratum`,
+                  html: `<div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:32px"><h2 style="color:#1a1a1a">Low Stock Alert</h2><p><strong>${updatedProduct.name}</strong> has reached low stock.</p><p>Current stock: <strong>${updatedProduct.stock}</strong> units</p><p>Threshold: ${updatedProduct.lowStockThreshold} units</p><a href="${APP_URL}/admin/inventory" style="display:inline-block;padding:10px 20px;background:#2563eb;color:white;text-decoration:none;border-radius:8px;margin-top:16px">View Inventory</a></div>`,
+                }).catch(console.error);
+              }
+            }
           } else if (item.bundleId) {
             const bps = await db.query.bundleProducts.findMany({
               where: eq(bundleProducts.bundleId, item.bundleId),
@@ -122,6 +181,16 @@ export async function POST(request: NextRequest) {
             subject: `Order Confirmed: ${order.orderNumber} — Stratum`,
             html,
           });
+
+          // Invalidate stats cache + push real-time event
+          await cacheDel(STATS_CACHE_KEY)
+          await publishEvent({
+            type: 'new_order',
+            orderId: order.id,
+            orderNumber: order.orderNumber,
+            total: order.total,
+            email: order.email,
+          })
         }
         break;
       }

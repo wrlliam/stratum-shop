@@ -51,9 +51,18 @@ vi.mock('@/lib/db', () => {
     orders: { id: 'id', status: 'status', createdAt: 'createdAt', email: 'email' },
     orderItems: { name: 'name', quantity: 'quantity', price: 'price' },
     products: { id: 'id', name: 'name', stock: 'stock', active: 'active' },
+    supportTickets: { status: 'status' },
     user: {},
   }
 })
+
+// Mock redis — no caching in tests
+vi.mock('@/lib/redis', () => ({
+  cacheGet: vi.fn().mockResolvedValue(null),
+  cacheSet: vi.fn().mockResolvedValue(undefined),
+  STATS_CACHE_KEY: 'stratum:cache:admin:stats',
+  STATS_TTL: 60,
+}))
 
 // Mock date-fns
 vi.mock('date-fns', () => ({

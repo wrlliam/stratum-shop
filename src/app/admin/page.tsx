@@ -1,5 +1,7 @@
-import { headers } from 'next/headers'
-import { auth } from '@/lib/auth'
+'use client'
+
+import { useState, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
 import { formatPrice } from '@/lib/utils'
 import {
   BarChartIcon,
@@ -18,27 +20,51 @@ import {
   LowStockTable,
 } from '@/components/admin/SalesChart'
 import { StatusBadge } from '@/components/ui/Badge'
+import { RealtimeAdmin } from '@/components/admin/RealtimeAdmin'
 import type { AdminStats } from '@/types'
+import { useEffect } from 'react'
 
-async function getStats(): Promise<AdminStats> {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/admin/stats`,
-    {
-      cache: 'no-store',
-      headers: await headers(),
-    }
-  )
+async function fetchStats(): Promise<AdminStats> {
+  const res = await fetch('/api/admin/stats', { cache: 'no-store' })
   if (!res.ok) throw new Error('Failed to load stats')
   return res.json()
 }
 
-export default async function AdminDashboard() {
-  const session = await auth.api.getSession({ headers: await headers() })
-  let stats: AdminStats | null = null
+export default function AdminDashboard() {
+  const router = useRouter()
+  const [stats, setStats] = useState<AdminStats | null>(null)
+  const [userName, setUserName] = useState<string>('')
 
-  try {
-    stats = await getStats()
-  } catch {}
+  const loadStats = useCallback(async () => {
+    try {
+      const data = await fetchStats()
+      setStats(data)
+    } catch {}
+  }, [])
+
+  useEffect(() => {
+    loadStats()
+    // Get user name from session
+    fetch('/api/auth/get-session')
+      .then((r) => r.json())
+      .then((d) => {
+        const name: string = d?.user?.name ?? ''
+        setUserName(name.split(' ')[0] ?? '')
+      })
+      .catch(() => {})
+  }, [loadStats])
+
+  const handleStatsInvalidated = useCallback(() => {
+    // Slight delay so the DB write has committed before we re-fetch
+    setTimeout(loadStats, 800)
+  }, [loadStats])
+
+  const todayChange =
+    stats && stats.yesterdayRevenue > 0
+      ? Math.round(((stats.todayRevenue - stats.yesterdayRevenue) / stats.yesterdayRevenue) * 100)
+      : stats?.todayRevenue
+        ? 100
+        : 0
 
   const statCards = stats
     ? [
@@ -48,12 +74,19 @@ export default async function AdminDashboard() {
           icon: <BarChartIcon className="w-4 h-4 text-brand-blue" />,
           bg: 'bg-brand-blue-light',
           color: 'text-brand-blue',
-          sub: stats.revenueChangePercent !== 0 ? (
-            <span className={`text-xs flex items-center gap-0.5 ${stats.revenueChangePercent > 0 ? 'text-green-600' : 'text-red-500'}`}>
-              {stats.revenueChangePercent > 0 ? <ArrowUpIcon className="w-3 h-3" /> : <ArrowDownIcon className="w-3 h-3" />}
-              {Math.abs(stats.revenueChangePercent)}% vs last month
-            </span>
-          ) : null,
+          sub:
+            stats.revenueChangePercent !== 0 ? (
+              <span
+                className={`text-xs flex items-center gap-0.5 ${stats.revenueChangePercent > 0 ? 'text-green-600' : 'text-red-500'}`}
+              >
+                {stats.revenueChangePercent > 0 ? (
+                  <ArrowUpIcon className="w-3 h-3" />
+                ) : (
+                  <ArrowDownIcon className="w-3 h-3" />
+                )}
+                {Math.abs(stats.revenueChangePercent)}% vs last month
+              </span>
+            ) : null,
         },
         {
           label: 'Total Orders',
@@ -61,7 +94,9 @@ export default async function AdminDashboard() {
           icon: <BackpackIcon className="w-4 h-4 text-blue-600" />,
           bg: 'bg-blue-50',
           color: 'text-blue-600',
-          sub: null,
+          sub: stats.pendingOrders > 0 ? (
+            <span className="text-xs text-amber-600">{stats.pendingOrders} need attention</span>
+          ) : null,
         },
         {
           label: 'Avg Order Value',
@@ -77,24 +112,79 @@ export default async function AdminDashboard() {
           icon: <PersonIcon className="w-4 h-4 text-green-600" />,
           bg: 'bg-green-50',
           color: 'text-green-600',
-          sub: stats.repeatCustomerRate > 0 ? (
-            <span className="text-xs text-brand-muted">{stats.repeatCustomerRate}% repeat</span>
-          ) : null,
+          sub:
+            stats.repeatCustomerRate > 0 ? (
+              <span className="text-xs text-brand-muted">{stats.repeatCustomerRate}% repeat</span>
+            ) : null,
         },
       ]
     : []
 
   return (
     <div className="p-8">
+      {/* Realtime SSE connector */}
+      <RealtimeAdmin onStatsInvalidated={handleStatsInvalidated} />
+
       {/* Header */}
-      <div className="mb-8">
+      <div className="mb-6">
         <h1 className="text-2xl font-bold text-brand-text">Dashboard</h1>
-        <p className="text-brand-muted text-sm mt-1">
-          Welcome back, {session?.user?.name?.split(' ')[0]}
-        </p>
+        {userName && (
+          <p className="text-brand-muted text-sm mt-1">Welcome back, {userName}</p>
+        )}
       </div>
 
-      {/* Stat cards */}
+      {/* Today at a glance strip */}
+      {stats && (
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+          {/* Today's revenue */}
+          <div className="bg-gradient-to-br from-brand-blue/10 to-brand-blue/5 border border-brand-blue/20 rounded-xl p-4">
+            <p className="text-[11px] font-semibold text-brand-muted uppercase tracking-wider mb-1">Today</p>
+            <p className="text-xl font-bold text-brand-blue">{formatPrice(stats.todayRevenue)}</p>
+            {todayChange !== 0 && (
+              <span className={`text-xs flex items-center gap-0.5 mt-0.5 ${todayChange > 0 ? 'text-green-600' : 'text-red-500'}`}>
+                {todayChange > 0 ? <ArrowUpIcon className="w-3 h-3" /> : <ArrowDownIcon className="w-3 h-3" />}
+                {Math.abs(todayChange)}% vs yesterday
+              </span>
+            )}
+            <p className="text-xs text-brand-muted mt-1">{stats.todayOrders} orders</p>
+          </div>
+
+          {/* Pending orders */}
+          <div className="bg-amber-50 border border-amber-200/60 rounded-xl p-4">
+            <p className="text-[11px] font-semibold text-amber-600/70 uppercase tracking-wider mb-1">Pending</p>
+            <p className="text-xl font-bold text-amber-700">{stats.pendingOrders}</p>
+            <p className="text-xs text-amber-600/70 mt-1">orders to process</p>
+          </div>
+
+          {/* Open tickets */}
+          <div className={`${stats.openTickets > 0 ? 'bg-red-50 border-red-200/60' : 'bg-green-50 border-green-200/60'} border rounded-xl p-4`}>
+            <p className={`text-[11px] font-semibold uppercase tracking-wider mb-1 ${stats.openTickets > 0 ? 'text-red-500/70' : 'text-green-600/70'}`}>
+              Support
+            </p>
+            <p className={`text-xl font-bold ${stats.openTickets > 0 ? 'text-red-600' : 'text-green-700'}`}>
+              {stats.openTickets}
+            </p>
+            <p className={`text-xs mt-1 ${stats.openTickets > 0 ? 'text-red-500/70' : 'text-green-600/70'}`}>
+              open tickets
+            </p>
+          </div>
+
+          {/* Low stock */}
+          <div className={`${stats.lowStockCount > 0 ? 'bg-orange-50 border-orange-200/60' : 'bg-brand-arctic border-brand-border'} border rounded-xl p-4`}>
+            <p className={`text-[11px] font-semibold uppercase tracking-wider mb-1 ${stats.lowStockCount > 0 ? 'text-orange-500/70' : 'text-brand-muted'}`}>
+              Low Stock
+            </p>
+            <p className={`text-xl font-bold ${stats.lowStockCount > 0 ? 'text-orange-600' : 'text-brand-muted'}`}>
+              {stats.lowStockCount}
+            </p>
+            <p className={`text-xs mt-1 ${stats.lowStockCount > 0 ? 'text-orange-500/70' : 'text-brand-muted'}`}>
+              products
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Main stat cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {statCards.map((card) => (
           <div
@@ -196,7 +286,7 @@ export default async function AdminDashboard() {
 
       {!stats && (
         <div className="text-center py-16 text-brand-muted">
-          <p>Failed to load statistics. Check your database connection.</p>
+          <p>Loading statistics…</p>
         </div>
       )}
     </div>

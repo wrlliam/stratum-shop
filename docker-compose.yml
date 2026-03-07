@@ -19,6 +19,21 @@ services:
       timeout: 5s
       retries: 5
 
+  redis:
+    image: redis:7-alpine
+    container_name: stratum_redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   app:
     build:
       context: .
@@ -27,6 +42,10 @@ services:
     restart: unless-stopped
     depends_on:
       postgres:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+      redis:
         condition: service_healthy
     environment:
       DATABASE_URL: postgresql://stratum:stratum_pass@postgres:5432/stratum
@@ -40,12 +59,22 @@ services:
       RESEND_FROM_EMAIL: ${RESEND_FROM_EMAIL:-orders@stratum.store}
       NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
       ADMIN_EMAIL: ${ADMIN_EMAIL}
+      MINIO_ENDPOINT: minio
+      MINIO_PORT: 9000
+      MINIO_USE_SSL: "false"
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY:-stratum}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY:-stratum_minio_pass}
+      MINIO_BUCKET: ${MINIO_BUCKET:-stratum-custom-orders}
+      MINIO_PUBLIC_URL: ${MINIO_PUBLIC_URL:-http://localhost:9000}
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379}
       NODE_ENV: production
     ports:
       - "3000:3000"
     volumes:
       - uploads_data:/app/public/uploads
 
+
 volumes:
   postgres_data:
   uploads_data:
+  redis_data:
