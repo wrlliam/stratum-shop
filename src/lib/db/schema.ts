@@ -398,6 +398,7 @@ export const supportTickets = pgTable(
   (t) => [
     index('support_tickets_status_idx').on(t.status),
     index('support_tickets_created_at_idx').on(t.createdAt),
+    index('support_tickets_email_idx').on(t.email),
   ]
 )
 
