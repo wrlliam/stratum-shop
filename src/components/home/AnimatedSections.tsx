@@ -4,6 +4,8 @@ import Link from 'next/link'
 import * as motion from 'motion/react-client'
 import { ProductCard } from '@/components/shop/ProductCard'
 import { BundleCard } from '@/components/shop/BundleCard'
+import { ScrollReveal3D } from '@/components/ui/ScrollReveal3D'
+import { TiltCard } from '@/components/ui/TiltCard'
 import type { BundleWithProducts, ProductWithImages } from '@/types'
 
 // ─── Value Props Strip ──────────────────────────────────────────────────────────
@@ -150,13 +152,11 @@ export function ProcessSection() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {steps.map((step, i) => (
-            <motion.div
+            <ScrollReveal3D
               key={step.number}
               className="relative"
-              initial={{ opacity: 0, y: 20, filter: 'blur(8px)' }}
-              whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-              viewport={{ once: true, margin: '-30px' }}
-              transition={{ duration: 0.45, delay: i * 0.08 }}
+              delay={i * 0.1}
+              rotateX={10}
             >
               {/* Connector line (not on last item) */}
               {i < steps.length - 1 && (
@@ -167,7 +167,7 @@ export function ProcessSection() {
               </div>
               <h3 className="text-base font-bold text-brand-text mb-2">{step.title}</h3>
               <p className="text-xs text-brand-muted leading-relaxed">{step.description}</p>
-            </motion.div>
+            </ScrollReveal3D>
           ))}
         </div>
       </div>
@@ -209,12 +209,9 @@ export function MaterialsSection() {
           </p>
         </motion.div>
 
-        <motion.div
-          className="bg-brand-surface border border-brand-border rounded-lg p-8 hover:[box-shadow:0_0_0_1px_rgb(108_188_227/0.4)] hover:border-brand-blue/40 transition-all duration-300"
-          initial={{ opacity: 0, y: 20, filter: 'blur(8px)' }}
-          whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-          viewport={{ once: true, margin: '-30px' }}
-          transition={{ duration: 0.45 }}
+        <TiltCard
+          className="bg-brand-surface border border-brand-border rounded-lg p-8 hover:[box-shadow:0_0_0_1px_rgb(108_188_227/0.4)] hover:border-brand-blue/40 transition-colors duration-300"
+          maxTilt={5}
         >
           <div className="flex items-center gap-4 mb-6">
             <div
@@ -234,7 +231,7 @@ export function MaterialsSection() {
               </div>
             ))}
           </div>
-        </motion.div>
+        </TiltCard>
       </div>
     </section>
   )
@@ -329,12 +326,10 @@ export function ShippingSection() {
             </div>
           </motion.div>
 
-          <motion.div
+          <ScrollReveal3D
             className="bg-brand-arctic border border-brand-border rounded-lg overflow-hidden"
-            initial={{ opacity: 0, y: 20, filter: 'blur(8px)' }}
-            whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-            viewport={{ once: true, margin: '-50px' }}
-            transition={{ duration: 0.5, delay: 0.15 }}
+            delay={0.15}
+            rotateX={10}
           >
             <div className="px-5 py-3 border-b border-brand-border bg-brand-arctic">
               <p className="text-xs font-semibold text-brand-text">Shipping Options</p>
@@ -360,7 +355,7 @@ export function ShippingSection() {
                 Delivery times are rough estimates and may vary
               </p>
             </div>
-          </motion.div>
+          </ScrollReveal3D>
         </div>
       </div>
     </section>
@@ -449,12 +444,9 @@ export function CTASection() {
   return (
     <section className="py-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div
+        <ScrollReveal3D
           className="relative overflow-hidden rounded-2xl bg-[#0a1820] border border-brand-blue/20 p-12 sm:p-16"
-          initial={{ opacity: 0, y: 30, filter: 'blur(8px)' }}
-          whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-          viewport={{ once: true, margin: '-80px' }}
-          transition={{ duration: 0.6 }}
+          rotateX={12}
         >
           {/* Strata accent lines */}
           <svg className="absolute inset-0 w-full h-full opacity-10" preserveAspectRatio="none" viewBox="0 0 800 400">
@@ -508,7 +500,7 @@ export function CTASection() {
               </Link>
             </motion.div>
           </div>
-        </motion.div>
+        </ScrollReveal3D>
       </div>
     </section>
   )
