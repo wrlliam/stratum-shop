@@ -27,7 +27,7 @@ export default async function AdminRecommendationsPage() {
         {allRecs.map((rec) => (
           <div
             key={rec.id}
-            className="bg-white border border-brand-border rounded-2xl p-6 flex gap-5 shadow-card hover:shadow-card-hover transition-shadow"
+            className="bg-brand-surface border border-brand-border rounded-2xl p-6 flex gap-5 shadow-card hover:shadow-card-hover transition-shadow"
           >
             {rec.imageUrl && (
               <div className="relative w-20 h-20 flex-shrink-0 rounded-xl overflow-hidden bg-brand-arctic border border-brand-border">
@@ -72,7 +72,7 @@ export default async function AdminRecommendationsPage() {
         ))}
 
         {allRecs.length === 0 && (
-          <div className="text-center py-16 bg-white border border-brand-border rounded-2xl">
+          <div className="text-center py-16 bg-brand-surface border border-brand-border rounded-2xl">
             <p className="text-brand-muted">No print requests yet.</p>
           </div>
         )}

@@ -122,7 +122,7 @@ export default function RecommendationsPage() {
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="bg-white border border-brand-border rounded-2xl p-8 space-y-5 shadow-card">
+        <form onSubmit={handleSubmit} className="bg-brand-surface border border-brand-border rounded-2xl p-8 space-y-5 shadow-card">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Input
               label="Your Name"

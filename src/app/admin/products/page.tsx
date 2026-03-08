@@ -1,32 +1,63 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import { PlusIcon, Pencil1Icon } from '@radix-ui/react-icons'
+import { PlusIcon, Pencil1Icon, MagnifyingGlassIcon } from '@radix-ui/react-icons'
 import { db, products, productImages } from '@/lib/db'
-import { desc, asc, count } from 'drizzle-orm'
+import { desc, asc, count, ilike, or, and, eq, lte, type SQL } from 'drizzle-orm'
 import { formatPrice } from '@/lib/utils'
 import { Badge } from '@/components/ui/Badge'
 import { DeleteProductButton } from '@/components/admin/DeleteProductButton'
 import { ToggleProductButton } from '@/components/admin/ToggleProductButton'
+import { DuplicateProductButton } from '@/components/admin/DuplicateProductButton'
+import { InlineStockEdit } from '@/components/admin/InlineStockEdit'
 import { Pagination } from '@/components/ui/Pagination'
 
 export const dynamic = 'force-dynamic'
 
 const PER_PAGE = 25
 
+const STATUS_FILTERS = [
+  { value: '', label: 'All' },
+  { value: 'active', label: 'Active' },
+  { value: 'draft', label: 'Draft' },
+  { value: 'featured', label: 'Featured' },
+  { value: 'low_stock', label: 'Low Stock' },
+] as const
+
 interface Props {
-  searchParams: Promise<{ page?: string }>
+  searchParams: Promise<{ page?: string; q?: string; status?: string }>
 }
 
 export default async function AdminProductsPage({ searchParams }: Props) {
-  const { page: pageStr } = await searchParams
+  const { page: pageStr, q = '', status = '' } = await searchParams
   const page = Math.max(1, parseInt(pageStr || '1', 10))
 
-  const [totalResult] = await db.select({ count: count() }).from(products)
+  const conditions: (SQL | undefined)[] = []
+  if (q) {
+    conditions.push(
+      or(
+        ilike(products.name, `%${q}%`),
+        ilike(products.sku, `%${q}%`),
+        ilike(products.slug, `%${q}%`)
+      )
+    )
+  }
+  if (status === 'active') conditions.push(eq(products.active, true))
+  else if (status === 'draft') conditions.push(eq(products.active, false))
+  else if (status === 'featured') conditions.push(eq(products.featured, true))
+  else if (status === 'low_stock') conditions.push(lte(products.stock, 5))
+
+  const whereClause = conditions.length > 0 ? and(...(conditions as [SQL, ...SQL[]])) : undefined
+
+  const [totalResult] = await db
+    .select({ count: count() })
+    .from(products)
+    .where(whereClause)
   const total = totalResult.count
   const totalPages = Math.ceil(total / PER_PAGE)
 
   const allProducts = await db.query.products.findMany({
     with: { images: { orderBy: asc(productImages.order) } },
+    where: whereClause,
     orderBy: desc(products.createdAt),
     limit: PER_PAGE,
     offset: (page - 1) * PER_PAGE,
@@ -34,10 +65,10 @@ export default async function AdminProductsPage({ searchParams }: Props) {
 
   return (
     <div className="p-8">
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-brand-text">Products</h1>
-          <p className="text-brand-muted text-sm mt-1">{total} total</p>
+          <p className="text-brand-muted text-sm mt-1">{total} {q || status ? 'matching' : 'total'}</p>
         </div>
         <div className="flex items-center gap-3">
           <Link
@@ -56,7 +87,49 @@ export default async function AdminProductsPage({ searchParams }: Props) {
         </div>
       </div>
 
-      <div className="bg-white border border-brand-border rounded-2xl overflow-hidden shadow-card">
+      {/* Search + filter bar */}
+      <form method="GET" className="flex flex-wrap items-center gap-3 mb-6">
+        <div className="relative flex-1 min-w-[220px] max-w-sm">
+          <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-brand-muted pointer-events-none" />
+          <input
+            name="q"
+            defaultValue={q}
+            placeholder="Search by name, SKU, slug…"
+            className="w-full pl-9 pr-4 py-2.5 text-sm border border-brand-border rounded-xl bg-brand-surface text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue"
+          />
+        </div>
+        <div className="flex items-center gap-1.5">
+          {STATUS_FILTERS.map((f) => (
+            <Link
+              key={f.value}
+              href={`/admin/products?${new URLSearchParams({ ...(q ? { q } : {}), ...(f.value ? { status: f.value } : {}) }).toString()}`}
+              className={`px-3 py-2 text-xs font-semibold rounded-lg transition-colors ${
+                status === f.value
+                  ? 'bg-brand-blue text-white'
+                  : 'bg-brand-surface border border-brand-border text-brand-muted hover:text-brand-text hover:bg-brand-arctic'
+              }`}
+            >
+              {f.label}
+            </Link>
+          ))}
+        </div>
+        <button
+          type="submit"
+          className="px-4 py-2.5 text-sm font-semibold bg-brand-arctic border border-brand-border text-brand-text rounded-xl hover:bg-brand-border transition-colors"
+        >
+          Search
+        </button>
+        {(q || status) && (
+          <Link
+            href="/admin/products"
+            className="text-sm text-brand-muted hover:text-brand-text transition-colors"
+          >
+            Clear
+          </Link>
+        )}
+      </form>
+
+      <div className="bg-brand-surface border border-brand-border rounded-2xl overflow-hidden shadow-card">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
@@ -97,9 +170,7 @@ export default async function AdminProductsPage({ searchParams }: Props) {
                   </td>
 
                   <td className="px-4 py-4">
-                    <span className="text-xs font-mono text-brand-muted">
-                      {product.sku || '—'}
-                    </span>
+                    <span className="text-xs font-mono text-brand-muted">{product.sku || '—'}</span>
                   </td>
 
                   <td className="px-4 py-4">
@@ -114,17 +185,7 @@ export default async function AdminProductsPage({ searchParams }: Props) {
                   </td>
 
                   <td className="px-4 py-4">
-                    <span
-                      className={`text-sm font-semibold ${
-                        product.stock === 0
-                          ? 'text-red-500'
-                          : product.stock <= 5
-                            ? 'text-amber-600'
-                            : 'text-green-600'
-                      }`}
-                    >
-                      {product.stock}
-                    </span>
+                    <InlineStockEdit productId={product.id} stock={product.stock} />
                   </td>
 
                   <td className="px-4 py-4">
@@ -163,6 +224,7 @@ export default async function AdminProductsPage({ searchParams }: Props) {
                       >
                         <Pencil1Icon className="w-3.5 h-3.5" />
                       </Link>
+                      <DuplicateProductButton productId={product.id} />
                       <ToggleProductButton productId={product.id} active={product.active} />
                       <DeleteProductButton productId={product.id} />
                     </div>
@@ -173,10 +235,11 @@ export default async function AdminProductsPage({ searchParams }: Props) {
               {allProducts.length === 0 && (
                 <tr>
                   <td colSpan={7} className="px-4 py-12 text-center text-brand-muted">
-                    No products yet.{' '}
-                    <Link href="/admin/products/new" className="text-brand-blue hover:underline">
-                      Create your first product
-                    </Link>
+                    {q || status ? (
+                      <>No products match your search. <Link href="/admin/products" className="text-brand-blue hover:underline">Clear filters</Link></>
+                    ) : (
+                      <>No products yet. <Link href="/admin/products/new" className="text-brand-blue hover:underline">Create your first product</Link></>
+                    )}
                   </td>
                 </tr>
               )}
@@ -185,7 +248,12 @@ export default async function AdminProductsPage({ searchParams }: Props) {
         </div>
       </div>
 
-      <Pagination currentPage={page} totalPages={totalPages} basePath="/admin/products" />
+      <Pagination
+        currentPage={page}
+        totalPages={totalPages}
+        basePath="/admin/products"
+        searchParams={{ ...(q ? { q } : {}), ...(status ? { status } : {}) }}
+      />
     </div>
   )
 }

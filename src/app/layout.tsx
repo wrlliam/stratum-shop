@@ -6,6 +6,7 @@ import { Footer } from '@/components/layout/Footer'
 import { CartProvider } from '@/components/providers/CartProvider'
 import { ConfirmProvider } from '@/components/providers/ConfirmProvider'
 import { CartDrawer } from '@/components/shop/CartDrawer'
+import { PageLoader } from '@/components/ui/PageLoader'
 import { Toaster } from 'react-hot-toast'
 
 const dmSans = DM_Sans({
@@ -59,6 +60,7 @@ export default function RootLayout({
       <body className="bg-brand-bg text-brand-text antialiased font-sans">
         <ConfirmProvider>
         <CartProvider>
+          <PageLoader />
           <Navbar />
           <CartDrawer />
           <main className="min-h-screen">{children}</main>
@@ -68,11 +70,11 @@ export default function RootLayout({
             toastOptions={{
               duration: 3000,
               style: {
-                background: '#FFFFFF',
-                color: '#1a1a2e',
-                border: '1px solid #E8EAED',
+                background: '#0f0f0f',
+                color: '#f0f0f0',
+                border: '1px solid #262626',
                 borderRadius: '10px',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.4)',
                 fontSize: '14px',
               },
             }}

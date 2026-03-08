@@ -59,7 +59,7 @@ export default function AuditPage() {
         />
       </div>
 
-      <div className="bg-white border border-brand-border rounded-2xl shadow-card overflow-hidden">
+      <div className="bg-brand-surface border border-brand-border rounded-2xl shadow-card overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>

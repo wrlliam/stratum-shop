@@ -113,7 +113,7 @@ export function CustomOrderSubmitForm({ orderId, itemId, itemName, fields, exist
               placeholder={field.placeholder || ''}
               value={values[field.label] || ''}
               onChange={(e) => setValue(field.label, e.target.value)}
-              className="w-full px-3 py-2 text-sm border border-brand-border rounded-lg bg-white text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue"
+              className="w-full px-3 py-2 text-sm border border-brand-border rounded-lg bg-brand-surface text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue"
             />
           )}
 
@@ -123,7 +123,7 @@ export function CustomOrderSubmitForm({ orderId, itemId, itemName, fields, exist
               placeholder={field.placeholder || ''}
               value={values[field.label] || ''}
               onChange={(e) => setValue(field.label, e.target.value)}
-              className="w-full px-3 py-2 text-sm border border-brand-border rounded-lg bg-white text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue"
+              className="w-full px-3 py-2 text-sm border border-brand-border rounded-lg bg-brand-surface text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue"
             />
           )}
 
@@ -131,7 +131,7 @@ export function CustomOrderSubmitForm({ orderId, itemId, itemName, fields, exist
             <select
               value={values[field.label] || ''}
               onChange={(e) => setValue(field.label, e.target.value)}
-              className="w-full bg-white border border-brand-border rounded-lg px-3 py-2 text-sm text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue"
+              className="w-full bg-brand-surface border border-brand-border rounded-lg px-3 py-2 text-sm text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue"
             >
               <option value="">— Select —</option>
               {field.options?.map((opt) => (
@@ -144,7 +144,7 @@ export function CustomOrderSubmitForm({ orderId, itemId, itemName, fields, exist
             <div>
               {values[field.label] ? (
                 <div className="flex flex-col gap-2">
-                  <div className="w-full rounded-xl overflow-hidden border border-brand-border bg-white">
+                  <div className="w-full rounded-xl overflow-hidden border border-brand-border bg-brand-surface">
                     <img src={values[field.label]} alt={field.label} className="w-full h-auto object-contain" />
                   </div>
                   <button

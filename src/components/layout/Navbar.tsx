@@ -133,8 +133,8 @@ export function Navbar() {
       className={cn(
         'transition-all duration-300',
         scrolled
-          ? 'bg-white/95 backdrop-blur-xl border-b border-brand-border shadow-card'
-          : 'bg-white/80 backdrop-blur-sm border-b border-brand-border'
+          ? 'bg-brand-bg/90 backdrop-blur-xl border-b border-brand-border'
+          : 'bg-transparent backdrop-blur-sm border-b border-brand-border/30'
       )}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -148,8 +148,8 @@ export function Navbar() {
               height={32}
               className="group-hover:scale-105 transition-transform duration-200"
             />
-            <span className="text-xl font-bold tracking-tight text-brand-text group-hover:text-brand-blue transition-colors">
-              Stratum
+            <span className="text-xl font-bold font-mono tracking-tight text-brand-text group-hover:text-brand-blue transition-colors">
+              STRATUM
             </span>
           </Link>
 
@@ -183,7 +183,7 @@ export function Navbar() {
                     placeholder="Search prints..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-40 sm:w-56 px-3 py-2 text-sm bg-white border border-brand-border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all"
+                    className="w-40 sm:w-56 px-3 py-2 text-sm bg-brand-surface border border-brand-border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all"
                   />
                   <button
                     type="button"
@@ -205,7 +205,7 @@ export function Navbar() {
 
               {/* Search results dropdown */}
               {searchOpen && searchQuery.trim() && (
-                <div className="absolute right-0 top-full mt-1 w-72 sm:w-80 bg-white border border-brand-border rounded-xl shadow-card-lg overflow-hidden z-50 animate-fade-in">
+                <div className="absolute right-0 top-full mt-1 w-72 sm:w-80 bg-brand-surface border border-brand-border rounded-xl shadow-card-lg overflow-hidden z-50 animate-fade-in">
                   {searchLoading ? (
                     <div className="px-4 py-6 text-center">
                       <div className="animate-spin w-5 h-5 border-2 border-brand-blue border-t-transparent rounded-full mx-auto" />
@@ -285,7 +285,7 @@ export function Navbar() {
                 </button>
 
                 {userMenuOpen && (
-                  <div className="absolute right-0 mt-1 w-48 bg-white border border-brand-border rounded-xl shadow-card-lg overflow-hidden animate-fade-in">
+                  <div className="absolute right-0 mt-1 w-48 bg-brand-surface border border-brand-border rounded-xl shadow-card-lg overflow-hidden animate-fade-in">
                     <Link
                       href="/account"
                       className="flex items-center gap-2.5 px-4 py-3 text-sm text-brand-text hover:text-brand-blue hover:bg-brand-arctic transition-colors"
@@ -301,6 +301,14 @@ export function Navbar() {
                     >
                       <BackpackIcon className="w-4 h-4" />
                       My Orders
+                    </Link>
+                    <Link
+                      href="/support"
+                      className="flex items-center gap-2.5 px-4 py-3 text-sm text-brand-text hover:text-brand-blue hover:bg-brand-arctic transition-colors"
+                      onClick={() => setUserMenuOpen(false)}
+                    >
+                      <svg width="16" height="16" viewBox="0 0 15 15" fill="none" className="w-4 h-4"><path d="M7.5 1a6.5 6.5 0 1 0 0 13A6.5 6.5 0 0 0 7.5 1zM0 7.5a7.5 7.5 0 1 1 15 0 7.5 7.5 0 0 1-15 0zm7.5-3a1 1 0 0 0-1 1H5a2.5 2.5 0 0 1 5 0c0 .84-.65 1.47-1.15 1.87-.25.21-.45.39-.58.55-.12.15-.27.37-.27.63H7c0-.47.18-.77.37-1.01.2-.25.46-.47.7-.66C8.5 6.48 9 6.06 9 5.5a1 1 0 0 0-1-1zm-.75 6a.75.75 0 1 1 1.5 0 .75.75 0 0 1-1.5 0z" fill="currentColor" fillRule="evenodd" clipRule="evenodd"/></svg>
+                      Support
                     </Link>
                     {(session.user as { role?: string }).role === 'admin' && (
                       <Link
@@ -318,7 +326,7 @@ export function Navbar() {
                         signOut()
                         setUserMenuOpen(false)
                       }}
-                      className="w-full flex items-center gap-2.5 px-4 py-3 text-sm text-brand-muted hover:text-red-600 hover:bg-red-50 transition-colors"
+                      className="w-full flex items-center gap-2.5 px-4 py-3 text-sm text-brand-muted hover:text-red-400 hover:bg-red-900/20 transition-colors"
                     >
                       <ExitIcon className="w-4 h-4" />
                       Sign out
@@ -349,7 +357,7 @@ export function Navbar() {
 
       {/* Mobile menu */}
       {menuOpen && (
-        <div className="md:hidden border-t border-brand-border bg-white">
+        <div className="md:hidden border-t border-brand-border bg-brand-surface">
           <div className="px-4 py-4 space-y-1">
             {navLinks.map((link) => (
               <Link
@@ -383,6 +391,13 @@ export function Navbar() {
                     <BackpackIcon className="w-4 h-4" />
                     My Orders
                   </Link>
+                  <Link
+                    href="/support"
+                    className="flex items-center gap-2 px-4 py-3 rounded-xl text-sm text-brand-text hover:text-brand-blue hover:bg-brand-arctic transition-all"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 15 15" fill="none" className="w-4 h-4"><path d="M7.5 1a6.5 6.5 0 1 0 0 13A6.5 6.5 0 0 0 7.5 1zM0 7.5a7.5 7.5 0 1 1 15 0 7.5 7.5 0 0 1-15 0zm7.5-3a1 1 0 0 0-1 1H5a2.5 2.5 0 0 1 5 0c0 .84-.65 1.47-1.15 1.87-.25.21-.45.39-.58.55-.12.15-.27.37-.27.63H7c0-.47.18-.77.37-1.01.2-.25.46-.47.7-.66C8.5 6.48 9 6.06 9 5.5a1 1 0 0 0-1-1zm-.75 6a.75.75 0 1 1 1.5 0 .75.75 0 0 1-1.5 0z" fill="currentColor" fillRule="evenodd" clipRule="evenodd"/></svg>
+                    Support
+                  </Link>
                   {(session.user as { role?: string }).role === 'admin' && (
                     <Link
                       href="/admin"
@@ -394,7 +409,7 @@ export function Navbar() {
                   )}
                   <button
                     onClick={() => signOut()}
-                    className="w-full flex items-center gap-2 px-4 py-3 rounded-xl text-sm text-brand-muted hover:text-red-600 hover:bg-red-50 transition-all"
+                    className="w-full flex items-center gap-2 px-4 py-3 rounded-xl text-sm text-brand-muted hover:text-red-400 hover:bg-red-900/20 transition-all"
                   >
                     <ExitIcon className="w-4 h-4" />
                     Sign out

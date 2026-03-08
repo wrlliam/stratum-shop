@@ -117,7 +117,7 @@ export default function FilamentsPage() {
       </div>
 
       {showForm && (
-        <div className="bg-white border border-brand-border rounded-2xl p-6 shadow-card mb-6">
+        <div className="bg-brand-surface border border-brand-border rounded-2xl p-6 shadow-card mb-6">
           <h2 className="text-sm font-bold text-brand-text mb-4">{editId ? 'Edit' : 'Add'} Filament</h2>
           <form onSubmit={submit} className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             <Input label="Brand" placeholder="Bambu, Polymaker..." value={form.brand ?? ''} onChange={(e) => set('brand', e.target.value)} />
@@ -125,7 +125,7 @@ export default function FilamentsPage() {
             <div>
               <label className="block text-xs font-semibold text-brand-text uppercase tracking-wider mb-1.5">Material</label>
               <select value={form.material ?? 'PLA'} onChange={(e) => set('material', e.target.value)}
-                className="w-full bg-white border border-brand-border rounded-lg px-3 py-2.5 text-sm text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-blue">
+                className="w-full bg-brand-surface border border-brand-border rounded-lg px-3 py-2.5 text-sm text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-blue">
                 {MATERIALS.map((m) => <option key={m} value={m}>{m}</option>)}
               </select>
             </div>
@@ -160,7 +160,7 @@ export default function FilamentsPage() {
       {loading ? (
         <div className="flex justify-center py-16"><div className="animate-spin w-6 h-6 border-2 border-brand-blue border-t-transparent rounded-full" /></div>
       ) : (
-        <div className="bg-white border border-brand-border rounded-2xl overflow-hidden shadow-card">
+        <div className="bg-brand-surface border border-brand-border rounded-2xl overflow-hidden shadow-card">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>

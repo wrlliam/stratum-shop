@@ -121,7 +121,7 @@ function InputField({
           step={step ?? 1}
           min={min ?? 0}
           max={max}
-          className={`w-full px-3 py-2.5 text-sm bg-white border border-brand-border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all ${prefix ? "pl-7" : ""} ${suffix ? "pr-12" : ""}`}
+          className={`w-full px-3 py-2.5 text-sm bg-brand-surface border border-brand-border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all ${prefix ? "pl-7" : ""} ${suffix ? "pr-12" : ""}`}
         />
         {suffix && (
           <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-brand-muted">
@@ -357,7 +357,7 @@ export default function AdminPricingPage() {
         {/* Inputs */}
         <div className="lg:col-span-2 space-y-6">
           {/* Print Time */}
-          <div className="bg-white border border-brand-border rounded-2xl p-5 shadow-card">
+          <div className="bg-brand-surface border border-brand-border rounded-2xl p-5 shadow-card">
             <h2 className="text-sm font-semibold text-brand-text mb-4">
               Print Details
             </h2>
@@ -386,7 +386,7 @@ export default function AdminPricingPage() {
           </div>
 
           {/* Material Costs */}
-          <div className="bg-white border border-brand-border rounded-2xl p-5 shadow-card">
+          <div className="bg-brand-surface border border-brand-border rounded-2xl p-5 shadow-card">
             <h2 className="text-sm font-semibold text-brand-text mb-4">
               Material &amp; Energy Costs
             </h2>
@@ -419,7 +419,7 @@ export default function AdminPricingPage() {
           </div>
 
           {/* Labour & Margins */}
-          <div className="bg-white border border-brand-border rounded-2xl p-5 shadow-card">
+          <div className="bg-brand-surface border border-brand-border rounded-2xl p-5 shadow-card">
             <h2 className="text-sm font-semibold text-brand-text mb-4">
               Labour &amp; Margins
             </h2>
@@ -476,7 +476,7 @@ export default function AdminPricingPage() {
 
         {/* Results */}
         <div className="space-y-4">
-          <div className="bg-white border border-brand-border rounded-2xl p-5 shadow-card sticky top-8">
+          <div className="bg-brand-surface border border-brand-border rounded-2xl p-5 shadow-card sticky top-8">
             <h2 className="text-sm font-semibold text-brand-text mb-4">
               Cost Breakdown
             </h2>

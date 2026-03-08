@@ -8,6 +8,9 @@ import { eq, desc } from 'drizzle-orm'
 import { formatPrice } from '@/lib/utils'
 import { StatusBadge } from '@/components/ui/Badge'
 import { CancelOrderButton } from '@/components/orders/CancelOrderButton'
+import { CustomOrderSubmitForm } from '@/components/orders/CustomOrderSubmitForm'
+import { customOrderSubmissions } from '@/lib/db/schema'
+import { inArray } from 'drizzle-orm'
 import type { Metadata } from 'next'
 
 const CANCEL_WINDOW_MS = 24 * 60 * 60 * 1000
@@ -25,9 +28,27 @@ export default async function OrdersPage() {
 
   const userOrders = await db.query.orders.findMany({
     where: eq(orders.userId, session.user.id),
-    with: { items: true, messages: true },
+    with: {
+      items: {
+        with: {
+          product: {
+            columns: { id: true, productType: true, digitalFilePath: true, digitalFileUrl: true, customOrderFields: true },
+          },
+        },
+      },
+      messages: true,
+    },
     orderBy: desc(orders.createdAt),
   })
+
+  const DOWNLOADABLE_STATUSES = ['paid', 'processing', 'prepared', 'shipped', 'delivered']
+
+  // Fetch existing custom order submissions for all items
+  const allItemIds = userOrders.flatMap((o) => o.items.map((i) => i.id))
+  const submissions = allItemIds.length
+    ? await db.select().from(customOrderSubmissions).where(inArray(customOrderSubmissions.orderItemId, allItemIds))
+    : []
+  const submissionsByItemId = Object.fromEntries(submissions.map((s) => [s.orderItemId, s.fields as Record<string, string>]))
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 pt-24">
@@ -45,7 +66,7 @@ export default async function OrdersPage() {
       </div>
 
       {userOrders.length === 0 ? (
-        <div className="text-center py-20 bg-white rounded-2xl border border-brand-border">
+        <div className="text-center py-20 bg-brand-surface rounded-2xl border border-brand-border">
           <div className="text-5xl mb-4">🛍️</div>
           <h3 className="font-semibold text-brand-text mb-2">No orders yet</h3>
           <p className="text-brand-muted text-sm mb-6">
@@ -63,7 +84,7 @@ export default async function OrdersPage() {
           {userOrders.map((order) => (
             <div
               key={order.id}
-              className="bg-white border border-brand-border rounded-2xl p-6 hover:shadow-card-hover transition-shadow"
+              className="bg-brand-surface border border-brand-border rounded-2xl p-6 hover:shadow-card-hover transition-shadow"
             >
               <div className="flex flex-wrap items-start justify-between gap-4 mb-4">
                 <div>
@@ -96,22 +117,58 @@ export default async function OrdersPage() {
               {/* Items */}
               <div className="border-t border-brand-border pt-4">
                 <div className="space-y-2">
-                  {order.items.map((item) => (
-                    <div key={item.id} className="flex items-center justify-between text-sm">
-                      <span className="text-brand-text">
-                        {item.name}
-                        {item.quantity > 1 && (
-                          <span className="text-brand-muted ml-1">× {item.quantity}</span>
-                        )}
-                        {item.isBundle && (
-                          <span className="ml-2 text-[10px] bg-brand-blue-light text-brand-blue px-1.5 py-0.5 rounded font-semibold uppercase tracking-wider">
-                            Bundle
+                  {order.items.map((item) => {
+                    const isDownloadable =
+                      DOWNLOADABLE_STATUSES.includes(order.status) &&
+                      item.productId &&
+                      (item.product?.productType === 'digital' ||
+                        item.product?.productType === '3d_model') &&
+                      (item.product?.digitalFilePath || item.product?.digitalFileUrl)
+                    const isCustomOrder =
+                      DOWNLOADABLE_STATUSES.includes(order.status) &&
+                      item.productId &&
+                      item.product?.productType === 'custom_order' &&
+                      Array.isArray(item.product?.customOrderFields) &&
+                      (item.product?.customOrderFields as unknown[]).length > 0
+
+                    return (
+                      <div key={item.id} className="text-sm">
+                        <div className="flex items-center justify-between gap-3">
+                          <span className="text-brand-text flex-1">
+                            {item.name}
+                            {item.quantity > 1 && (
+                              <span className="text-brand-muted ml-1">× {item.quantity}</span>
+                            )}
+                            {item.isBundle && (
+                              <span className="ml-2 text-[10px] bg-brand-blue-light text-brand-blue px-1.5 py-0.5 rounded font-semibold uppercase tracking-wider">
+                                Bundle
+                              </span>
+                            )}
                           </span>
+                          <div className="flex items-center gap-3 flex-shrink-0">
+                            {isDownloadable && (
+                              <a
+                                href={`/api/download/${item.productId}`}
+                                className="text-[11px] font-semibold text-brand-blue hover:underline"
+                              >
+                                ↓ Download
+                              </a>
+                            )}
+                            <span className="text-brand-muted">{formatPrice(item.price * item.quantity)}</span>
+                          </div>
+                        </div>
+                        {isCustomOrder && (
+                          <CustomOrderSubmitForm
+                            orderId={order.id}
+                            itemId={item.id}
+                            itemName={item.name}
+                            fields={item.product!.customOrderFields as { type: 'text' | 'image' | 'number' | 'select'; label: string; required?: boolean; placeholder?: string; options?: string[] }[]}
+                            existingSubmission={submissionsByItemId[item.id] ?? null}
+                          />
                         )}
-                      </span>
-                      <span className="text-brand-muted">{formatPrice(item.price * item.quantity)}</span>
-                    </div>
-                  ))}
+                      </div>
+                    )
+                  })}
                 </div>
 
                 {/* Order summary */}

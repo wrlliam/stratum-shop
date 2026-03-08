@@ -72,7 +72,7 @@ export default async function AdminOrderDetailPage({ params }: Props) {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Items */}
         <div className="lg:col-span-2 space-y-4">
-          <div className="bg-white border border-brand-border rounded-2xl p-6 shadow-card">
+          <div className="bg-brand-surface border border-brand-border rounded-2xl p-6 shadow-card">
             <h2 className="text-sm font-bold text-brand-text mb-4">Order Items</h2>
 
             <div className="space-y-4">
@@ -118,7 +118,7 @@ export default async function AdminOrderDetailPage({ params }: Props) {
           </div>
 
           {address && (
-            <div className="bg-white border border-brand-border rounded-2xl p-6 shadow-card">
+            <div className="bg-brand-surface border border-brand-border rounded-2xl p-6 shadow-card">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-sm font-bold text-brand-text">Delivery Address</h2>
                 <PrintLabelButton
@@ -138,12 +138,12 @@ export default async function AdminOrderDetailPage({ params }: Props) {
             </div>
           )}
 
-          <div className="bg-white border border-brand-border rounded-2xl p-6 shadow-card">
+          <div className="bg-brand-surface border border-brand-border rounded-2xl p-6 shadow-card">
             <h2 className="text-sm font-bold text-brand-text mb-4">Tracking</h2>
             <TrackingForm orderId={order.id} initialTrackingNumber={order.trackingNumber} />
           </div>
 
-          <div className="bg-white border border-brand-border rounded-2xl p-6 shadow-card">
+          <div className="bg-brand-surface border border-brand-border rounded-2xl p-6 shadow-card">
             <h2 className="text-sm font-bold text-brand-text mb-4">
               Messages
               {order.messages.length > 0 && (
@@ -158,7 +158,7 @@ export default async function AdminOrderDetailPage({ params }: Props) {
 
         {/* Summary */}
         <div className="space-y-4">
-          <div className="bg-white border border-brand-border rounded-2xl p-6 shadow-card">
+          <div className="bg-brand-surface border border-brand-border rounded-2xl p-6 shadow-card">
             <h2 className="text-sm font-bold text-brand-text mb-4">Order Summary</h2>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
@@ -190,7 +190,7 @@ export default async function AdminOrderDetailPage({ params }: Props) {
             </div>
           </div>
 
-          <div className="bg-white border border-brand-border rounded-2xl p-6 shadow-card">
+          <div className="bg-brand-surface border border-brand-border rounded-2xl p-6 shadow-card">
             <h2 className="text-sm font-bold text-brand-text mb-3">Details</h2>
             <div className="space-y-2 text-xs">
               <div className="flex justify-between">

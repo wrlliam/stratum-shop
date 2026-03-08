@@ -15,15 +15,15 @@ export function ValueProps() {
   ]
 
   return (
-    <section className="border-y border-brand-border bg-white">
+    <section className="border-y border-brand-border bg-brand-surface">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-brand-border">
           {items.map((item, i) => (
             <motion.div
               key={item.label}
               className="py-8 sm:px-8 first:sm:pl-0 last:sm:pr-0"
-              initial={{ opacity: 0, y: 10 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, y: 10, filter: 'blur(8px)' }}
+              whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
               viewport={{ once: true, margin: '-50px' }}
               transition={{ duration: 0.4, delay: i * 0.1 }}
             >
@@ -50,8 +50,8 @@ export function FeaturedProducts({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           className="flex items-end justify-between mb-10"
-          initial={{ opacity: 0, y: 15 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, y: 15, filter: 'blur(8px)' }}
+          whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
           viewport={{ once: true, margin: '-50px' }}
           transition={{ duration: 0.5 }}
         >
@@ -74,8 +74,8 @@ export function FeaturedProducts({
             {displayProducts.map((product, i) => (
               <motion.div
                 key={product.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, y: 20, filter: 'blur(8px)' }}
+                whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
                 viewport={{ once: true, margin: '-30px' }}
                 transition={{ duration: 0.4, delay: i * 0.06 }}
               >
@@ -129,12 +129,12 @@ export function ProcessSection() {
   ]
 
   return (
-    <section className="py-20 bg-white">
+    <section className="py-20 bg-brand-surface">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           className="max-w-2xl mb-14"
-          initial={{ opacity: 0, y: 15 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, y: 15, filter: 'blur(8px)' }}
+          whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
           viewport={{ once: true, margin: '-50px' }}
           transition={{ duration: 0.5 }}
         >
@@ -153,10 +153,10 @@ export function ProcessSection() {
             <motion.div
               key={step.number}
               className="relative"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, y: 20, filter: 'blur(8px)' }}
+              whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
               viewport={{ once: true, margin: '-30px' }}
-              transition={{ duration: 0.45, delay: i * 0.1 }}
+              transition={{ duration: 0.45, delay: i * 0.08 }}
             >
               {/* Connector line (not on last item) */}
               {i < steps.length - 1 && (
@@ -191,8 +191,8 @@ export function MaterialsSection() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           className="max-w-2xl mb-14"
-          initial={{ opacity: 0, y: 15 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, y: 15, filter: 'blur(8px)' }}
+          whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
           viewport={{ once: true, margin: '-50px' }}
           transition={{ duration: 0.5 }}
         >
@@ -210,15 +210,15 @@ export function MaterialsSection() {
         </motion.div>
 
         <motion.div
-          className="bg-white border border-brand-border rounded-2xl p-8 hover:border-brand-blue/30 hover:shadow-card-hover transition-all duration-300"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          className="bg-brand-surface border border-brand-border rounded-lg p-8 hover:[box-shadow:0_0_0_1px_rgb(108_188_227/0.4)] hover:border-brand-blue/40 transition-all duration-300"
+          initial={{ opacity: 0, y: 20, filter: 'blur(8px)' }}
+          whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
           viewport={{ once: true, margin: '-30px' }}
           transition={{ duration: 0.45 }}
         >
           <div className="flex items-center gap-4 mb-6">
             <div
-              className="w-12 h-12 rounded-xl shadow-inner"
+              className="w-12 h-12 rounded-lg shadow-inner"
               style={{ backgroundColor: '#6CBCE3' }}
             />
             <div>
@@ -249,8 +249,8 @@ export function BundleSection({ activeBundles }: { activeBundles: BundleWithProd
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           className="flex items-end justify-between mb-10"
-          initial={{ opacity: 0, y: 15 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, y: 15, filter: 'blur(8px)' }}
+          whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
           viewport={{ once: true, margin: '-50px' }}
           transition={{ duration: 0.5 }}
         >
@@ -271,10 +271,10 @@ export function BundleSection({ activeBundles }: { activeBundles: BundleWithProd
           {activeBundles.map((bundle, i) => (
             <motion.div
               key={bundle.id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, y: 20, filter: 'blur(8px)' }}
+              whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
               viewport={{ once: true, margin: '-30px' }}
-              transition={{ duration: 0.4, delay: i * 0.1 }}
+              transition={{ duration: 0.4, delay: i * 0.08 }}
             >
               <BundleCard bundle={bundle} />
             </motion.div>
@@ -295,13 +295,13 @@ export function ShippingSection() {
   ]
 
   return (
-    <section className="py-20 bg-white border-t border-brand-border">
+    <section className="py-20 bg-brand-surface border-t border-brand-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="lg:grid lg:grid-cols-2 lg:gap-16 items-start">
           <motion.div
             className="mb-10 lg:mb-0"
-            initial={{ opacity: 0, y: 15 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, y: 15, filter: 'blur(8px)' }}
+            whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
             viewport={{ once: true, margin: '-50px' }}
             transition={{ duration: 0.5 }}
           >
@@ -330,13 +330,13 @@ export function ShippingSection() {
           </motion.div>
 
           <motion.div
-            className="bg-brand-arctic border border-brand-border rounded-2xl overflow-hidden"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            className="bg-brand-arctic border border-brand-border rounded-lg overflow-hidden"
+            initial={{ opacity: 0, y: 20, filter: 'blur(8px)' }}
+            whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
             viewport={{ once: true, margin: '-50px' }}
             transition={{ duration: 0.5, delay: 0.15 }}
           >
-            <div className="px-5 py-3 border-b border-brand-border bg-white">
+            <div className="px-5 py-3 border-b border-brand-border bg-brand-arctic">
               <p className="text-xs font-semibold text-brand-text">Shipping Options</p>
             </div>
             <div className="divide-y divide-brand-border">
@@ -402,8 +402,8 @@ export function FAQSection() {
         <div className="lg:grid lg:grid-cols-3 lg:gap-16">
           <motion.div
             className="mb-10 lg:mb-0"
-            initial={{ opacity: 0, y: 15 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, y: 15, filter: 'blur(8px)' }}
+            whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
             viewport={{ once: true, margin: '-50px' }}
             transition={{ duration: 0.5 }}
           >
@@ -421,8 +421,8 @@ export function FAQSection() {
               <motion.details
                 key={i}
                 className="group py-5"
-                initial={{ opacity: 0, y: 10 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, y: 10, filter: 'blur(4px)' }}
+                whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
                 viewport={{ once: true, margin: '-20px' }}
                 transition={{ duration: 0.35, delay: i * 0.05 }}
               >
@@ -450,9 +450,9 @@ export function CTASection() {
     <section className="py-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
-          className="relative overflow-hidden rounded-3xl bg-brand-text p-12 sm:p-16"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          className="relative overflow-hidden rounded-2xl bg-[#0a1820] border border-brand-blue/20 p-12 sm:p-16"
+          initial={{ opacity: 0, y: 30, filter: 'blur(8px)' }}
+          whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
           viewport={{ once: true, margin: '-80px' }}
           transition={{ duration: 0.6 }}
         >
@@ -501,7 +501,7 @@ export function CTASection() {
             >
               <Link
                 href="/recommendations"
-                className="group inline-flex items-center gap-3 px-8 py-4 bg-brand-blue text-white font-semibold rounded-2xl hover:bg-brand-blue-dark transition-all shadow-blue hover:shadow-blue-lg"
+                className="group inline-flex items-center gap-3 px-8 py-4 bg-brand-blue text-white font-semibold rounded-lg hover:bg-brand-blue-dark transition-all shadow-blue hover:shadow-blue-lg"
               >
                 Submit a Request
                 <span className="transition-transform duration-200 group-hover:translate-x-1">→</span>

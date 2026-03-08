@@ -99,7 +99,7 @@ export default function ProductLabelsPage() {
         </div>
 
         {/* QR Type toggle */}
-        <div className="bg-white border border-brand-border rounded-2xl p-6 shadow-card mb-6">
+        <div className="bg-brand-surface border border-brand-border rounded-2xl p-6 shadow-card mb-6">
           <h2 className="text-sm font-bold text-brand-text mb-3">QR Code Type</h2>
           <div className="flex gap-2">
             {(['public', 'inventory'] as const).map((type) => (
@@ -124,7 +124,7 @@ export default function ProductLabelsPage() {
         </div>
 
         {/* Product selector with quantity inputs */}
-        <div className="bg-white border border-brand-border rounded-2xl p-6 shadow-card mb-8">
+        <div className="bg-brand-surface border border-brand-border rounded-2xl p-6 shadow-card mb-8">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-sm font-bold text-brand-text">Select Products &amp; Quantities</h2>
             <button

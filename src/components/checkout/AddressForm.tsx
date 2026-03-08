@@ -61,7 +61,7 @@ export function AddressForm({ address, onChange, errors }: Props) {
       setLoaded(true)
     }
 
-    init().catch(console.error)
+    init().catch(() => {})
     return () => { mounted = false }
   }, [loaded, handlePlaceChanged])
 

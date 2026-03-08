@@ -11,31 +11,22 @@ const stats = [
 
 export function HeroSection() {
   return (
-    <section className="relative pt-28 pb-20 lg:pb-32 overflow-hidden">
-      {/* Background */}
-      <div className="absolute inset-0">
-        <div className="absolute inset-0 bg-gradient-to-b from-[#f0f7fb] via-white to-white" />
-        <svg className="absolute inset-0 w-full h-full opacity-[0.07]" preserveAspectRatio="none" viewBox="0 0 1440 800">
-          <motion.path d="M0 200 Q360 160 720 220 T1440 180" stroke="#6CBCE3" strokeWidth="2" fill="none" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 2, delay: 0.5, ease: 'easeOut' }} />
-          <motion.path d="M0 280 Q400 240 800 300 T1440 260" stroke="#6CBCE3" strokeWidth="1.5" fill="none" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 2, delay: 0.7, ease: 'easeOut' }} />
-          <motion.path d="M0 360 Q300 320 720 380 T1440 340" stroke="#3A9FD4" strokeWidth="1" fill="none" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 2, delay: 0.9, ease: 'easeOut' }} />
-          <motion.path d="M0 440 Q500 400 900 460 T1440 420" stroke="#6CBCE3" strokeWidth="1.5" fill="none" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 2, delay: 1.1, ease: 'easeOut' }} />
-          <motion.path d="M0 520 Q350 480 750 540 T1440 500" stroke="#3A9FD4" strokeWidth="1" fill="none" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 2, delay: 1.3, ease: 'easeOut' }} />
-        </svg>
-        <motion.div
-          className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-brand-blue/5 rounded-full blur-3xl"
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1.5, delay: 0.3 }}
-        />
-      </div>
+    <section className="relative pt-28 pb-20 lg:pb-32 overflow-hidden bg-brand-bg dot-grid-bg">
+      {/* Background glow orb */}
+      <motion.div
+        className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[700px] h-[350px] rounded-full pointer-events-none"
+        style={{ background: 'radial-gradient(ellipse, rgba(108,188,227,0.06) 0%, transparent 70%)' }}
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 1.5, delay: 0.3 }}
+      />
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="lg:grid lg:grid-cols-2 lg:gap-16 items-center">
           {/* Left — copy */}
           <div>
             <motion.div
-              className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-white border border-brand-border shadow-card mb-8"
+              className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-brand-surface border border-brand-border mb-8"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
@@ -48,8 +39,8 @@ export function HeroSection() {
 
             <motion.h1
               className="text-[3.5rem] sm:text-[4.5rem] lg:text-[5.5rem] font-bold text-brand-text leading-[0.95] tracking-tight mb-8"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, y: 20, filter: 'blur(8px)' }}
+              animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
               transition={{ duration: 0.6, delay: 0.2 }}
             >
               Precision
@@ -78,14 +69,14 @@ export function HeroSection() {
             >
               <Link
                 href="/products"
-                className="group inline-flex items-center gap-3 px-8 py-4 bg-brand-text text-white font-semibold rounded-2xl text-base hover:bg-brand-charcoal transition-all duration-200 shadow-card-lg"
+                className="group inline-flex items-center gap-3 px-8 py-4 bg-brand-blue text-white font-semibold rounded-lg text-base hover:bg-brand-blue-dark transition-all duration-200 shadow-blue-sm"
               >
                 Browse Prints
                 <span className="transition-transform duration-200 group-hover:translate-x-1">→</span>
               </Link>
               <Link
                 href="/recommendations"
-                className="inline-flex items-center gap-2 px-8 py-4 text-brand-text font-semibold rounded-2xl text-base hover:text-brand-blue transition-colors duration-200"
+                className="inline-flex items-center gap-2 px-8 py-4 text-brand-muted font-semibold rounded-lg text-base border border-brand-border hover:border-brand-blue hover:text-brand-blue transition-all duration-200"
               >
                 Request a Custom Print
               </Link>
@@ -100,12 +91,12 @@ export function HeroSection() {
             >
               {stats.map((s, i) => (
                 <div key={s.label} className="flex items-center gap-3">
-                  <div>
-                    <p className="text-lg font-bold text-brand-text leading-tight">{s.value}</p>
+                  <div className="border-t border-brand-border pt-3 w-20">
+                    <p className="text-lg font-bold font-mono text-brand-text leading-tight">{s.value}</p>
                     <p className="text-2xs text-brand-muted">{s.label}</p>
                   </div>
                   {i < stats.length - 1 && (
-                    <div className="w-px h-8 bg-brand-border ml-5" />
+                    <div className="w-px h-8 bg-brand-border ml-2" />
                   )}
                 </div>
               ))}
@@ -121,15 +112,15 @@ export function HeroSection() {
           >
             <div className="relative w-[380px] h-[380px]">
               <svg viewBox="0 0 380 380" className="w-full h-full" fill="none">
-                {/* Topographic contour rings — like a height map / terrain slice */}
+                {/* Topographic contour rings — dark-adapted blues */}
                 {[
-                  { rx: 160, ry: 150, cx: 190, cy: 195, color: '#f0f7fb', width: 1.5, delay: 0.6 },
-                  { rx: 140, ry: 132, cx: 188, cy: 192, color: '#e4f1f9', width: 1.5, delay: 0.75 },
-                  { rx: 120, ry: 112, cx: 186, cy: 189, color: '#d4ecf6', width: 1.5, delay: 0.9 },
-                  { rx: 100, ry: 94, cx: 184, cy: 186, color: '#c0e2f0', width: 1.5, delay: 1.05 },
-                  { rx: 82, ry: 76, cx: 182, cy: 183, color: '#a8d5e8', width: 1.5, delay: 1.2 },
-                  { rx: 64, ry: 60, cx: 180, cy: 180, color: '#8ec8e0', width: 2, delay: 1.35 },
-                  { rx: 46, ry: 44, cx: 178, cy: 177, color: '#7ac0db', width: 2, delay: 1.5 },
+                  { rx: 160, ry: 150, cx: 190, cy: 195, color: '#0d1a20', width: 1.5, delay: 0.6 },
+                  { rx: 140, ry: 132, cx: 188, cy: 192, color: '#102030', width: 1.5, delay: 0.75 },
+                  { rx: 120, ry: 112, cx: 186, cy: 189, color: '#142840', width: 1.5, delay: 0.9 },
+                  { rx: 100, ry: 94, cx: 184, cy: 186, color: '#1a3550', width: 1.5, delay: 1.05 },
+                  { rx: 82, ry: 76, cx: 182, cy: 183, color: '#224468', width: 1.5, delay: 1.2 },
+                  { rx: 64, ry: 60, cx: 180, cy: 180, color: '#2d5880', width: 2, delay: 1.35 },
+                  { rx: 46, ry: 44, cx: 178, cy: 177, color: '#3a6e9a', width: 2, delay: 1.5 },
                   { rx: 30, ry: 28, cx: 176, cy: 175, color: '#6CBCE3', width: 2.5, delay: 1.65 },
                   { rx: 14, ry: 13, cx: 175, cy: 173, color: '#5db3de', width: 2.5, delay: 1.8 },
                 ].map((ring, i) => (
@@ -172,7 +163,7 @@ export function HeroSection() {
                     key={i}
                     x={label.x}
                     y={label.y}
-                    fill="#AEB4BB"
+                    fill="#505050"
                     fontSize="9"
                     className="font-mono"
                     initial={{ opacity: 0 }}
@@ -186,7 +177,7 @@ export function HeroSection() {
                 {/* Thin dashed cross-hair through peak */}
                 <motion.line
                   x1="175" y1="40" x2="175" y2="340"
-                  stroke="#AEB4BB"
+                  stroke="#505050"
                   strokeWidth="0.5"
                   strokeDasharray="4 4"
                   initial={{ opacity: 0 }}
@@ -195,7 +186,7 @@ export function HeroSection() {
                 />
                 <motion.line
                   x1="30" y1="173" x2="340" y2="173"
-                  stroke="#AEB4BB"
+                  stroke="#505050"
                   strokeWidth="0.5"
                   strokeDasharray="4 4"
                   initial={{ opacity: 0 }}
@@ -215,7 +206,7 @@ export function HeroSection() {
                     cx={x}
                     cy={y}
                     r="1"
-                    fill="#E8EAED"
+                    fill="#262626"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.3, delay: 0.5 + i * 0.03 }}
@@ -225,7 +216,7 @@ export function HeroSection() {
 
               {/* Floating labels */}
               <motion.div
-                className="absolute top-6 left-6 bg-white/80 backdrop-blur-sm border border-brand-border rounded-lg px-3 py-1.5 shadow-card"
+                className="absolute top-6 left-6 bg-brand-surface/80 backdrop-blur-sm border border-brand-border rounded-lg px-3 py-1.5"
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.4, delay: 2.2 }}
@@ -234,7 +225,7 @@ export function HeroSection() {
               </motion.div>
 
               <motion.div
-                className="absolute bottom-6 right-6 bg-white/80 backdrop-blur-sm border border-brand-border rounded-lg px-3 py-1.5 shadow-card"
+                className="absolute bottom-6 right-6 bg-brand-surface/80 backdrop-blur-sm border border-brand-border rounded-lg px-3 py-1.5"
                 initial={{ opacity: 0, x: 10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.4, delay: 2.4 }}

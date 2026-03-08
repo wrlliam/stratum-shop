@@ -4,6 +4,7 @@ import { stripe } from '@/lib/stripe'
 import { db, orders } from '@/lib/db'
 import { eq } from 'drizzle-orm'
 import { formatPrice } from '@/lib/utils'
+import { ConfettiCelebration } from '@/components/ui/ConfettiCelebration'
 
 interface Props {
   searchParams: Promise<{ session_id?: string }>
@@ -19,23 +20,19 @@ export default async function CheckoutSuccessPage({ searchParams }: Props) {
     try {
       const session = await stripe.checkout.sessions.retrieve(session_id)
       const orderId = session.metadata?.orderId
-
       if (orderId) {
-        const order = await db.query.orders.findFirst({
-          where: eq(orders.id, orderId),
-        })
-        if (order) {
-          orderNumber = order.orderNumber
-          total = order.total
-        }
+        const order = await db.query.orders.findFirst({ where: eq(orders.id, orderId) })
+        if (order) { orderNumber = order.orderNumber; total = order.total }
       }
     } catch {}
   }
 
   return (
     <div className="min-h-screen pt-24 pb-16 flex items-center justify-center bg-brand-bg">
-      <div className="max-w-md mx-auto px-4 text-center">
-        {/* Success icon */}
+      <ConfettiCelebration />
+
+      <div className="max-w-md w-full mx-auto px-4 text-center">
+        {/* Icon */}
         <div className="relative inline-flex mb-8">
           <div className="w-24 h-24 rounded-full bg-green-50 border-2 border-green-200 flex items-center justify-center">
             <CheckCircledIcon className="w-12 h-12 text-green-600" />
@@ -54,14 +51,14 @@ export default async function CheckoutSuccessPage({ searchParams }: Props) {
         </p>
 
         {total && (
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-brand-border mb-8">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-surface border border-brand-border mb-8">
             <span className="text-sm text-brand-muted">Total charged:</span>
             <span className="text-sm font-bold text-brand-blue">{formatPrice(total)}</span>
           </div>
         )}
 
         {/* What happens next */}
-        <div className="text-left bg-white border border-brand-border rounded-2xl p-6 mb-8 shadow-card">
+        <div className="text-left bg-brand-surface border border-brand-border rounded-2xl p-6 mb-8 shadow-card">
           <h2 className="text-sm font-bold text-brand-text mb-4 flex items-center gap-2">
             <CubeIcon className="w-4 h-4 text-brand-blue" />
             What happens next?
@@ -83,16 +80,17 @@ export default async function CheckoutSuccessPage({ searchParams }: Props) {
           </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-3">
+        {/* Buttons — always side-by-side, no wrapping */}
+        <div className="flex gap-3">
           <Link
             href="/products"
-            className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-brand-blue text-white font-semibold rounded-xl hover:bg-brand-blue-dark transition-colors shadow-blue-sm"
+            className="flex-1 flex items-center justify-center whitespace-nowrap px-5 py-3 bg-brand-blue text-white font-semibold rounded-xl hover:bg-brand-blue-dark transition-colors shadow-blue-sm text-sm"
           >
             Continue Shopping →
           </Link>
           <Link
             href="/orders"
-            className="flex-1 flex items-center justify-center gap-2 px-6 py-3 border border-brand-border text-brand-text font-medium rounded-xl hover:border-brand-blue hover:text-brand-blue transition-colors"
+            className="flex-1 flex items-center justify-center whitespace-nowrap px-5 py-3 border border-brand-border text-brand-text font-medium rounded-xl hover:border-brand-blue hover:text-brand-blue transition-colors text-sm"
           >
             View My Orders
           </Link>

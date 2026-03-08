@@ -18,6 +18,8 @@ function LoginForm() {
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [form, setForm] = useState({ name: '', email: '', password: '' })
+  const [tosAccepted, setTosAccepted] = useState(false)
+  const [marketingEmails, setMarketingEmails] = useState(true)
   const [errors, setErrors] = useState<Record<string, string>>({})
 
   const validate = () => {
@@ -27,6 +29,8 @@ function LoginForm() {
       e.email = 'Valid email is required'
     if (!form.password || form.password.length < 8)
       e.password = 'Password must be at least 8 characters'
+    if (mode === 'register' && !tosAccepted)
+      e.tos = 'You must accept the Terms of Service to create an account'
     setErrors(e)
     return Object.keys(e).length === 0
   }
@@ -52,6 +56,9 @@ function LoginForm() {
           name: form.name,
           email: form.email,
           password: form.password,
+          // @ts-expect-error — custom fields via better-auth additionalFields
+          tosAcceptedAt: new Date().toISOString(),
+          marketingEmails,
         })
         if (result.error) {
           toast.error(result.error.message || 'Registration failed')
@@ -88,7 +95,7 @@ function LoginForm() {
         </div>
 
         {/* Card */}
-        <div className="bg-white border border-brand-border rounded-2xl p-8 shadow-card-lg">
+        <div className="bg-brand-surface border border-brand-border rounded-2xl p-8 shadow-card-lg">
           {/* Toggle */}
           <div className="flex bg-brand-arctic rounded-xl p-1 mb-6">
             {(['login', 'register'] as const).map((m) => (
@@ -97,7 +104,7 @@ function LoginForm() {
                 onClick={() => { setMode(m); setErrors({}) }}
                 className={`flex-1 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
                   mode === m
-                    ? 'bg-white text-brand-blue shadow-card'
+                    ? 'bg-brand-surface text-brand-blue shadow-card'
                     : 'text-brand-muted hover:text-brand-text'
                 }`}
               >
@@ -152,6 +159,37 @@ function LoginForm() {
                 )}
               </button>
             </div>
+
+            {mode === 'register' && (
+              <div className="space-y-3 pt-1">
+                <label className="flex items-start gap-2.5 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={tosAccepted}
+                    onChange={(e) => setTosAccepted(e.target.checked)}
+                    className="mt-0.5 w-4 h-4 rounded border-brand-border text-brand-blue"
+                  />
+                  <span className="text-xs text-brand-muted leading-relaxed">
+                    I agree to the{' '}
+                    <a href="/terms" target="_blank" className="text-brand-blue hover:underline font-medium">Terms of Service</a>
+                    {' '}and{' '}
+                    <a href="/privacy" target="_blank" className="text-brand-blue hover:underline font-medium">Privacy Policy</a>
+                  </span>
+                </label>
+                {errors.tos && <p className="text-xs text-red-500">{errors.tos}</p>}
+                <label className="flex items-start gap-2.5 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={marketingEmails}
+                    onChange={(e) => setMarketingEmails(e.target.checked)}
+                    className="mt-0.5 w-4 h-4 rounded border-brand-border text-brand-blue"
+                  />
+                  <span className="text-xs text-brand-muted leading-relaxed">
+                    Receive product updates and offers by email (you can unsubscribe anytime)
+                  </span>
+                </label>
+              </div>
+            )}
 
             <Button
               type="submit"

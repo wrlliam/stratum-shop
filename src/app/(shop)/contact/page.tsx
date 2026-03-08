@@ -65,10 +65,18 @@ export default function ContactPage() {
         modelName = uploadData.name
       }
 
-      const res = await fetch('/api/contact', {
+      const res = await fetch('/api/support/tickets', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...form, modelUrl, modelName }),
+        body: JSON.stringify({
+          name: form.name,
+          email: form.email,
+          subject: form.orderNumber ? `Order enquiry: ${form.orderNumber}` : 'Customer enquiry',
+          body: modelUrl
+            ? `${form.message}\n\nAttached file: ${modelUrl}`
+            : form.message,
+          orderNumber: form.orderNumber || undefined,
+        }),
       })
 
       if (!res.ok) throw new Error('Failed to send')
@@ -98,7 +106,7 @@ export default function ContactPage() {
               We&apos;d love to hear from you.
             </p>
 
-            <div className="p-4 bg-white border border-brand-border rounded-xl">
+            <div className="p-4 bg-brand-surface border border-brand-border rounded-xl">
               <div className="flex items-center gap-2 mb-2">
                 <EnvelopeClosedIcon className="w-4 h-4 text-brand-blue" />
                 <p className="text-sm font-semibold text-brand-text">Email</p>
@@ -106,14 +114,14 @@ export default function ContactPage() {
               <p className="text-sm text-brand-muted">hello@stratum3d.co.uk</p>
             </div>
 
-            <div className="p-4 bg-white border border-brand-border rounded-xl">
+            <div className="p-4 bg-brand-surface border border-brand-border rounded-xl">
               <p className="text-sm font-semibold text-brand-text mb-1">Response Time</p>
               <p className="text-xs text-brand-muted">
                 We aim to reply within 24 hours on business days.
               </p>
             </div>
 
-            <div className="p-4 bg-white border border-brand-border rounded-xl">
+            <div className="p-4 bg-brand-surface border border-brand-border rounded-xl">
               <p className="text-sm font-semibold text-brand-text mb-1">Custom Prints</p>
               <p className="text-xs text-brand-muted">
                 Requesting a custom print? Attach your model file (.STL, .3MF, .OBJ, .STEP) to get a faster quote.
@@ -124,7 +132,7 @@ export default function ContactPage() {
           {/* Form */}
           <div className="lg:col-span-3">
             {sent ? (
-              <div className="text-center py-12 bg-white border border-brand-border rounded-2xl">
+              <div className="text-center py-12 bg-brand-surface border border-brand-border rounded-2xl">
                 <div className="text-4xl mb-4">✉️</div>
                 <h3 className="text-lg font-semibold text-brand-text mb-2">Message Sent</h3>
                 <p className="text-sm text-brand-muted">
@@ -132,7 +140,7 @@ export default function ContactPage() {
                 </p>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} className="bg-white border border-brand-border rounded-2xl p-6 space-y-4 shadow-card">
+              <form onSubmit={handleSubmit} className="bg-brand-surface border border-brand-border rounded-2xl p-6 space-y-4 shadow-card">
                 <Input
                   label="Name *"
                   placeholder="Your name"

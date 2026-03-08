@@ -41,7 +41,7 @@ export function CartDrawer() {
       {/* Drawer */}
       <div
         className={cn(
-          'fixed top-0 right-0 h-full w-full max-w-md z-50 bg-white border-l border-brand-border flex flex-col transition-transform duration-300 ease-in-out shadow-card-lg',
+          'fixed top-0 right-0 h-full w-full max-w-md z-50 bg-brand-surface border-l border-brand-border flex flex-col transition-transform duration-300 ease-in-out',
           isOpen ? 'translate-x-0' : 'translate-x-full'
         )}
       >
@@ -85,10 +85,10 @@ export function CartDrawer() {
             cart.items.map((item) => (
               <div
                 key={item.id}
-                className="flex gap-3 p-3 rounded-xl bg-brand-arctic border border-brand-border"
+                className="flex gap-3 p-3 rounded-lg bg-brand-arctic border border-brand-border"
               >
                 {/* Image */}
-                <div className="relative w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden bg-white border border-brand-border">
+                <div className="relative w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden bg-brand-arctic border border-brand-border">
                   {item.imageUrl ? (
                     <Image
                       src={item.imageUrl}
@@ -124,7 +124,7 @@ export function CartDrawer() {
                     <button
                       onClick={() => updateQuantity(item.id, item.quantity - 1)}
                       aria-label="Decrease quantity"
-                      className="w-6 h-6 rounded-md bg-white border border-brand-border flex items-center justify-center text-brand-muted hover:text-brand-blue hover:border-brand-blue transition-colors"
+                      className="w-6 h-6 rounded-md bg-brand-arctic border border-brand-border flex items-center justify-center text-brand-muted hover:text-brand-blue hover:border-brand-blue transition-colors"
                     >
                       <MinusIcon className="w-2.5 h-2.5" />
                     </button>
@@ -134,7 +134,7 @@ export function CartDrawer() {
                     <button
                       onClick={() => updateQuantity(item.id, item.quantity + 1)}
                       aria-label="Increase quantity"
-                      className="w-6 h-6 rounded-md bg-white border border-brand-border flex items-center justify-center text-brand-muted hover:text-brand-blue hover:border-brand-blue transition-colors"
+                      className="w-6 h-6 rounded-md bg-brand-arctic border border-brand-border flex items-center justify-center text-brand-muted hover:text-brand-blue hover:border-brand-blue transition-colors"
                     >
                       <PlusIcon className="w-2.5 h-2.5" />
                     </button>

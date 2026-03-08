@@ -35,7 +35,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
 
   return (
     <Link href={`/products/${product.slug}`} className={cn('group block h-full', className)}>
-      <div className="h-full flex flex-col overflow-hidden rounded-2xl bg-white border border-brand-border transition-all duration-300 hover:shadow-card-hover hover:border-brand-blue/30">
+      <div className="h-full flex flex-col overflow-hidden rounded-lg bg-brand-surface border border-brand-border transition-all duration-300 hover:[box-shadow:0_0_0_1px_rgb(108_188_227/0.6)] hover:border-brand-blue/60">
         {/* Image */}
         <div className="relative aspect-square overflow-hidden bg-brand-arctic">
           {primaryImage ? (
@@ -78,8 +78,8 @@ export function ProductCard({ product, className }: ProductCardProps) {
 
           {/* Out of stock overlay */}
           {product.stock === 0 && (
-            <div className="absolute inset-0 bg-white/60 flex items-center justify-center">
-              <span className="text-sm font-bold text-red-500 uppercase tracking-wider bg-white/90 px-4 py-2 rounded-xl">
+            <div className="absolute inset-0 bg-brand-bg/70 flex items-center justify-center">
+              <span className="text-sm font-bold text-red-400 uppercase tracking-wider bg-brand-surface/90 px-4 py-2 rounded-lg">
                 Out of Stock
               </span>
             </div>
@@ -141,7 +141,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
             {product.stock === 0 ? (
               <span className="text-[10px] text-red-500 uppercase tracking-wider font-semibold">Sold out</span>
             ) : product.stock <= 5 ? (
-              <span className="text-[10px] text-amber-600 uppercase tracking-wider font-semibold">
+              <span className="text-[10px] text-amber-400 uppercase tracking-wider font-semibold">
                 {product.stock} left
               </span>
             ) : null}

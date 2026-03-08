@@ -57,7 +57,7 @@ export default function SupportPage() {
             key={s}
             onClick={() => setStatusFilter(s)}
             className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors capitalize ${
-              statusFilter === s ? 'bg-white text-brand-blue shadow-card' : 'text-brand-muted hover:text-brand-text'
+              statusFilter === s ? 'bg-brand-surface text-brand-blue shadow-card' : 'text-brand-muted hover:text-brand-text'
             }`}
           >
             {s.replace('_', ' ')}
@@ -65,7 +65,7 @@ export default function SupportPage() {
         ))}
       </div>
 
-      <div className="bg-white border border-brand-border rounded-2xl shadow-card overflow-hidden">
+      <div className="bg-brand-surface border border-brand-border rounded-2xl shadow-card overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>

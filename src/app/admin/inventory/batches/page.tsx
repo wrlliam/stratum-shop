@@ -87,13 +87,13 @@ export default function BatchesPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Create form */}
-        <div className="bg-white border border-brand-border rounded-2xl p-6 shadow-card">
+        <div className="bg-brand-surface border border-brand-border rounded-2xl p-6 shadow-card">
           <h2 className="text-sm font-bold text-brand-text mb-4">New Batch</h2>
           <BatchForm products={products} onCreated={fetchData} />
         </div>
 
         {/* Batch list */}
-        <div className="lg:col-span-2 bg-white border border-brand-border rounded-2xl shadow-card">
+        <div className="lg:col-span-2 bg-brand-surface border border-brand-border rounded-2xl shadow-card">
           <div className="p-4 border-b border-brand-border">
             <h2 className="text-sm font-bold text-brand-text">All Batches</h2>
           </div>

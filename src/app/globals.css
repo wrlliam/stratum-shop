@@ -4,9 +4,40 @@
 
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@400;500&display=swap');
 
+/* ─── Dark defaults (:root) ──────────────────────────────────────────────────── */
 :root {
   --font-dm-sans: 'DM Sans', system-ui, sans-serif;
   --font-dm-mono: 'DM Mono', monospace;
+
+  /* Dark palette */
+  --color-bg:         7 7 7;
+  --color-surface:    15 15 15;
+  --color-arctic:     22 22 22;
+  --color-border:     38 38 38;
+  --color-text:       240 240 240;
+  --color-muted:      100 100 100;
+  --color-slate:      80 80 80;
+  --color-blue:       108 188 227;
+  --color-blue-dark:  58 159 212;
+  --color-blue-light: 12 30 40;
+  --color-charcoal:   200 200 200;
+  --color-light-gray: 60 60 60;
+}
+
+/* ─── Light overrides (admin) ────────────────────────────────────────────────── */
+[data-theme="light"] {
+  --color-bg:         248 249 250;
+  --color-surface:    255 255 255;
+  --color-arctic:     245 245 245;
+  --color-border:     232 234 237;
+  --color-text:       26 26 46;
+  --color-muted:      107 114 128;
+  --color-slate:      174 180 187;
+  --color-blue:       108 188 227;
+  --color-blue-dark:  58 159 212;
+  --color-blue-light: 235 246 252;
+  --color-charcoal:   51 51 51;
+  --color-light-gray: 225 225 225;
 }
 
 * { box-sizing: border-box; }
@@ -14,8 +45,8 @@
 html { scroll-behavior: smooth; }
 
 body {
-  background-color: #F8F9FA;
-  color: #1a1a2e;
+  background-color: rgb(var(--color-bg));
+  color: rgb(var(--color-text));
   font-family: var(--font-dm-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -23,16 +54,16 @@ body {
 
 /* Scrollbar */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: #F5F5F5; }
-::-webkit-scrollbar-thumb { background: #E1E1E1; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #AEB4BB; }
+::-webkit-scrollbar-track { background: rgb(var(--color-arctic)); }
+::-webkit-scrollbar-thumb { background: rgb(var(--color-border)); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgb(var(--color-slate)); }
 
 /* Selection */
-::selection { background: rgba(108,188,227,0.25); color: #333333; }
+::selection { background: rgba(108,188,227,0.25); color: rgb(var(--color-text)); }
 
 /* Focus ring */
 .focus-ring {
-  @apply focus:outline-none focus:ring-2 focus:ring-brand-blue focus:ring-offset-2 focus:ring-offset-white;
+  @apply focus:outline-none focus:ring-2 focus:ring-brand-blue focus:ring-offset-2 focus:ring-offset-brand-bg;
 }
 
 /* Top stripe accent */
@@ -53,3 +84,35 @@ body {
 .admin-link.active {
   @apply text-brand-blue bg-brand-blue-light font-semibold;
 }
+
+/* ─── Dot-grid background (hero) ─────────────────────────────────────────────── */
+.dot-grid-bg {
+  background-image: radial-gradient(circle, rgb(var(--color-border)) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+/* ─── Fine grid background (footer etc.) ─────────────────────────────────────── */
+.grid-line-bg {
+  background-image:
+    linear-gradient(rgb(var(--color-border) / 0.4) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(var(--color-border) / 0.4) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* ─── Glow text ──────────────────────────────────────────────────────────────── */
+.glow-text {
+  text-shadow: 0 0 20px rgba(108, 188, 227, 0.5);
+}
+
+/* ─── Thin rule ──────────────────────────────────────────────────────────────── */
+.thin-rule {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgb(var(--color-border)), transparent);
+}
+
+/* ─── Badge light-theme recovery (inside [data-theme="light"]) ───────────────── */
+[data-theme="light"] .badge-green  { background-color: #f0fdf4; color: #15803d; border-color: #bbf7d0; }
+[data-theme="light"] .badge-red    { background-color: #fef2f2; color: #dc2626; border-color: #fecaca; }
+[data-theme="light"] .badge-amber  { background-color: #fffbeb; color: #b45309; border-color: #fde68a; }
+[data-theme="light"] .badge-purple { background-color: #faf5ff; color: #7c3aed; border-color: #e9d5ff; }
+[data-theme="light"] .badge-blue   { background-color: #ebf6fc; color: #6CBCE3; border-color: rgba(108,188,227,0.3); }

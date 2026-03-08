@@ -34,7 +34,7 @@ export default async function AdminBundlesPage() {
         </Link>
       </div>
 
-      <div className="bg-white border border-brand-border rounded-2xl overflow-hidden shadow-card">
+      <div className="bg-brand-surface border border-brand-border rounded-2xl overflow-hidden shadow-card">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>

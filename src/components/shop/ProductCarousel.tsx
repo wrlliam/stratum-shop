@@ -84,7 +84,7 @@ export function ProductCarousel({ images, productName, className }: ProductCarou
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                   <button
-                    className="absolute top-3 right-3 p-2 bg-white/90 border border-brand-border rounded-lg opacity-0 group-hover:opacity-100 transition-opacity text-brand-muted hover:text-brand-blue shadow-sm"
+                    className="absolute top-3 right-3 p-2 bg-brand-surface/90 border border-brand-border rounded-lg opacity-0 group-hover:opacity-100 transition-opacity text-brand-muted hover:text-brand-blue shadow-sm"
                     onClick={(e) => { e.stopPropagation(); setLightboxOpen(true) }}
                   >
                     <EnterFullScreenIcon className="w-4 h-4" />
@@ -99,13 +99,13 @@ export function ProductCarousel({ images, productName, className }: ProductCarou
             <>
               <button
                 onClick={scrollPrev}
-                className="absolute left-3 top-1/2 -translate-y-1/2 p-2 bg-white/90 border border-brand-border rounded-xl text-brand-muted hover:text-brand-blue hover:border-brand-blue transition-all opacity-0 group-hover:opacity-100 shadow-sm"
+                className="absolute left-3 top-1/2 -translate-y-1/2 p-2 bg-brand-surface/90 border border-brand-border rounded-xl text-brand-muted hover:text-brand-blue hover:border-brand-blue transition-all opacity-0 group-hover:opacity-100 shadow-sm"
               >
                 <ChevronLeftIcon className="w-5 h-5" />
               </button>
               <button
                 onClick={scrollNext}
-                className="absolute right-3 top-1/2 -translate-y-1/2 p-2 bg-white/90 border border-brand-border rounded-xl text-brand-muted hover:text-brand-blue hover:border-brand-blue transition-all opacity-0 group-hover:opacity-100 shadow-sm"
+                className="absolute right-3 top-1/2 -translate-y-1/2 p-2 bg-brand-surface/90 border border-brand-border rounded-xl text-brand-muted hover:text-brand-blue hover:border-brand-blue transition-all opacity-0 group-hover:opacity-100 shadow-sm"
               >
                 <ChevronRightIcon className="w-5 h-5" />
               </button>
@@ -123,7 +123,7 @@ export function ProductCarousel({ images, productName, className }: ProductCarou
                     'h-1.5 rounded-full transition-all duration-300',
                     i === selectedIndex
                       ? 'w-6 bg-brand-blue'
-                      : 'w-1.5 bg-white/70 hover:bg-white'
+                      : 'w-1.5 bg-brand-surface/70 hover:bg-brand-surface'
                   )}
                 />
               ))}

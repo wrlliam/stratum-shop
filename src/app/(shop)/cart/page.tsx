@@ -55,7 +55,7 @@ export default function CartPage() {
             {cart.items.map((item) => (
               <div
                 key={item.id}
-                className="flex gap-4 p-4 bg-white border border-brand-border rounded-2xl shadow-card"
+                className="flex gap-4 p-4 bg-brand-surface border border-brand-border rounded-2xl shadow-card"
               >
                 <div className="relative w-20 h-20 flex-shrink-0 rounded-xl overflow-hidden bg-brand-arctic border border-brand-border">
                   {item.imageUrl ? (
@@ -107,7 +107,7 @@ export default function CartPage() {
                       <button
                         onClick={() => updateQuantity(item.id, item.quantity - 1)}
                         aria-label="Decrease quantity"
-                        className="p-2 text-brand-muted hover:text-brand-blue hover:bg-white transition-colors"
+                        className="p-2 text-brand-muted hover:text-brand-blue hover:bg-brand-surface transition-colors"
                       >
                         <MinusIcon className="w-3.5 h-3.5" />
                       </button>
@@ -117,7 +117,7 @@ export default function CartPage() {
                       <button
                         onClick={() => updateQuantity(item.id, item.quantity + 1)}
                         aria-label="Increase quantity"
-                        className="p-2 text-brand-muted hover:text-brand-blue hover:bg-white transition-colors"
+                        className="p-2 text-brand-muted hover:text-brand-blue hover:bg-brand-surface transition-colors"
                       >
                         <PlusIcon className="w-3.5 h-3.5" />
                       </button>
@@ -133,7 +133,7 @@ export default function CartPage() {
 
           {/* Order summary */}
           <div className="lg:col-span-1">
-            <div className="sticky top-24 bg-white border border-brand-border rounded-2xl p-6 shadow-card">
+            <div className="sticky top-24 bg-brand-surface border border-brand-border rounded-2xl p-6 shadow-card">
               <h2 className="text-lg font-bold text-brand-text mb-6">Order Summary</h2>
 
               <div className="space-y-3 mb-6">

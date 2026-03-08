@@ -5,12 +5,13 @@ import { eq, asc, ne, and } from 'drizzle-orm'
 import { ProductCarousel } from '@/components/shop/ProductCarousel'
 import { ProductCard } from '@/components/shop/ProductCard'
 import { AddToCartButton } from '@/components/shop/AddToCartButton'
-import { formatPrice } from '@/lib/utils'
+import { formatPrice, isSaleActive } from '@/lib/utils'
 import { Badge } from '@/components/ui/Badge'
 import { CubeIcon, LightningBoltIcon, LockClosedIcon, StackIcon } from '@radix-ui/react-icons'
 import { ProductViewTracker } from '@/components/shop/ProductViewTracker'
 import { RecentlyViewed } from '@/components/shop/RecentlyViewed'
 import type { ProductWithImagesAndOptions } from '@/types'
+import { ModelViewerClient } from '@/components/shop/ModelViewerClient'
 
 interface Props {
   params: Promise<{ slug: string }>
@@ -75,9 +76,9 @@ export default async function ProductPage({ params }: Props) {
     limit: 4,
   })
 
-  const isOnSale = product.compareAtPrice && product.compareAtPrice > product.price
-  const discountPercent = isOnSale
-    ? Math.round((1 - product.price / product.compareAtPrice!) * 100)
+  const isOnSale = isSaleActive(product)
+  const discountPercent = isOnSale && product.compareAtPrice
+    ? Math.round((1 - product.price / product.compareAtPrice) * 100)
     : null
   const hasOptionModifiers = product.optionGroups?.some((g) =>
     g.choices.some((c) => c.priceModifier > 0)
@@ -128,9 +129,12 @@ export default async function ProductPage({ params }: Props) {
         </nav>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 xl:gap-16">
-          {/* Images */}
-          <div>
+          {/* Images / 3D viewer */}
+          <div className="space-y-4">
             <ProductCarousel images={product.images} productName={product.name} />
+            {(product as { modelUrl?: string | null }).modelUrl && (
+              <ModelViewerClient url={(product as { modelUrl: string }).modelUrl} />
+            )}
           </div>
 
           {/* Info */}
@@ -172,6 +176,13 @@ export default async function ProductPage({ params }: Props) {
               )}
             </div>
 
+            {/* Sale urgency */}
+            {isOnSale && product.saleEndsAt && (
+              <p className="text-xs text-amber-600 font-medium mb-2">
+                Sale ends {new Date(product.saleEndsAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}
+              </p>
+            )}
+
             {/* Stock */}
             <div className="mb-6">
               {product.stock === 0 ? (
@@ -188,10 +199,22 @@ export default async function ProductPage({ params }: Props) {
             {/* Add to cart */}
             <AddToCartButton product={product as ProductWithImagesAndOptions} />
 
+            {/* Custom order notice */}
+            {(product as { productType?: string }).productType === 'custom_order' && (
+              <div className="mt-3 flex items-start gap-2.5 p-3.5 bg-brand-arctic border border-brand-border rounded-xl">
+                <CubeIcon className="w-4 h-4 text-brand-blue shrink-0 mt-0.5" />
+                <p className="text-xs text-brand-muted leading-relaxed">
+                  This is a <span className="font-semibold text-brand-text">custom order</span>. After purchasing, visit{' '}
+                  <a href="/orders" className="text-brand-blue hover:underline font-medium">My Orders</a>{' '}
+                  to submit your customisation details.
+                </p>
+              </div>
+            )}
+
             {/* Specs */}
             <div className="mt-8 grid grid-cols-2 gap-3">
               {product.material && (
-                <div className="flex items-center gap-2.5 p-3 bg-white border border-brand-border rounded-xl">
+                <div className="flex items-center gap-2.5 p-3 bg-brand-surface border border-brand-border rounded-xl">
                   <StackIcon className="w-4 h-4 text-brand-blue shrink-0" />
                   <div>
                     <p className="text-[10px] text-brand-muted uppercase tracking-wider">Material</p>
@@ -200,7 +223,7 @@ export default async function ProductPage({ params }: Props) {
                 </div>
               )}
               {product.color && (
-                <div className="flex items-center gap-2.5 p-3 bg-white border border-brand-border rounded-xl">
+                <div className="flex items-center gap-2.5 p-3 bg-brand-surface border border-brand-border rounded-xl">
                   <div
                     className="w-4 h-4 rounded-full border border-brand-border shrink-0"
                     style={{ backgroundColor: product.color }}
@@ -212,7 +235,7 @@ export default async function ProductPage({ params }: Props) {
                 </div>
               )}
               {product.printTime && (
-                <div className="flex items-center gap-2.5 p-3 bg-white border border-brand-border rounded-xl">
+                <div className="flex items-center gap-2.5 p-3 bg-brand-surface border border-brand-border rounded-xl">
                   <LightningBoltIcon className="w-4 h-4 text-brand-blue shrink-0" />
                   <div>
                     <p className="text-[10px] text-brand-muted uppercase tracking-wider">Print Time</p>
@@ -225,7 +248,7 @@ export default async function ProductPage({ params }: Props) {
                 </div>
               )}
               {product.weight && (
-                <div className="flex items-center gap-2.5 p-3 bg-white border border-brand-border rounded-xl">
+                <div className="flex items-center gap-2.5 p-3 bg-brand-surface border border-brand-border rounded-xl">
                   <CubeIcon className="w-4 h-4 text-brand-blue shrink-0" />
                   <div>
                     <p className="text-[10px] text-brand-muted uppercase tracking-wider">Weight</p>
@@ -236,7 +259,7 @@ export default async function ProductPage({ params }: Props) {
             </div>
 
             {/* Guarantees */}
-            <div className="mt-6 flex items-center gap-3 p-4 bg-white border border-brand-border rounded-xl">
+            <div className="mt-6 flex items-center gap-3 p-4 bg-brand-surface border border-brand-border rounded-xl">
               <LockClosedIcon className="w-4 h-4 text-brand-blue shrink-0" />
               <p className="text-xs text-brand-muted leading-relaxed">
                 Printed to order with quality filament. If you&apos;re not happy,{' '}

@@ -9,11 +9,11 @@ interface BadgeProps {
 
 const variants = {
   default: 'bg-brand-arctic text-brand-text border-brand-border',
-  blue: 'bg-brand-blue-light text-brand-blue border-brand-blue/30',
-  green: 'bg-green-50 text-green-700 border-green-200',
-  red: 'bg-red-50 text-red-600 border-red-200',
-  amber: 'bg-amber-50 text-amber-700 border-amber-200',
-  purple: 'bg-purple-50 text-purple-700 border-purple-200',
+  blue: 'badge-blue bg-brand-blue-light text-brand-blue border-brand-blue/30',
+  green: 'badge-green bg-green-950/60 text-green-400 border-green-800/50',
+  red: 'badge-red bg-red-950/60 text-red-400 border-red-800/50',
+  amber: 'badge-amber bg-amber-950/60 text-amber-400 border-amber-800/50',
+  purple: 'badge-purple bg-purple-950/60 text-purple-400 border-purple-800/50',
 }
 
 const sizes = {
@@ -41,6 +41,7 @@ export function StatusBadge({ status }: { status: string }) {
     pending: { label: 'Pending', variant: 'default' },
     paid: { label: 'Paid', variant: 'green' },
     processing: { label: 'Processing', variant: 'blue' },
+    prepared: { label: 'Prepared', variant: 'amber' },
     shipped: { label: 'Shipped', variant: 'purple' },
     delivered: { label: 'Delivered', variant: 'green' },
     cancelled: { label: 'Cancelled', variant: 'red' },

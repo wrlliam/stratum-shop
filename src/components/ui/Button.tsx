@@ -29,7 +29,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       primary:
         'bg-brand-blue text-white hover:bg-brand-blue-dark shadow-blue-sm hover:shadow-blue active:scale-[0.98]',
       secondary:
-        'bg-white text-brand-text hover:bg-brand-arctic border border-brand-border',
+        'bg-brand-surface text-brand-text hover:bg-brand-arctic border border-brand-border',
       ghost:
         'text-brand-muted hover:text-brand-text hover:bg-brand-arctic',
       danger:

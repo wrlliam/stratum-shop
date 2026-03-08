@@ -10,16 +10,17 @@ export function Footer() {
   if (pathname.startsWith('/admin')) return null
 
   return (
-    <footer className="bg-white border-t border-brand-border mt-20">
+    <footer className="relative overflow-hidden bg-brand-surface border-t border-brand-border mt-20">
+      <div className="absolute inset-0 grid-line-bg opacity-30 pointer-events-none" />
       <div className="brand-stripe" />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
           {/* Brand */}
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center gap-2.5 mb-4">
               <Image src="/icon.png" alt="Stratum" width={28} height={28} />
-              <span className="text-lg font-bold tracking-tight text-brand-text">Stratum</span>
+              <span className="text-lg font-bold font-mono tracking-tight text-brand-text">STRATUM</span>
             </div>
             <p className="text-sm text-brand-muted leading-relaxed max-w-xs">
               Precision 3D printed objects, crafted layer by layer. Each piece is made to order
@@ -80,11 +81,15 @@ export function Footer() {
           <p className="text-xs text-brand-muted">
             © {new Date().getFullYear()} Stratum. All rights reserved.
           </p>
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-brand-muted">Payments secured by</span>
-            <span className="text-xs font-semibold text-brand-text bg-brand-arctic border border-brand-border px-2 py-0.5 rounded">
-              Stripe
-            </span>
+          <div className="flex items-center gap-4">
+            <Link href="/terms" className="text-xs text-brand-muted hover:text-brand-blue transition-colors">Terms</Link>
+            <Link href="/privacy" className="text-xs text-brand-muted hover:text-brand-blue transition-colors">Privacy</Link>
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-brand-muted">Payments secured by</span>
+              <span className="text-xs font-semibold text-brand-text bg-brand-arctic border border-brand-border px-2 py-0.5 rounded">
+                Stripe
+              </span>
+            </div>
           </div>
         </div>
       </div>

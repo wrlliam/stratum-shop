@@ -150,7 +150,7 @@ export default function BannersPage() {
 
       {/* Create / Edit form */}
       {showForm && (
-        <div className="bg-white border border-brand-border rounded-2xl p-6 shadow-card mb-6">
+        <div className="bg-brand-surface border border-brand-border rounded-2xl p-6 shadow-card mb-6">
           <div className="flex items-center justify-between mb-5">
             <h2 className="text-sm font-bold text-brand-text">
               {editingId ? 'Edit Banner' : 'New Banner'}
@@ -182,7 +182,7 @@ export default function BannersPage() {
                 <select
                   value={form.type}
                   onChange={(e) => set('type', e.target.value)}
-                  className="w-full px-3 py-2.5 text-sm border border-brand-border rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue"
+                  className="w-full px-3 py-2.5 text-sm border border-brand-border rounded-xl bg-brand-surface focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue"
                 >
                   {Object.entries(TYPE_META).map(([value, { label }]) => (
                     <option key={value} value={value}>{label}</option>
@@ -259,7 +259,7 @@ export default function BannersPage() {
                         : 'bg-brand-arctic border border-brand-border'
                     }`}
                   >
-                    <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform duration-200 ${
+                    <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-brand-surface shadow transition-transform duration-200 ${
                       form[key as keyof typeof form] ? 'translate-x-4' : 'translate-x-0.5'
                     }`} />
                   </div>
@@ -305,7 +305,7 @@ export default function BannersPage() {
             return (
               <div
                 key={banner.id}
-                className={`bg-white border rounded-2xl p-5 shadow-card flex items-start gap-4 ${
+                className={`bg-brand-surface border rounded-2xl p-5 shadow-card flex items-start gap-4 ${
                   !banner.active || expired ? 'opacity-60' : ''
                 } border-brand-border`}
               >

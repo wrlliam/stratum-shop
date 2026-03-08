@@ -93,7 +93,7 @@ export default function AdminCouponsPage() {
           <div className="animate-spin w-6 h-6 border-2 border-brand-blue border-t-transparent rounded-full" />
         </div>
       ) : (
-        <div className="bg-white border border-brand-border rounded-2xl overflow-hidden shadow-card">
+        <div className="bg-brand-surface border border-brand-border rounded-2xl overflow-hidden shadow-card">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
@@ -268,7 +268,7 @@ function CreateCouponForm({
   }
 
   return (
-    <div className="bg-white border border-brand-border rounded-2xl p-6 shadow-card mb-6">
+    <div className="bg-brand-surface border border-brand-border rounded-2xl p-6 shadow-card mb-6">
       <h2 className="text-base font-bold text-brand-text mb-4">Create Coupon</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -286,7 +286,7 @@ function CreateCouponForm({
             <select
               value={type}
               onChange={(e) => setType(e.target.value as 'fixed' | 'percentage')}
-              className="w-full bg-white border border-brand-border rounded-lg px-3 py-2.5 text-sm text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-blue"
+              className="w-full bg-brand-surface border border-brand-border rounded-lg px-3 py-2.5 text-sm text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-blue"
             >
               <option value="percentage">Percentage</option>
               <option value="fixed">Fixed Amount</option>
@@ -432,7 +432,7 @@ function CreateCouponForm({
               <select
                 value={condField}
                 onChange={(e) => setCondField(e.target.value)}
-                className="bg-white border border-brand-border rounded-lg px-2 py-2 text-xs text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-blue"
+                className="bg-brand-surface border border-brand-border rounded-lg px-2 py-2 text-xs text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-blue"
               >
                 {CONDITION_FIELDS.map((f) => (
                   <option key={f.value} value={f.value}>{f.label}</option>
@@ -444,7 +444,7 @@ function CreateCouponForm({
               <select
                 value={condOperator}
                 onChange={(e) => setCondOperator(e.target.value as CouponCondition['operator'])}
-                className="bg-white border border-brand-border rounded-lg px-2 py-2 text-xs text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-blue"
+                className="bg-brand-surface border border-brand-border rounded-lg px-2 py-2 text-xs text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-blue"
               >
                 {OPERATORS.map((op) => (
                   <option key={op.value} value={op.value}>{op.label}</option>
@@ -457,7 +457,7 @@ function CreateCouponForm({
                 value={condValue}
                 onChange={(e) => setCondValue(e.target.value)}
                 placeholder="e.g. 1"
-                className="bg-white border border-brand-border rounded-lg px-2 py-2 text-xs text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-blue w-24"
+                className="bg-brand-surface border border-brand-border rounded-lg px-2 py-2 text-xs text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-blue w-24"
               />
             </div>
             <Button type="button" variant="outline" size="sm" onClick={addCondition}>

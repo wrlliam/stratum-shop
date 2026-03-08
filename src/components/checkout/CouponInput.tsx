@@ -79,7 +79,7 @@ export function CouponInput({ subtotal, onApply, onRemove, applied }: Props) {
         value={code}
         onChange={(e) => setCode(e.target.value.toUpperCase())}
         onKeyDown={(e) => e.key === 'Enter' && handleApply()}
-        className="flex-1 bg-white border border-brand-border rounded-lg px-3 py-2 text-sm text-brand-text placeholder:text-brand-slate focus:outline-none focus:ring-2 focus:ring-brand-blue font-mono"
+        className="flex-1 bg-brand-surface border border-brand-border rounded-lg px-3 py-2 text-sm text-brand-text placeholder:text-brand-slate focus:outline-none focus:ring-2 focus:ring-brand-blue font-mono"
       />
       <Button variant="secondary" size="sm" onClick={handleApply} loading={loading}>
         Apply

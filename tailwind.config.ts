@@ -10,18 +10,18 @@ const config: Config = {
     extend: {
       colors: {
         brand: {
-          blue: '#6CBCE3',
-          'blue-dark': '#3A9FD4',
-          'blue-light': '#EBF6FC',
-          slate: '#AEB4BB',
-          charcoal: '#333333',
-          'light-gray': '#E1E1E1',
-          arctic: '#F5F5F5',
-          bg: '#F8F9FA',
-          surface: '#FFFFFF',
-          border: '#E8EAED',
-          text: '#1a1a2e',
-          muted: '#6b7280',
+          blue: 'rgb(var(--color-blue) / <alpha-value>)',
+          'blue-dark': 'rgb(var(--color-blue-dark) / <alpha-value>)',
+          'blue-light': 'rgb(var(--color-blue-light) / <alpha-value>)',
+          slate: 'rgb(var(--color-slate) / <alpha-value>)',
+          charcoal: 'rgb(var(--color-charcoal) / <alpha-value>)',
+          'light-gray': 'rgb(var(--color-light-gray) / <alpha-value>)',
+          arctic: 'rgb(var(--color-arctic) / <alpha-value>)',
+          bg: 'rgb(var(--color-bg) / <alpha-value>)',
+          surface: 'rgb(var(--color-surface) / <alpha-value>)',
+          border: 'rgb(var(--color-border) / <alpha-value>)',
+          text: 'rgb(var(--color-text) / <alpha-value>)',
+          muted: 'rgb(var(--color-muted) / <alpha-value>)',
         },
       },
       fontFamily: {
@@ -38,12 +38,14 @@ const config: Config = {
         'blue-sm': '0 2px 8px rgba(108,188,227,0.25)',
         'blue': '0 4px 16px rgba(108,188,227,0.35)',
         'blue-lg': '0 8px 24px rgba(108,188,227,0.4)',
-        'inner-border': 'inset 0 0 0 1.5px #E8EAED',
+        'inner-border': 'inset 0 0 0 1.5px rgb(var(--color-border))',
       },
       animation: {
         'fade-in': 'fadeIn 0.2s ease-out',
         'slide-up': 'slideUp 0.3s ease-out',
         'slide-right': 'slideRight 0.3s ease-out',
+        'scan-line': 'scanLine 1.2s ease-in-out',
+        'glow-pulse': 'glowPulse 2s ease-in-out infinite',
       },
       keyframes: {
         fadeIn: {
@@ -57,6 +59,14 @@ const config: Config = {
         slideRight: {
           '0%': { transform: 'translateX(100%)' },
           '100%': { transform: 'translateX(0)' },
+        },
+        scanLine: {
+          '0%': { transform: 'scaleX(0)', opacity: '1' },
+          '100%': { transform: 'scaleX(1)', opacity: '1' },
+        },
+        glowPulse: {
+          '0%, 100%': { opacity: '0.4' },
+          '50%': { opacity: '0.8' },
         },
       },
     },

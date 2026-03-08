@@ -1,10 +1,8 @@
 import { db, orders } from '@/lib/db'
 import { desc, count } from 'drizzle-orm'
-import { formatPrice } from '@/lib/utils'
 import { StatusBadge } from '@/components/ui/Badge'
-import { OrderStatusSelect } from '@/components/admin/OrderStatusSelect'
+import { BulkOrdersTable } from '@/components/admin/BulkOrderStatusSelect'
 import { Pagination } from '@/components/ui/Pagination'
-import Link from 'next/link'
 
 export const dynamic = 'force-dynamic'
 
@@ -29,7 +27,6 @@ export default async function AdminOrdersPage({ searchParams }: Props) {
     offset: (page - 1) * PER_PAGE,
   })
 
-  // Status counts from all orders (separate query for accurate counts)
   const allStatuses = await db
     .select({ status: orders.status, count: count() })
     .from(orders)
@@ -50,7 +47,7 @@ export default async function AdminOrdersPage({ searchParams }: Props) {
         {Object.entries(statusCounts).map(([status, cnt]) => (
           <div
             key={status}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-brand-border rounded-full shadow-card"
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-brand-surface border border-brand-border rounded-full shadow-card"
           >
             <StatusBadge status={status} />
             <span className="text-xs font-semibold text-brand-text">{cnt}</span>
@@ -58,76 +55,8 @@ export default async function AdminOrdersPage({ searchParams }: Props) {
         ))}
       </div>
 
-      <div className="bg-white border border-brand-border rounded-2xl overflow-hidden shadow-card">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-brand-border bg-brand-arctic">
-                {['Order #', 'Customer', 'Items', 'Delivery', 'Total', 'Status', 'Date', 'Actions'].map(
-                  (col) => (
-                    <th
-                      key={col}
-                      className="px-4 py-3 text-left text-xs font-medium text-brand-muted uppercase tracking-wider whitespace-nowrap"
-                    >
-                      {col}
-                    </th>
-                  )
-                )}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-brand-border">
-              {allOrders.map((order) => (
-                <tr key={order.id} className="hover:bg-brand-arctic transition-colors">
-                  <td className="px-4 py-4">
-                    <span className="font-mono text-xs text-brand-blue font-bold">
-                      {order.orderNumber}
-                    </span>
-                  </td>
-                  <td className="px-4 py-4">
-                    <div className="max-w-[160px]">
-                      <p className="text-brand-text truncate text-xs">{order.email}</p>
-                    </div>
-                  </td>
-                  <td className="px-4 py-4 text-brand-muted">{order.items.reduce((sum, i) => sum + i.quantity, 0)}</td>
-                  <td className="px-4 py-4">
-                    <span className="text-xs text-brand-muted">
-                      {order.deliveryMethod.replace('royal_mail_', '').replace(/_/g, ' ')}
-                    </span>
-                  </td>
-                  <td className="px-4 py-4 font-bold text-brand-text">
-                    {formatPrice(order.total)}
-                  </td>
-                  <td className="px-4 py-4">
-                    <OrderStatusSelect orderId={order.id} currentStatus={order.status} />
-                  </td>
-                  <td className="px-4 py-4 text-brand-muted text-xs whitespace-nowrap">
-                    {new Date(order.createdAt).toLocaleDateString('en-GB', {
-                      day: 'numeric',
-                      month: 'short',
-                      year: 'numeric',
-                    })}
-                  </td>
-                  <td className="px-4 py-4">
-                    <Link
-                      href={`/admin/orders/${order.id}`}
-                      className="text-xs text-brand-blue hover:underline font-medium"
-                    >
-                      View
-                    </Link>
-                  </td>
-                </tr>
-              ))}
-
-              {allOrders.length === 0 && (
-                <tr>
-                  <td colSpan={8} className="px-4 py-12 text-center text-brand-muted">
-                    No orders yet.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+      <div className="bg-brand-surface border border-brand-border rounded-2xl overflow-hidden shadow-card">
+        <BulkOrdersTable orders={allOrders} />
       </div>
 
       <Pagination currentPage={page} totalPages={totalPages} basePath="/admin/orders" />

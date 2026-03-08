@@ -63,7 +63,7 @@ export default function MassEmailPage() {
       )}
 
       <form onSubmit={handleSubmit} className="space-y-5">
-        <div className="bg-white border border-brand-border rounded-2xl p-6 shadow-card space-y-4">
+        <div className="bg-brand-surface border border-brand-border rounded-2xl p-6 shadow-card space-y-4">
           <h2 className="text-sm font-bold text-brand-text">Recipients</h2>
           <div className="space-y-2">
             {RECIPIENT_OPTS.map((opt) => (
@@ -82,7 +82,7 @@ export default function MassEmailPage() {
           </div>
         </div>
 
-        <div className="bg-white border border-brand-border rounded-2xl p-6 shadow-card space-y-4">
+        <div className="bg-brand-surface border border-brand-border rounded-2xl p-6 shadow-card space-y-4">
           <h2 className="text-sm font-bold text-brand-text">Content</h2>
           <div>
             <label className="block text-xs font-medium text-brand-muted mb-1.5">Subject *</label>

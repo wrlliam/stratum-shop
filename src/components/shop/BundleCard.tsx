@@ -38,7 +38,7 @@ export function BundleCard({ bundle }: BundleCardProps) {
 
   return (
     <Link href={`/bundles/${bundle.slug}`} className="group block">
-      <div className="overflow-hidden rounded-2xl bg-white border border-brand-border transition-all duration-300 hover:shadow-card-hover hover:border-brand-blue/30">
+      <div className="overflow-hidden rounded-2xl bg-brand-surface border border-brand-border transition-all duration-300 hover:shadow-card-hover hover:border-brand-blue/30">
         {/* Image */}
         <div className="relative aspect-[4/3] overflow-hidden bg-brand-arctic">
           {coverImage ? (
@@ -75,7 +75,7 @@ export function BundleCard({ bundle }: BundleCardProps) {
               </div>
             ))}
             {bundle.bundleProducts.length > 3 && (
-              <div className="w-10 h-10 rounded-lg bg-white border-2 border-white shadow-card flex items-center justify-center text-xs font-bold text-brand-text">
+              <div className="w-10 h-10 rounded-lg bg-brand-surface border-2 border-white shadow-card flex items-center justify-center text-xs font-bold text-brand-text">
                 +{bundle.bundleProducts.length - 3}
               </div>
             )}

@@ -47,7 +47,7 @@ export default function AboutPage() {
                 desc: 'Every print is inspected, cleaned, and packaged with care before shipping.',
               },
             ].map((step) => (
-              <div key={step.title} className="p-4 bg-white border border-brand-border rounded-xl">
+              <div key={step.title} className="p-4 bg-brand-surface border border-brand-border rounded-xl">
                 <div className="mb-3">{step.icon}</div>
                 <h3 className="text-sm font-bold text-brand-text mb-1">{step.title}</h3>
                 <p className="text-xs text-brand-muted leading-relaxed">{step.desc}</p>

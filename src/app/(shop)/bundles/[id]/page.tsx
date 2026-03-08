@@ -85,7 +85,7 @@ export default async function BundlePage({ params }: Props) {
             )}
 
             {/* Pricing */}
-            <div className="p-6 bg-white border border-brand-border rounded-2xl mb-6 shadow-card">
+            <div className="p-6 bg-brand-surface border border-brand-border rounded-2xl mb-6 shadow-card">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm text-brand-muted">Original price</span>
                 <span className="text-brand-muted line-through">{formatPrice(originalTotal)}</span>

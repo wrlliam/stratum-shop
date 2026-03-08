@@ -23,25 +23,74 @@ interface BatchData {
   product: { id: string; name: string }
 }
 
+interface OrderData {
+  id: string
+  status: string
+  totalAmount: number
+  createdAt: string
+  user?: { name: string; email: string } | null
+}
+
 export default function ScanPage() {
   const searchParams = useSearchParams()
   const [product, setProduct] = useState<ProductData | null>(null)
   const [batch, setBatch] = useState<BatchData | null>(null)
+  const [order, setOrder] = useState<OrderData | null>(null)
   const [loading, setLoading] = useState(false)
   const [completingBatch, setCompletingBatch] = useState(false)
+  const [markingPrepared, setMarkingPrepared] = useState(false)
   const textInputRef = useRef<HTMLInputElement>(null)
 
   // Handle initial URL params
   useEffect(() => {
     const productId = searchParams.get('product')
     const batchId = searchParams.get('batch')
+    const orderId = searchParams.get('order')
     if (productId) loadProduct(productId)
     if (batchId) loadBatch(batchId)
+    if (orderId) loadOrder(orderId)
   }, [searchParams])
+
+  const loadOrder = async (id: string) => {
+    setLoading(true)
+    setProduct(null)
+    setBatch(null)
+    try {
+      const res = await fetch(`/api/orders/${id}`)
+      if (!res.ok) throw new Error('Order not found')
+      const data = await res.json()
+      setOrder(data)
+    } catch {
+      toast.error('Order not found')
+      setOrder(null)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const markOrderPrepared = async () => {
+    if (!order) return
+    setMarkingPrepared(true)
+    try {
+      const res = await fetch(`/api/orders/${order.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'prepared' }),
+      })
+      if (!res.ok) throw new Error()
+      toast.success('Order marked as prepared')
+      setOrder({ ...order, status: 'prepared' })
+    } catch {
+      toast.error('Failed to update order status')
+    } finally {
+      setMarkingPrepared(false)
+    }
+  }
 
   const loadProduct = async (id: string) => {
     setLoading(true)
     setBatch(null)
+    setOrder(null)
     try {
       const res = await fetch(`/api/products/${id}`)
       if (!res.ok) throw new Error('Product not found')
@@ -58,6 +107,7 @@ export default function ScanPage() {
   const loadBatch = async (id: string) => {
     setLoading(true)
     setProduct(null)
+    setOrder(null)
     try {
       const res = await fetch(`/api/inventory/batches/${id}`)
       if (!res.ok) throw new Error('Batch not found')
@@ -93,24 +143,34 @@ export default function ScanPage() {
     parseScanInput(text)
   }
 
-  const parseScanInput = (text: string) => {
+  const parseScanInput = async (text: string) => {
     try {
       const url = new URL(text)
       const productId = url.searchParams.get('product')
       const batchId = url.searchParams.get('batch')
-      if (productId) {
-        loadProduct(productId)
-        return
-      }
-      if (batchId) {
-        loadBatch(batchId)
-        return
-      }
+      const orderId = url.searchParams.get('order')
+      if (productId) { loadProduct(productId); return }
+      if (batchId) { loadBatch(batchId); return }
+      if (orderId) { loadOrder(orderId); return }
     } catch {
-      // Not a URL - try as raw UUID
+      // Not a URL - try as raw UUID: attempt order lookup first, then product
       const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
       if (uuidRegex.test(text.trim())) {
-        loadProduct(text.trim())
+        const id = text.trim()
+        // Try order first (order labels are more commonly scanned in inventory context)
+        setLoading(true)
+        const orderRes = await fetch(`/api/orders/${id}`)
+        if (orderRes.ok) {
+          const data = await orderRes.json()
+          setOrder(data)
+          setProduct(null)
+          setBatch(null)
+          setLoading(false)
+          return
+        }
+        // Fall back to product
+        setLoading(false)
+        loadProduct(id)
         return
       }
     }
@@ -151,13 +211,13 @@ export default function ScanPage() {
       {/* Scanner modes */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         {/* Camera */}
-        <div className="bg-white border border-brand-border rounded-2xl p-6 shadow-card">
+        <div className="bg-brand-surface border border-brand-border rounded-2xl p-6 shadow-card">
           <h2 className="text-sm font-bold text-brand-text mb-4">Camera Scanner</h2>
           <QRScanner onScan={handleScan} />
         </div>
 
         {/* Text input (USB scanner / paste) */}
-        <div className="bg-white border border-brand-border rounded-2xl p-6 shadow-card">
+        <div className="bg-brand-surface border border-brand-border rounded-2xl p-6 shadow-card">
           <h2 className="text-sm font-bold text-brand-text mb-4">USB Scanner / Paste</h2>
           <p className="text-xs text-brand-muted mb-3">
             Focus this field and scan with a USB barcode scanner, or paste a QR URL.
@@ -168,7 +228,7 @@ export default function ScanPage() {
             placeholder="Scan or paste URL here..."
             onKeyDown={handleTextInput}
             onPaste={handlePaste}
-            className="w-full px-3 py-2.5 text-sm border border-brand-border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue"
+            className="w-full px-3 py-2.5 text-sm border border-brand-border rounded-lg bg-brand-surface focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue"
             autoFocus
           />
         </div>
@@ -176,7 +236,7 @@ export default function ScanPage() {
 
       {/* Loading */}
       {loading && (
-        <div className="bg-white border border-brand-border rounded-2xl p-6 shadow-card text-center">
+        <div className="bg-brand-surface border border-brand-border rounded-2xl p-6 shadow-card text-center">
           <div className="animate-spin w-6 h-6 border-2 border-brand-blue border-t-transparent rounded-full mx-auto" />
           <p className="text-sm text-brand-muted mt-2">Loading...</p>
         </div>
@@ -184,7 +244,7 @@ export default function ScanPage() {
 
       {/* Product result */}
       {product && !loading && (
-        <div className="bg-white border border-brand-border rounded-2xl p-6 shadow-card">
+        <div className="bg-brand-surface border border-brand-border rounded-2xl p-6 shadow-card">
           <h2 className="text-sm font-bold text-brand-text mb-4">Product Found</h2>
           <StockAdjustForm
             productId={product.id}
@@ -195,9 +255,40 @@ export default function ScanPage() {
         </div>
       )}
 
+      {/* Order result */}
+      {order && !loading && (
+        <div className="bg-brand-surface border border-brand-border rounded-2xl p-6 shadow-card space-y-3">
+          <h2 className="text-sm font-bold text-brand-text">Order Found</h2>
+          <div className="space-y-1 text-sm">
+            <p><span className="text-brand-muted">Order ID:</span> <span className="font-mono text-xs">{order.id}</span></p>
+            {order.user && (
+              <p><span className="text-brand-muted">Customer:</span> <span className="font-medium text-brand-text">{order.user.name} ({order.user.email})</span></p>
+            )}
+            <p><span className="text-brand-muted">Status:</span>{' '}
+              <span className={`font-medium capitalize ${order.status === 'prepared' ? 'text-amber-600' : order.status === 'shipped' || order.status === 'delivered' ? 'text-green-600' : 'text-brand-text'}`}>
+                {order.status}
+              </span>
+            </p>
+          </div>
+          {order.status === 'processing' && (
+            <Button
+              variant="primary"
+              size="sm"
+              loading={markingPrepared}
+              onClick={markOrderPrepared}
+            >
+              Mark as Prepared
+            </Button>
+          )}
+          {order.status === 'prepared' && (
+            <p className="text-sm text-amber-600 font-medium">Order is prepared and ready to ship.</p>
+          )}
+        </div>
+      )}
+
       {/* Batch result */}
       {batch && !loading && (
-        <div className="bg-white border border-brand-border rounded-2xl p-6 shadow-card space-y-3">
+        <div className="bg-brand-surface border border-brand-border rounded-2xl p-6 shadow-card space-y-3">
           <h2 className="text-sm font-bold text-brand-text">Batch Found</h2>
           <div className="space-y-1 text-sm">
             <p><span className="text-brand-muted">Product:</span> <span className="font-medium text-brand-text">{batch.product.name}</span></p>

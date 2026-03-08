@@ -2,6 +2,8 @@ import Link from 'next/link'
 import { db, products, inventoryLog, productImages } from '@/lib/db'
 import { desc, asc } from 'drizzle-orm'
 import { QRCodeDisplay } from '@/components/admin/QRCodeDisplay'
+import { InventoryStatsCards } from '@/components/admin/InventoryStatsCards'
+import { formatPrice } from '@/lib/utils'
 
 export default async function InventoryDashboardPage() {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
@@ -16,6 +18,11 @@ export default async function InventoryDashboardPage() {
     orderBy: desc(inventoryLog.createdAt),
     limit: 20,
   })
+
+  const totalSKUs = allProducts.length
+  const totalUnits = allProducts.reduce((s, p) => s + p.stock, 0)
+  const estimatedValue = allProducts.reduce((s, p) => s + p.stock * p.price, 0)
+  const topByStock = [...allProducts].sort((a, b) => b.stock - a.stock).slice(0, 10)
 
   return (
     <div className="p-8">
@@ -43,8 +50,27 @@ export default async function InventoryDashboardPage() {
         </div>
       </div>
 
+      {/* Stat Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+        <div className="bg-brand-surface border border-brand-border rounded-2xl p-5 shadow-card">
+          <p className="text-xs font-semibold text-brand-muted uppercase tracking-widest mb-1">Total SKUs</p>
+          <p className="text-3xl font-bold text-brand-text">{totalSKUs}</p>
+        </div>
+        <div className="bg-brand-surface border border-brand-border rounded-2xl p-5 shadow-card">
+          <p className="text-xs font-semibold text-brand-muted uppercase tracking-widest mb-1">Units in Stock</p>
+          <p className="text-3xl font-bold text-brand-text">{totalUnits}</p>
+        </div>
+        <div className="bg-brand-surface border border-brand-border rounded-2xl p-5 shadow-card">
+          <p className="text-xs font-semibold text-brand-muted uppercase tracking-widest mb-1">Inventory Value</p>
+          <p className="text-3xl font-bold text-brand-text">{formatPrice(estimatedValue)}</p>
+        </div>
+      </div>
+
+      {/* Top products bar chart */}
+      <InventoryStatsCards topByStock={topByStock} />
+
       {/* Product Stock Table */}
-      <div className="bg-white border border-brand-border rounded-2xl shadow-card mb-8">
+      <div className="bg-brand-surface border border-brand-border rounded-2xl shadow-card mb-8">
         <div className="p-4 border-b border-brand-border">
           <h2 className="text-sm font-bold text-brand-text">Product Stock</h2>
         </div>
@@ -86,7 +112,7 @@ export default async function InventoryDashboardPage() {
       </div>
 
       {/* Recent Inventory Log */}
-      <div className="bg-white border border-brand-border rounded-2xl shadow-card">
+      <div className="bg-brand-surface border border-brand-border rounded-2xl shadow-card">
         <div className="p-4 border-b border-brand-border">
           <h2 className="text-sm font-bold text-brand-text">Recent Activity</h2>
         </div>

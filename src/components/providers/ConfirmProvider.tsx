@@ -58,7 +58,7 @@ export function ConfirmProvider({ children }: { children: React.ReactNode }) {
 
             {/* Dialog */}
             <motion.div
-              className="relative bg-white rounded-2xl shadow-xl border border-brand-border w-full max-w-sm p-6"
+              className="relative bg-brand-surface rounded-2xl shadow-xl border border-brand-border w-full max-w-sm p-6"
               initial={{ scale: 0.92, opacity: 0, y: 8 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.92, opacity: 0, y: 8 }}

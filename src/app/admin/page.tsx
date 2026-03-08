@@ -189,7 +189,7 @@ export default function AdminDashboard() {
         {statCards.map((card) => (
           <div
             key={card.label}
-            className="bg-white border border-brand-border rounded-2xl p-5 shadow-card"
+            className="bg-brand-surface border border-brand-border rounded-2xl p-5 shadow-card"
           >
             <div className="flex items-center justify-between mb-4">
               <span className="text-xs font-medium text-brand-muted uppercase tracking-wider">
@@ -230,7 +230,7 @@ export default function AdminDashboard() {
           </div>
 
           {/* Recent Orders */}
-          <div className="bg-white border border-brand-border rounded-2xl p-6 shadow-card">
+          <div className="bg-brand-surface border border-brand-border rounded-2xl p-6 shadow-card">
             <h3 className="text-sm font-semibold text-brand-text mb-4">Recent Orders</h3>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">

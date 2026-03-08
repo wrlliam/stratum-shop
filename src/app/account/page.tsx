@@ -13,7 +13,9 @@ export default function AccountPage() {
   const router = useRouter()
   const { data: session, isPending } = useSession()
   const [name, setName] = useState('')
+  const [marketingEmails, setMarketingEmails] = useState(true)
   const [saving, setSaving] = useState(false)
+  const [savingPrefs, setSavingPrefs] = useState(false)
 
   useEffect(() => {
     if (!isPending && !session?.user) {
@@ -21,6 +23,8 @@ export default function AccountPage() {
     }
     if (session?.user) {
       setName(session.user.name || '')
+      // @ts-expect-error — custom field
+      setMarketingEmails(session.user.marketingEmails ?? true)
     }
   }, [session, isPending, router])
 
@@ -58,7 +62,7 @@ export default function AccountPage() {
 
         <div className="space-y-6">
           {/* Profile */}
-          <div className="bg-white border border-brand-border rounded-2xl p-6 shadow-card">
+          <div className="bg-brand-surface border border-brand-border rounded-2xl p-6 shadow-card">
             <div className="flex items-center gap-3 mb-6">
               <div className="w-12 h-12 rounded-full bg-brand-blue-light border border-brand-blue/30 flex items-center justify-center">
                 <PersonIcon className="w-5 h-5 text-brand-blue" />
@@ -90,8 +94,47 @@ export default function AccountPage() {
             </form>
           </div>
 
+          {/* Email Preferences */}
+          <div className="bg-brand-surface border border-brand-border rounded-2xl p-6 shadow-card">
+            <h2 className="text-sm font-bold text-brand-text mb-4">Email Preferences</h2>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-brand-text">Marketing emails</p>
+                <p className="text-xs text-brand-muted mt-0.5">Product updates and offers</p>
+              </div>
+              <button
+                onClick={async () => {
+                  const next = !marketingEmails
+                  setSavingPrefs(true)
+                  try {
+                    const res = await fetch('/api/account/preferences', {
+                      method: 'PATCH',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ marketingEmails: next }),
+                    })
+                    if (!res.ok) throw new Error()
+                    setMarketingEmails(next)
+                    toast.success(next ? 'Subscribed to marketing emails' : 'Unsubscribed from marketing emails')
+                  } catch {
+                    toast.error('Failed to update preference')
+                  } finally {
+                    setSavingPrefs(false)
+                  }
+                }}
+                disabled={savingPrefs}
+                className={`relative w-10 h-5 rounded-full transition-colors duration-200 disabled:opacity-50 ${
+                  marketingEmails ? 'bg-brand-blue' : 'bg-brand-arctic border border-brand-border'
+                }`}
+              >
+                <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-brand-surface shadow transition-transform duration-200 ${
+                  marketingEmails ? 'translate-x-5' : 'translate-x-0.5'
+                }`} />
+              </button>
+            </div>
+          </div>
+
           {/* Quick links */}
-          <div className="bg-white border border-brand-border rounded-2xl overflow-hidden shadow-card">
+          <div className="bg-brand-surface border border-brand-border rounded-2xl overflow-hidden shadow-card">
             <Link
               href="/orders"
               className="flex items-center gap-3 px-6 py-4 hover:bg-brand-arctic transition-colors"

@@ -17,6 +17,7 @@ export default function LabelsPage() {
   // Map of product id → quantity (0 = not selected)
   const [quantities, setQuantities] = useState<Record<string, number>>({})
   const [loading, setLoading] = useState(true)
+  const [labelStyle, setLabelStyle] = useState<'qr' | 'barcode' | 'both'>('qr')
 
   useEffect(() => {
     fetch('/api/products?admin=true&limit=100')
@@ -81,7 +82,22 @@ export default function LabelsPage() {
           >
             <ArrowLeftIcon className="w-5 h-5" />
           </Link>
-          <h1 className="text-xl font-bold text-brand-text">Print QR Labels</h1>
+          <h1 className="text-xl font-bold text-brand-text">Print Labels</h1>
+          <div className="flex items-center gap-1 ml-4 bg-brand-arctic border border-brand-border rounded-lg p-1">
+            {(['qr', 'barcode', 'both'] as const).map((style) => (
+              <button
+                key={style}
+                onClick={() => setLabelStyle(style)}
+                className={`px-3 py-1 rounded text-xs font-medium transition-colors capitalize ${
+                  labelStyle === style
+                    ? 'bg-brand-surface text-brand-text shadow-sm'
+                    : 'text-brand-muted hover:text-brand-text'
+                }`}
+              >
+                {style === 'both' ? 'QR + Barcode' : style.toUpperCase()}
+              </button>
+            ))}
+          </div>
           <button
             onClick={() => window.print()}
             disabled={totalLabels === 0}
@@ -92,7 +108,7 @@ export default function LabelsPage() {
         </div>
 
         {/* Product selector with quantity inputs */}
-        <div className="bg-white border border-brand-border rounded-2xl p-6 shadow-card mb-8">
+        <div className="bg-brand-surface border border-brand-border rounded-2xl p-6 shadow-card mb-8">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-sm font-bold text-brand-text">Select Products &amp; Quantities</h2>
             <button
@@ -160,6 +176,7 @@ export default function LabelsPage() {
               <QRCodeDisplay
                 value={`${appUrl}/admin/inventory/scan?product=${item.id}`}
                 size={120}
+                showBarcode={labelStyle === 'barcode' || labelStyle === 'both'}
               />
               <p className="text-sm font-bold text-brand-text print:text-black">{item.name}</p>
               <p className="text-xs text-brand-muted print:text-gray-500 font-mono">{item.id.slice(0, 8)}</p>
