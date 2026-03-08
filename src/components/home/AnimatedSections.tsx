@@ -5,7 +5,6 @@ import * as motion from 'motion/react-client'
 import { ProductCard } from '@/components/shop/ProductCard'
 import { BundleCard } from '@/components/shop/BundleCard'
 import { ScrollReveal3D } from '@/components/ui/ScrollReveal3D'
-import { TiltCard } from '@/components/ui/TiltCard'
 import type { BundleWithProducts, ProductWithImages } from '@/types'
 
 // ─── Value Props Strip ──────────────────────────────────────────────────────────
@@ -209,9 +208,12 @@ export function MaterialsSection() {
           </p>
         </motion.div>
 
-        <TiltCard
-          className="bg-brand-surface border border-brand-border rounded-lg p-8 hover:[box-shadow:0_0_0_1px_rgb(108_188_227/0.4)] hover:border-brand-blue/40 transition-colors duration-300"
-          maxTilt={5}
+        <motion.div
+          className="bg-brand-surface border border-brand-border rounded-2xl p-8 hover:border-brand-blue/30 hover:shadow-card-hover transition-all duration-300"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-30px' }}
+          transition={{ duration: 0.45 }}
         >
           <div className="flex items-center gap-4 mb-6">
             <div
@@ -231,7 +233,7 @@ export function MaterialsSection() {
               </div>
             ))}
           </div>
-        </TiltCard>
+        </motion.div>
       </div>
     </section>
   )
