@@ -47,7 +47,7 @@ export function RecommendationStatusSelect({ recId, currentStatus }: Props) {
       </button>
 
       {open && (
-        <div className="absolute right-0 mt-1 w-32 bg-white border border-brand-border rounded-xl shadow-card-lg overflow-hidden z-20 animate-fade-in">
+        <div className="absolute right-0 mt-1 w-32 bg-brand-surface border border-brand-border rounded-xl shadow-card-lg overflow-hidden z-20 animate-fade-in">
           {STATUS_OPTIONS.map((s) => (
             <button
               key={s}

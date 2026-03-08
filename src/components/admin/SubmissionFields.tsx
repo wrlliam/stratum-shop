@@ -43,7 +43,7 @@ export function SubmissionFields({ fields, submission }: Props) {
                   download
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold bg-brand-arctic border border-brand-border rounded-lg text-brand-text hover:bg-white hover:border-brand-slate transition-colors"
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold bg-brand-arctic border border-brand-border rounded-lg text-brand-text hover:bg-brand-surface hover:border-brand-slate transition-colors"
                 >
                   <DownloadIcon className="w-3 h-3" />
                   Download

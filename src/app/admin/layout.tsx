@@ -19,7 +19,7 @@ export default async function AdminLayout({
   }
 
   return (
-    <div data-theme="light" className="min-h-screen flex bg-brand-bg">
+    <div className="min-h-screen flex bg-brand-bg">
       <AdminSidebar />
       <main className="flex-1 h-screen overflow-auto">{children}</main>
     </div>

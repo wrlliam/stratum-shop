@@ -63,7 +63,7 @@ export function BatchForm({ products, onCreated }: BatchFormProps) {
         <select
           value={productId}
           onChange={(e) => setProductId(e.target.value)}
-          className="w-full px-3 py-2 text-sm border border-brand-border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue"
+          className="w-full px-3 py-2 text-sm border border-brand-border rounded-lg bg-brand-surface focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue"
         >
           {products.map((p) => (
             <option key={p.id} value={p.id}>
@@ -82,7 +82,7 @@ export function BatchForm({ products, onCreated }: BatchFormProps) {
           placeholder="10"
           value={quantity}
           onChange={(e) => setQuantity(e.target.value)}
-          className="w-full px-3 py-2 text-sm border border-brand-border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue"
+          className="w-full px-3 py-2 text-sm border border-brand-border rounded-lg bg-brand-surface focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue"
         />
       </div>
       <div>
@@ -94,7 +94,7 @@ export function BatchForm({ products, onCreated }: BatchFormProps) {
           placeholder="Optional notes..."
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
-          className="w-full px-3 py-2 text-sm border border-brand-border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue"
+          className="w-full px-3 py-2 text-sm border border-brand-border rounded-lg bg-brand-surface focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue"
         />
       </div>
       <Button type="submit" variant="primary" size="sm" loading={loading}>

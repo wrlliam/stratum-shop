@@ -8,6 +8,7 @@ import { renderAsync } from '@react-email/components'
 import { resend, FROM_EMAIL, APP_URL } from '@/lib/resend'
 import { OrderShippedEmail } from '@/lib/email/order-shipped'
 import { OrderStatusUpdateEmail } from '@/lib/email/order-status-update'
+import { logAuditEvent } from '@/lib/audit'
 
 export async function GET(
   _request: NextRequest,
@@ -52,7 +53,7 @@ export async function PATCH(
   try {
     const body = await request.json()
     const updateSchema = z.object({
-      status: z.enum(['pending', 'paid', 'processing', 'shipped', 'delivered', 'cancelled', 'refunded']).optional(),
+      status: z.enum(['pending', 'paid', 'processing', 'prepared', 'shipped', 'delivered', 'cancelled', 'refunded']).optional(),
       trackingNumber: z.string().max(200).nullable().optional(),
       notes: z.string().max(2000).nullable().optional(),
     })
@@ -122,6 +123,16 @@ export async function PATCH(
         console.error('Failed to send status update email:', emailErr)
         // Don't fail the status update if email fails
       }
+    }
+
+    if (data.status && data.status !== previousStatus) {
+      await logAuditEvent({
+        adminId: session.user.id,
+        action: 'order.status_change',
+        entityType: 'order',
+        entityId: id,
+        metadata: { from: previousStatus, to: data.status },
+      })
     }
 
     return NextResponse.json(updated)

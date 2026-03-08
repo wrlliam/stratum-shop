@@ -5,17 +5,7 @@ import { auth } from '@/lib/auth'
 import { headers } from 'next/headers'
 import { createSlug } from '@/lib/utils'
 import { z } from 'zod'
-
-const optionChoiceSchema = z.object({
-  label: z.string().min(1),
-  priceModifier: z.number().int().default(0),
-})
-
-const optionGroupSchema = z.object({
-  name: z.string().min(1),
-  type: z.enum(['select', 'boolean', 'text']).default('select'),
-  choices: z.array(optionChoiceSchema).min(1),
-})
+import { optionGroupSchema, customOrderFieldSchema } from './_schemas'
 
 const createProductSchema = z.object({
   name: z.string().min(1),
@@ -32,6 +22,18 @@ const createProductSchema = z.object({
   color: z.string().optional(),
   printTime: z.number().int().optional(),
   sku: z.string().optional(),
+  lowStockThreshold: z.number().int().min(0).optional(),
+  lowStockAlerts: z.boolean().default(false),
+  filamentCostPence: z.number().int().min(0).optional(),
+  estimatedMinutes: z.number().int().min(0).optional(),
+  productType: z.enum(['physical', 'digital', '3d_model', 'custom_order']).default('physical'),
+  modelUrl: z.string().optional(),
+  digitalFileUrl: z.string().optional(),
+  filamentId: z.string().uuid().optional(),
+  digitalFilePath: z.string().optional(),
+  saleEndsAt: z.string().optional(),
+  saleStopAtStock: z.number().int().min(0).optional(),
+  customOrderFields: z.array(customOrderFieldSchema).optional(),
   images: z.array(z.object({ url: z.string(), alt: z.string().optional() })).default([]),
   optionGroups: z.array(optionGroupSchema).default([]),
 })
@@ -165,6 +167,18 @@ export async function POST(request: NextRequest) {
         color: data.color,
         printTime: data.printTime,
         sku: data.sku,
+        lowStockThreshold: data.lowStockThreshold,
+        lowStockAlerts: data.lowStockAlerts,
+        filamentCostPence: data.filamentCostPence,
+        estimatedMinutes: data.estimatedMinutes,
+        productType: data.productType,
+        modelUrl: data.modelUrl,
+        digitalFileUrl: data.digitalFileUrl,
+        filamentId: data.filamentId,
+        digitalFilePath: data.digitalFilePath,
+        saleEndsAt: data.saleEndsAt ? new Date(data.saleEndsAt) : undefined,
+        saleStopAtStock: data.saleStopAtStock,
+        customOrderFields: data.customOrderFields,
       })
       .returning()
 

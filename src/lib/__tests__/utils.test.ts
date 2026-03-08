@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { formatPrice, createSlug, generateOrderNumber, truncate, pluralize, debounce } from '../utils'
+import { describe, it, expect, vi } from 'vitest'
+import { formatPrice, createSlug, generateOrderNumber, truncate, pluralize, debounce, isSaleActive } from '../utils'
 
 describe('formatPrice', () => {
   it('formats pence to GBP currency string', () => {
@@ -86,41 +86,82 @@ describe('pluralize', () => {
   })
 })
 
+describe('isSaleActive', () => {
+  const base = { price: 1000, stock: 10 }
+
+  it('returns false when compareAtPrice is null', () => {
+    expect(isSaleActive({ ...base, compareAtPrice: null })).toBe(false)
+  })
+
+  it('returns false when compareAtPrice is undefined', () => {
+    expect(isSaleActive({ ...base, compareAtPrice: undefined })).toBe(false)
+  })
+
+  it('returns false when compareAtPrice equals price', () => {
+    expect(isSaleActive({ ...base, compareAtPrice: 1000 })).toBe(false)
+  })
+
+  it('returns false when compareAtPrice is less than price', () => {
+    expect(isSaleActive({ ...base, compareAtPrice: 800 })).toBe(false)
+  })
+
+  it('returns true when compareAtPrice > price and no expiry or threshold', () => {
+    expect(isSaleActive({ ...base, compareAtPrice: 1500 })).toBe(true)
+  })
+
+  it('returns false when saleEndsAt is in the past', () => {
+    const past = new Date(Date.now() - 1000 * 60 * 60).toISOString()
+    expect(isSaleActive({ ...base, compareAtPrice: 1500, saleEndsAt: past })).toBe(false)
+  })
+
+  it('returns true when saleEndsAt is in the future', () => {
+    const future = new Date(Date.now() + 1000 * 60 * 60 * 24).toISOString()
+    expect(isSaleActive({ ...base, compareAtPrice: 1500, saleEndsAt: future })).toBe(true)
+  })
+
+  it('returns false when stock <= saleStopAtStock', () => {
+    expect(isSaleActive({ ...base, compareAtPrice: 1500, saleStopAtStock: 10 })).toBe(false)
+  })
+
+  it('returns false when stock is below saleStopAtStock', () => {
+    expect(isSaleActive({ ...base, stock: 5, compareAtPrice: 1500, saleStopAtStock: 10 })).toBe(false)
+  })
+
+  it('returns true when stock > saleStopAtStock', () => {
+    expect(isSaleActive({ ...base, stock: 11, compareAtPrice: 1500, saleStopAtStock: 10 })).toBe(true)
+  })
+})
+
+const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+
 describe('debounce', () => {
-  beforeEach(() => {
-    vi.useFakeTimers()
-  })
-
-  afterEach(() => {
-    vi.useRealTimers()
-  })
-
-  it('delays function execution', () => {
+  it('delays function execution', async () => {
     const fn = vi.fn()
-    const debounced = debounce(fn, 100)
+    const debounced = debounce(fn, 30)
     debounced()
     expect(fn).not.toHaveBeenCalled()
-    vi.advanceTimersByTime(100)
+    await wait(40)
     expect(fn).toHaveBeenCalledOnce()
   })
 
-  it('resets timer on subsequent calls', () => {
+  it('resets timer on subsequent calls', async () => {
     const fn = vi.fn()
-    const debounced = debounce(fn, 100)
+    const debounced = debounce(fn, 50)
     debounced()
-    vi.advanceTimersByTime(50)
+    await wait(20)
     debounced()
-    vi.advanceTimersByTime(50)
+    await wait(20)
+    // Still within debounce window — should not have fired
     expect(fn).not.toHaveBeenCalled()
-    vi.advanceTimersByTime(50)
+    await wait(40)
     expect(fn).toHaveBeenCalledOnce()
   })
 
-  it('passes arguments to the original function', () => {
+  it('passes arguments to the original function', async () => {
     const fn = vi.fn()
-    const debounced = debounce(fn, 100)
+    const debounced = debounce(fn, 30)
     debounced('a', 'b')
-    vi.advanceTimersByTime(100)
+    await wait(40)
     expect(fn).toHaveBeenCalledWith('a', 'b')
   })
 })

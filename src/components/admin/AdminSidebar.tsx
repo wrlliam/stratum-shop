@@ -151,7 +151,7 @@ function NavGroup({ group }: { group: NavGroup }) {
 
 export function AdminSidebar() {
   return (
-    <aside className="w-56 h-screen flex-shrink-0 border-r border-brand-border bg-white flex flex-col">
+    <aside className="w-56 h-screen flex-shrink-0 border-r border-brand-border bg-brand-surface flex flex-col">
       {/* Logo */}
       <div className="p-4 border-b border-brand-border">
         <Link href="/admin" className="flex items-center gap-2.5">

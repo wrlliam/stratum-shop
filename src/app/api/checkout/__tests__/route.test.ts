@@ -61,6 +61,10 @@ vi.mock('@/lib/db', () => ({
         findFirst: (...args: unknown[]) => mockCouponFindFirst(...args),
       },
     },
+    select: vi.fn(() => ({
+      from: vi.fn().mockReturnThis(),
+      where: vi.fn().mockResolvedValue([]),
+    })),
     insert: vi.fn(() => ({
       values: (...args: unknown[]) => {
         mockInsertValues(...args)
@@ -83,6 +87,7 @@ vi.mock('@/lib/db', () => ({
   orders: { id: 'id' },
   orderItems: {},
   coupons: { id: 'id', code: 'code', usedCount: 'usedCount' },
+  couponProducts: { couponId: 'couponId', productId: 'productId' },
   productOptionGroups: { order: 'order' },
   productOptionChoices: { order: 'order' },
 }))

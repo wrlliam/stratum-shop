@@ -2,6 +2,16 @@ import { describe, it, expect, beforeEach } from 'vitest'
 import { renderHook, act } from '@testing-library/react'
 import { useRecentlyViewed } from '../useRecentlyViewed'
 
+// Bun's test runner doesn't provide jsdom globals — polyfill localStorage
+const store: Record<string, string> = {}
+const localStorageMock = {
+  getItem: (k: string) => store[k] ?? null,
+  setItem: (k: string, v: string) => { store[k] = v },
+  removeItem: (k: string) => { delete store[k] },
+  clear: () => { Object.keys(store).forEach((k) => delete store[k]) },
+}
+Object.defineProperty(globalThis, 'localStorage', { value: localStorageMock, writable: true })
+
 describe('useRecentlyViewed', () => {
   beforeEach(() => {
     localStorage.clear()

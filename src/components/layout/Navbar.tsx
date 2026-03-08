@@ -19,6 +19,7 @@ import { useSession, signOut } from '@/lib/auth-client'
 import { cn } from '@/lib/utils'
 import { formatPrice } from '@/lib/utils'
 import { AnnouncementBanner } from '@/components/layout/AnnouncementBanner'
+import { ThemeToggle } from '@/components/ui/ThemeToggle'
 
 const navLinks = [
   { href: '/products', label: 'Shop' },
@@ -251,6 +252,9 @@ export function Navbar() {
               )}
             </div>
 
+            {/* Theme toggle */}
+            <ThemeToggle />
+
             {/* Cart */}
             <button
               onClick={toggleCart}
@@ -326,7 +330,7 @@ export function Navbar() {
                         signOut()
                         setUserMenuOpen(false)
                       }}
-                      className="w-full flex items-center gap-2.5 px-4 py-3 text-sm text-brand-muted hover:text-red-400 hover:bg-red-900/20 transition-colors"
+                      className="w-full flex items-center gap-2.5 px-4 py-3 text-sm text-brand-muted hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950 dark:hover:text-red-400 transition-colors"
                     >
                       <ExitIcon className="w-4 h-4" />
                       Sign out
@@ -409,7 +413,7 @@ export function Navbar() {
                   )}
                   <button
                     onClick={() => signOut()}
-                    className="w-full flex items-center gap-2 px-4 py-3 rounded-xl text-sm text-brand-muted hover:text-red-400 hover:bg-red-900/20 transition-all"
+                    className="w-full flex items-center gap-2 px-4 py-3 rounded-xl text-sm text-brand-muted hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950 dark:hover:text-red-400 transition-all"
                   >
                     <ExitIcon className="w-4 h-4" />
                     Sign out

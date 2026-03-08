@@ -1,17 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { db, coupons } from '@/lib/db'
-import { eq } from 'drizzle-orm'
+import { db, coupons, orders } from '@/lib/db'
+import { eq, and, count, sum } from 'drizzle-orm'
 import { z } from 'zod'
+import { auth } from '@/lib/auth'
+import { headers } from 'next/headers'
+import { evaluateConditions } from '@/lib/coupon-conditions'
+import type { CouponCondition } from '@/lib/coupon-conditions'
 
 const validateSchema = z.object({
   code: z.string().min(1),
   subtotal: z.number().int().positive(),
+  itemCount: z.number().int().min(0).optional(),
+  productIds: z.array(z.string()).optional(),
 })
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { code, subtotal } = validateSchema.parse(body)
+    const { code, subtotal, itemCount, productIds } = validateSchema.parse(body)
 
     const coupon = await db.query.coupons.findFirst({
       where: eq(coupons.code, code.toUpperCase().trim()),
@@ -39,6 +45,38 @@ export async function POST(request: NextRequest) {
         { error: `Minimum order amount of £${minAmount} required` },
         { status: 400 }
       )
+    }
+
+    // Evaluate conditions if present
+    if (coupon.conditions && Array.isArray(coupon.conditions) && coupon.conditions.length > 0) {
+      const session = await auth.api.getSession({ headers: await headers() })
+      let accountCtx: { orderCount: number; totalSpent: number; createdAtDays: number } | undefined
+
+      if (session?.user) {
+        const paidWhere = and(eq(orders.userId, session.user.id), eq(orders.status, 'paid'))
+        const [[orderCountResult], [totalSpentResult]] = await Promise.all([
+          db.select({ count: count() }).from(orders).where(paidWhere),
+          db.select({ total: sum(orders.total) }).from(orders).where(paidWhere),
+        ])
+
+        const createdAt = new Date(session.user.createdAt)
+        const createdAtDays = Math.floor((Date.now() - createdAt.getTime()) / (1000 * 60 * 60 * 24))
+
+        accountCtx = {
+          orderCount: Number(orderCountResult.count),
+          totalSpent: Number(totalSpentResult.total ?? 0),
+          createdAtDays,
+        }
+      }
+
+      const result = evaluateConditions(coupon.conditions as CouponCondition[], {
+        account: accountCtx,
+        cart: { itemCount: itemCount ?? 0, productIds: productIds ?? [] },
+      })
+
+      if (!result.valid) {
+        return NextResponse.json({ error: 'This coupon is not eligible for your account or cart' }, { status: 400 })
+      }
     }
 
     let discountAmount: number

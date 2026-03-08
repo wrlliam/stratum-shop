@@ -45,6 +45,11 @@ vi.mock('@/lib/db', () => ({
   },
   orders: { id: 'id', status: 'status', userId: 'userId', createdAt: 'createdAt', email: 'email' },
   orderItems: {},
+  auditLog: {},
+}))
+
+vi.mock('@/lib/audit', () => ({
+  logAuditEvent: vi.fn().mockResolvedValue(undefined),
 }))
 
 // Mock email dependencies

@@ -5,6 +5,7 @@ import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
 import { CartProvider } from '@/components/providers/CartProvider'
 import { ConfirmProvider } from '@/components/providers/ConfirmProvider'
+import { ThemeProvider } from '@/components/providers/ThemeProvider'
 import { CartDrawer } from '@/components/shop/CartDrawer'
 import { PageLoader } from '@/components/ui/PageLoader'
 import { Toaster } from 'react-hot-toast'
@@ -56,8 +57,9 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={`${dmSans.variable} ${dmMono.variable}`}>
+    <html lang="en" className={`${dmSans.variable} ${dmMono.variable}`} suppressHydrationWarning>
       <body className="bg-brand-bg text-brand-text antialiased font-sans">
+        <ThemeProvider>
         <ConfirmProvider>
         <CartProvider>
           <PageLoader />
@@ -70,9 +72,9 @@ export default function RootLayout({
             toastOptions={{
               duration: 3000,
               style: {
-                background: '#0f0f0f',
-                color: '#f0f0f0',
-                border: '1px solid #262626',
+                background: 'rgb(var(--brand-surface))',
+                color: 'rgb(var(--brand-text))',
+                border: '1px solid rgb(var(--brand-border))',
                 borderRadius: '10px',
                 boxShadow: '0 4px 12px rgba(0,0,0,0.4)',
                 fontSize: '14px',
@@ -81,6 +83,7 @@ export default function RootLayout({
           />
         </CartProvider>
         </ConfirmProvider>
+        </ThemeProvider>
       </body>
     </html>
   )

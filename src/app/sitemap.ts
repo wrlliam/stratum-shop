@@ -1,5 +1,5 @@
 import type { MetadataRoute } from 'next'
-import { db, products } from '@/lib/db'
+import { db, products, bundles } from '@/lib/db'
 import { eq } from 'drizzle-orm'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -14,12 +14,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/returns`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.4 },
     { url: `${baseUrl}/contact`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.5 },
     { url: `${baseUrl}/recommendations`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.4 },
+    { url: `${baseUrl}/terms`, lastModified: new Date(), changeFrequency: 'yearly', priority: 0.2 },
+    { url: `${baseUrl}/privacy`, lastModified: new Date(), changeFrequency: 'yearly', priority: 0.2 },
   ]
 
-  const activeProducts = await db.query.products.findMany({
-    where: eq(products.active, true),
-    columns: { slug: true, updatedAt: true },
-  })
+  const [activeProducts, activeBundles] = await Promise.all([
+    db.query.products.findMany({
+      where: eq(products.active, true),
+      columns: { slug: true, updatedAt: true },
+    }),
+    db.query.bundles.findMany({
+      where: eq(bundles.active, true),
+      columns: { slug: true, updatedAt: true },
+    }),
+  ])
 
   const productPages: MetadataRoute.Sitemap = activeProducts.map((p) => ({
     url: `${baseUrl}/products/${p.slug}`,
@@ -28,5 +36,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }))
 
-  return [...staticPages, ...productPages]
+  const bundlePages: MetadataRoute.Sitemap = activeBundles.map((b) => ({
+    url: `${baseUrl}/bundles/${b.slug}`,
+    lastModified: b.updatedAt,
+    changeFrequency: 'weekly',
+    priority: 0.6,
+  }))
+
+  return [...staticPages, ...productPages, ...bundlePages]
 }

@@ -28,7 +28,15 @@ export async function middleware(request: NextRequest) {
 
       if (response.ok) {
         const data = await response.json()
-        if (!data?.user || data.user.role !== 'admin') {
+        const role = data?.user?.role
+        if (!role) return NextResponse.redirect(new URL('/', request.url))
+
+        // customer_service can only access /admin/support/*
+        if (role === 'customer_service') {
+          if (!pathname.startsWith('/admin/support')) {
+            return NextResponse.redirect(new URL('/admin/support', request.url))
+          }
+        } else if (role !== 'admin') {
           return NextResponse.redirect(new URL('/', request.url))
         }
       } else {

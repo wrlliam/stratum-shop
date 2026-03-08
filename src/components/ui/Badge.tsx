@@ -9,11 +9,11 @@ interface BadgeProps {
 
 const variants = {
   default: 'bg-brand-arctic text-brand-text border-brand-border',
-  blue: 'badge-blue bg-brand-blue-light text-brand-blue border-brand-blue/30',
-  green: 'badge-green bg-green-950/60 text-green-400 border-green-800/50',
-  red: 'badge-red bg-red-950/60 text-red-400 border-red-800/50',
-  amber: 'badge-amber bg-amber-950/60 text-amber-400 border-amber-800/50',
-  purple: 'badge-purple bg-purple-950/60 text-purple-400 border-purple-800/50',
+  blue: 'bg-brand-blue-light text-brand-blue border-brand-blue/30',
+  green: 'bg-green-50 text-green-700 border-green-200 dark:bg-green-950 dark:text-green-400 dark:border-green-800',
+  red: 'bg-red-50 text-red-600 border-red-200 dark:bg-red-950 dark:text-red-400 dark:border-red-800',
+  amber: 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950 dark:text-amber-400 dark:border-amber-800',
+  purple: 'bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-950 dark:text-purple-400 dark:border-purple-800',
 }
 
 const sizes = {

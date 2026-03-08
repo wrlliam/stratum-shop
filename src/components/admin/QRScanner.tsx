@@ -15,8 +15,16 @@ export function QRScanner({ onScan }: QRScannerProps) {
   const start = async () => {
     if (!scannerRef.current || html5QrRef.current) return
     try {
-      const { Html5Qrcode } = await import('html5-qrcode')
-      const scanner = new Html5Qrcode('qr-reader')
+      const { Html5Qrcode, Html5QrcodeSupportedFormats } = await import('html5-qrcode')
+      const scanner = new Html5Qrcode('qr-reader', {
+        formatsToSupport: [
+          Html5QrcodeSupportedFormats.QR_CODE,
+          Html5QrcodeSupportedFormats.CODE_128,
+          Html5QrcodeSupportedFormats.EAN_13,
+          Html5QrcodeSupportedFormats.UPC_A,
+        ],
+        verbose: false,
+      })
       html5QrRef.current = scanner
       await scanner.start(
         { facingMode: 'environment' },

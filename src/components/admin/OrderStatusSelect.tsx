@@ -9,6 +9,7 @@ const STATUS_OPTIONS = [
   'pending',
   'paid',
   'processing',
+  'prepared',
   'shipped',
   'delivered',
   'cancelled',
@@ -98,7 +99,7 @@ export function OrderStatusSelect({ orderId, currentStatus }: Props) {
       {open && (
         <div
           ref={dropdownRef}
-          className="fixed w-36 bg-white border border-brand-border rounded-xl shadow-card-lg overflow-hidden z-50 animate-fade-in"
+          className="fixed w-36 bg-brand-surface border border-brand-border rounded-xl shadow-card-lg overflow-hidden z-50 animate-fade-in"
           style={{ top: pos.top, left: pos.left }}
         >
           {STATUS_OPTIONS.map((s) => (

@@ -98,7 +98,7 @@ export function BundleForm({ availableProducts, bundle }: Props) {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Product selector */}
         <div className="lg:col-span-2">
-          <div className="bg-white border border-brand-border rounded-2xl p-6 shadow-card">
+          <div className="bg-brand-surface border border-brand-border rounded-2xl p-6 shadow-card">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-sm font-bold text-brand-text">Select Products</h2>
               {selectedIds.size > 0 && (
@@ -162,7 +162,7 @@ export function BundleForm({ availableProducts, bundle }: Props) {
 
           {/* Selected summary */}
           {selectedProducts.length > 0 && (
-            <div className="bg-white border border-brand-border rounded-2xl p-6 mt-4 shadow-card">
+            <div className="bg-brand-surface border border-brand-border rounded-2xl p-6 mt-4 shadow-card">
               <h3 className="text-sm font-bold text-brand-text mb-3">Bundle Summary</h3>
               <div className="space-y-2 mb-4">
                 {selectedProducts.map((p) => (
@@ -192,7 +192,7 @@ export function BundleForm({ availableProducts, bundle }: Props) {
 
         {/* Settings */}
         <div className="space-y-5">
-          <div className="bg-white border border-brand-border rounded-2xl p-6 space-y-4 shadow-card">
+          <div className="bg-brand-surface border border-brand-border rounded-2xl p-6 space-y-4 shadow-card">
             <h2 className="text-sm font-bold text-brand-text">Bundle Info</h2>
 
             <Input
@@ -244,7 +244,7 @@ export function BundleForm({ availableProducts, bundle }: Props) {
                 }`}
               >
                 <div
-                  className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform duration-200 ${
+                  className={`absolute top-0.5 w-4 h-4 rounded-full bg-brand-surface shadow transition-transform duration-200 ${
                     form.active ? 'translate-x-5' : 'translate-x-0.5'
                   }`}
                 />

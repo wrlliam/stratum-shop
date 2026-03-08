@@ -35,6 +35,10 @@ export function getDeliveryOption(id: string) {
   return DELIVERY_OPTIONS.find((o) => o.id === id)
 }
 
+export function formatDeliveryMethod(id: string): string {
+  return getDeliveryOption(id)?.name ?? id.replace('royal_mail_', '').replace(/_/g, ' ').toUpperCase()
+}
+
 // UK VAT rate
 export const VAT_RATE = 0.2
 

@@ -58,12 +58,12 @@ export function StockAdjustForm({ productId, productName, currentStock, onAdjust
           placeholder="+5 or -3"
           value={change}
           onChange={(e) => setChange(e.target.value)}
-          className="flex-1 px-3 py-2 text-sm border border-brand-border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue"
+          className="flex-1 px-3 py-2 text-sm border border-brand-border rounded-lg bg-brand-surface focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue"
         />
         <select
           value={reason}
           onChange={(e) => setReason(e.target.value)}
-          className="px-3 py-2 text-sm border border-brand-border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue"
+          className="px-3 py-2 text-sm border border-brand-border rounded-lg bg-brand-surface focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue"
         >
           <option value="manual">Manual</option>
           <option value="batch_completed">Batch Completed</option>

@@ -6,10 +6,12 @@ import QRCode from 'qrcode'
 interface QRCodeDisplayProps {
   value: string
   size?: number
+  showBarcode?: boolean
 }
 
-export function QRCodeDisplay({ value, size = 160 }: QRCodeDisplayProps) {
+export function QRCodeDisplay({ value, size = 160, showBarcode = false }: QRCodeDisplayProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const barcodeRef = useRef<SVGSVGElement>(null)
 
   useEffect(() => {
     if (canvasRef.current) {
@@ -21,5 +23,27 @@ export function QRCodeDisplay({ value, size = 160 }: QRCodeDisplayProps) {
     }
   }, [value, size])
 
-  return <canvas ref={canvasRef} />
+  useEffect(() => {
+    if (!showBarcode || !barcodeRef.current) return
+    import('jsbarcode').then(({ default: JsBarcode }) => {
+      try {
+        JsBarcode(barcodeRef.current!, value, {
+          format: 'CODE128',
+          width: 2,
+          height: 50,
+          displayValue: false,
+          margin: 4,
+        })
+      } catch {
+        // value may not be encodable as barcode — silently ignore
+      }
+    })
+  }, [value, showBarcode])
+
+  return (
+    <div className="flex flex-col items-center gap-2">
+      <canvas ref={canvasRef} />
+      {showBarcode && <svg ref={barcodeRef} />}
+    </div>
+  )
 }
