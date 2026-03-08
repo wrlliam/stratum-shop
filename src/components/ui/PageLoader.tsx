@@ -15,7 +15,7 @@ export function PageLoader() {
     <AnimatePresence>
       {show && (
         <motion.div
-          className="fixed inset-0 z-[9999] bg-[#070707] flex items-end"
+          className="fixed inset-0 z-[9999] bg-brand-surface flex items-end"
           initial={{ scaleY: 1 }}
           animate={{ scaleY: 0 }}
           exit={{}}

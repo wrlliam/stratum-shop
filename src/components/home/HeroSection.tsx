@@ -1,7 +1,9 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import * as motion from 'motion/react-client'
+import { useTheme } from 'next-themes'
 
 const stats = [
   { value: 'FDM', label: 'Print Technology' },
@@ -9,7 +11,40 @@ const stats = [
   { value: '48hr', label: 'Avg. Turnaround' },
 ]
 
+const lightRings = [
+  { rx: 160, ry: 150, cx: 190, cy: 195, color: '#e8f4fa', width: 1.5, delay: 0.6 },
+  { rx: 140, ry: 132, cx: 188, cy: 192, color: '#d4ecf6', width: 1.5, delay: 0.75 },
+  { rx: 120, ry: 112, cx: 186, cy: 189, color: '#bbe2f1', width: 1.5, delay: 0.9 },
+  { rx: 100, ry: 94, cx: 184, cy: 186, color: '#9ed5eb', width: 1.5, delay: 1.05 },
+  { rx: 82, ry: 76, cx: 182, cy: 183, color: '#82c9e5', width: 1.5, delay: 1.2 },
+  { rx: 64, ry: 60, cx: 180, cy: 180, color: '#6CBCE3', width: 2, delay: 1.35 },
+  { rx: 46, ry: 44, cx: 178, cy: 177, color: '#54aed8', width: 2, delay: 1.5 },
+  { rx: 30, ry: 28, cx: 176, cy: 175, color: '#3A9FD4', width: 2.5, delay: 1.65 },
+  { rx: 14, ry: 13, cx: 175, cy: 173, color: '#2d8bc2', width: 2.5, delay: 1.8 },
+]
+
+const darkRings = [
+  { rx: 160, ry: 150, cx: 190, cy: 195, color: '#0d1a20', width: 1.5, delay: 0.6 },
+  { rx: 140, ry: 132, cx: 188, cy: 192, color: '#102030', width: 1.5, delay: 0.75 },
+  { rx: 120, ry: 112, cx: 186, cy: 189, color: '#142840', width: 1.5, delay: 0.9 },
+  { rx: 100, ry: 94, cx: 184, cy: 186, color: '#1a3550', width: 1.5, delay: 1.05 },
+  { rx: 82, ry: 76, cx: 182, cy: 183, color: '#224468', width: 1.5, delay: 1.2 },
+  { rx: 64, ry: 60, cx: 180, cy: 180, color: '#2d5880', width: 2, delay: 1.35 },
+  { rx: 46, ry: 44, cx: 178, cy: 177, color: '#3a6e9a', width: 2, delay: 1.5 },
+  { rx: 30, ry: 28, cx: 176, cy: 175, color: '#6CBCE3', width: 2.5, delay: 1.65 },
+  { rx: 14, ry: 13, cx: 175, cy: 173, color: '#5db3de', width: 2.5, delay: 1.8 },
+]
+
 export function HeroSection() {
+  const { resolvedTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => setMounted(true), [])
+
+  const isDark = mounted && resolvedTheme === 'dark'
+  const rings = isDark ? darkRings : lightRings
+  const accentColor = isDark ? '#505050' : '#b0b8c4'
+  const dotColor = isDark ? '#262626' : '#d0d5dc'
+
   return (
     <section className="relative pt-28 pb-20 lg:pb-32 overflow-hidden bg-brand-bg dot-grid-bg">
       {/* Background glow orb */}
@@ -112,18 +147,8 @@ export function HeroSection() {
           >
             <div className="relative w-[380px] h-[380px]">
               <svg viewBox="0 0 380 380" className="w-full h-full" fill="none">
-                {/* Topographic contour rings — dark-adapted blues */}
-                {[
-                  { rx: 160, ry: 150, cx: 190, cy: 195, color: '#0d1a20', width: 1.5, delay: 0.6 },
-                  { rx: 140, ry: 132, cx: 188, cy: 192, color: '#102030', width: 1.5, delay: 0.75 },
-                  { rx: 120, ry: 112, cx: 186, cy: 189, color: '#142840', width: 1.5, delay: 0.9 },
-                  { rx: 100, ry: 94, cx: 184, cy: 186, color: '#1a3550', width: 1.5, delay: 1.05 },
-                  { rx: 82, ry: 76, cx: 182, cy: 183, color: '#224468', width: 1.5, delay: 1.2 },
-                  { rx: 64, ry: 60, cx: 180, cy: 180, color: '#2d5880', width: 2, delay: 1.35 },
-                  { rx: 46, ry: 44, cx: 178, cy: 177, color: '#3a6e9a', width: 2, delay: 1.5 },
-                  { rx: 30, ry: 28, cx: 176, cy: 175, color: '#6CBCE3', width: 2.5, delay: 1.65 },
-                  { rx: 14, ry: 13, cx: 175, cy: 173, color: '#5db3de', width: 2.5, delay: 1.8 },
-                ].map((ring, i) => (
+                {/* Topographic contour rings */}
+                {rings.map((ring, i) => (
                   <motion.ellipse
                     key={i}
                     cx={ring.cx}
@@ -163,7 +188,7 @@ export function HeroSection() {
                     key={i}
                     x={label.x}
                     y={label.y}
-                    fill="#505050"
+                    fill={accentColor}
                     fontSize="9"
                     className="font-mono"
                     initial={{ opacity: 0 }}
@@ -177,7 +202,7 @@ export function HeroSection() {
                 {/* Thin dashed cross-hair through peak */}
                 <motion.line
                   x1="175" y1="40" x2="175" y2="340"
-                  stroke="#505050"
+                  stroke={accentColor}
                   strokeWidth="0.5"
                   strokeDasharray="4 4"
                   initial={{ opacity: 0 }}
@@ -186,7 +211,7 @@ export function HeroSection() {
                 />
                 <motion.line
                   x1="30" y1="173" x2="340" y2="173"
-                  stroke="#505050"
+                  stroke={accentColor}
                   strokeWidth="0.5"
                   strokeDasharray="4 4"
                   initial={{ opacity: 0 }}
@@ -206,7 +231,7 @@ export function HeroSection() {
                     cx={x}
                     cy={y}
                     r="1"
-                    fill="#262626"
+                    fill={dotColor}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.3, delay: 0.5 + i * 0.03 }}
