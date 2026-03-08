@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { db, auditLog } from '@/lib/db'
+import { db, auditLog, user as userTable } from '@/lib/db'
 import { requireAdmin } from '@/lib/api-guard'
-import { desc, ilike, or, eq } from 'drizzle-orm'
+import { desc, ilike, or, eq, and } from 'drizzle-orm'
 
 export async function GET(request: NextRequest) {
   const authResult = await requireAdmin()
@@ -26,14 +26,26 @@ export async function GET(request: NextRequest) {
       conditions.push(eq(auditLog.entityType, entityType))
     }
 
-    const logs = await db.query.auditLog.findMany({
-      where: conditions.length > 0 ? (conditions.length > 1 ? undefined : conditions[0]) : undefined,
-      orderBy: desc(auditLog.createdAt),
-      limit,
-      offset,
-    })
+    const rows = await db
+      .select({
+        id: auditLog.id,
+        adminId: auditLog.adminId,
+        adminName: userTable.name,
+        action: auditLog.action,
+        entityType: auditLog.entityType,
+        entityId: auditLog.entityId,
+        metadata: auditLog.metadata,
+        ipAddress: auditLog.ipAddress,
+        createdAt: auditLog.createdAt,
+      })
+      .from(auditLog)
+      .leftJoin(userTable, eq(auditLog.adminId, userTable.id))
+      .where(conditions.length > 0 ? and(...conditions) : undefined)
+      .orderBy(desc(auditLog.createdAt))
+      .limit(limit)
+      .offset(offset)
 
-    return NextResponse.json(logs)
+    return NextResponse.json(rows)
   } catch (error) {
     console.error(error)
     return NextResponse.json({ error: 'Failed to fetch audit log' }, { status: 500 })
