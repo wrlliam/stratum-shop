@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { user, orders } from '@/lib/db/schema'
 import { requireAdmin, requireJsonContentType } from '@/lib/api-guard'
-import { resend, FROM_EMAIL, APP_URL } from '@/lib/resend'
+import { FROM_EMAIL, APP_URL, getResend } from '@/lib/resend'
 import { eq, and, inArray } from 'drizzle-orm'
 import { z } from 'zod'
 
@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
       const batch = recipients.slice(i, i + BATCH_SIZE)
       const unsubToken = (id: string) => Buffer.from(id).toString('base64')
 
-      await resend.batch.send(
+      await getResend().batch.send(
         batch.map((r) => ({
           from: FROM_EMAIL,
           to: r.email,

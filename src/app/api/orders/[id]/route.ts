@@ -6,7 +6,7 @@ import { headers } from 'next/headers'
 import { requireAdmin } from '@/lib/api-guard'
 import { z } from 'zod'
 import { renderAsync } from '@react-email/components'
-import { resend, FROM_EMAIL, APP_URL } from '@/lib/resend'
+import { FROM_EMAIL, APP_URL, getResend } from '@/lib/resend'
 import { OrderShippedEmail } from '@/lib/email/order-shipped'
 import { OrderStatusUpdateEmail } from '@/lib/email/order-status-update'
 import { logAuditEvent } from '@/lib/audit'
@@ -96,7 +96,7 @@ export async function PATCH(
               appUrl: APP_URL,
             }) as React.ReactElement
           )
-          await resend.emails.send({
+          await getResend().emails.send({
             from: FROM_EMAIL,
             to: updated.email,
             subject: `Your Order Has Been Shipped: ${updated.orderNumber} — Stratum`,
@@ -110,7 +110,7 @@ export async function PATCH(
           })
           if (emailComponent) {
             const html = await renderAsync(emailComponent as React.ReactElement)
-            await resend.emails.send({
+            await getResend().emails.send({
               from: FROM_EMAIL,
               to: updated.email,
               subject: `Order Update: ${updated.orderNumber} — Stratum`,

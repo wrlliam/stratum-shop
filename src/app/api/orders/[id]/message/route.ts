@@ -6,7 +6,7 @@ import { requireAdmin } from '@/lib/api-guard'
 import { z } from 'zod'
 import { render } from '@react-email/components'
 import { OrderMessageEmail } from '@/lib/email/order-message'
-import { resend, FROM_EMAIL, APP_URL } from '@/lib/resend'
+import { FROM_EMAIL, APP_URL, getResend } from '@/lib/resend'
 
 const messageSchema = z.object({
   subject: z.string().min(1).max(200),
@@ -52,7 +52,7 @@ export async function POST(
       })
     )
 
-    await resend.emails.send({
+    await getResend().emails.send({
       from: FROM_EMAIL,
       to: order.email,
       subject: `${data.subject} — Order #${order.orderNumber}`,

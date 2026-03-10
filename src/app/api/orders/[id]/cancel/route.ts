@@ -11,7 +11,7 @@ import { eq, sql } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { stripe } from "@/lib/stripe";
-import { resend, FROM_EMAIL, APP_URL } from "@/lib/resend";
+import { FROM_EMAIL, APP_URL, getResend } from "@/lib/resend";
 import { renderAsync } from "@react-email/components";
 import { OrderCancellationEmail } from "@/lib/email/order-cancellation";
 
@@ -159,7 +159,7 @@ export async function POST(
           appUrl: APP_URL,
         }) as React.ReactElement,
       );
-      await resend.emails.send({
+      await getResend().emails.send({
         from: FROM_EMAIL,
         to: order.email,
         subject: `Order Cancelled: ${order.orderNumber} — Stratum`,

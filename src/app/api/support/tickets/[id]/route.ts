@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db, supportTickets, supportMessages } from '@/lib/db'
 import { auth } from '@/lib/auth'
 import { headers } from 'next/headers'
-import { resend, FROM_EMAIL, APP_URL } from '@/lib/resend'
+import { FROM_EMAIL, APP_URL, getResend } from '@/lib/resend'
 import { eq } from 'drizzle-orm'
 import { z } from 'zod'
 import { markdownToHtml } from '@/lib/utils'
@@ -109,7 +109,7 @@ export async function POST(
 
     if (isStaff) {
       // Staff replied → notify customer
-      await resend.emails.send({
+      await getResend().emails.send({
         from: FROM_EMAIL,
         to: ticket.email,
         subject: `Re: ${ticket.subject} — Stratum Support`,
@@ -128,7 +128,7 @@ export async function POST(
       // Customer replied → notify admin
       const adminEmail = process.env.ADMIN_EMAIL
       if (adminEmail) {
-        await resend.emails.send({
+        await getResend().emails.send({
           from: FROM_EMAIL,
           to: adminEmail,
           subject: `[Support] Customer replied: ${ticket.subject}`,

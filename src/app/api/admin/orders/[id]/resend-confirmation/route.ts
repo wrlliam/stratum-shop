@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db, orders } from '@/lib/db'
 import { eq } from 'drizzle-orm'
 import { requireAdmin } from '@/lib/api-guard'
-import { resend, FROM_EMAIL, APP_URL } from '@/lib/resend'
+import { FROM_EMAIL, APP_URL, getResend } from '@/lib/resend'
 import { renderAsync } from '@react-email/components'
 import { OrderConfirmationEmail } from '@/lib/email/order-confirmation'
 import { logAuditEvent } from '@/lib/audit'
@@ -28,7 +28,7 @@ export async function POST(
       OrderConfirmationEmail({ order, appUrl: APP_URL }) as React.ReactElement
     )
 
-    await resend.emails.send({
+    await getResend().emails.send({
       from: FROM_EMAIL,
       to: order.email,
       subject: `Order Confirmation: ${order.orderNumber} — Stratum`,

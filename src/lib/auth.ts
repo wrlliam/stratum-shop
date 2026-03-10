@@ -2,7 +2,7 @@ import { betterAuth } from 'better-auth'
 import { drizzleAdapter } from 'better-auth/adapters/drizzle'
 import { db } from '@/lib/db'
 import * as schema from '@/lib/db/schema'
-import { resend, FROM_EMAIL, APP_URL } from '@/lib/resend'
+import { FROM_EMAIL, APP_URL, getResend } from '@/lib/resend'
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -18,7 +18,7 @@ export const auth = betterAuth({
     enabled: true,
     requireEmailVerification: true,
     sendResetPassword: async ({ user, url }) => {
-      await resend.emails.send({
+      await getResend().emails.send({
         from: FROM_EMAIL,
         to: user.email,
         subject: 'Reset your password — Stratum',
@@ -36,7 +36,7 @@ export const auth = betterAuth({
   },
   emailVerification: {
     sendVerificationEmail: async (data) => {
-      await resend.emails.send({
+      await getResend().emails.send({
         from: FROM_EMAIL,
         to: data.user.email,
         subject: 'Verify your email — Stratum',

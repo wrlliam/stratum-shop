@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
     console.log('Contact form submission:', data)
 
     // TODO: Send email notification via Resend
-    // await resend.emails.send({
+    // await getResend().emails.send({
     //   from: 'Stratum <noreply@stratum3d.co.uk>',
     //   to: 'hello@stratum3d.co.uk',
     //   subject: `Contact form: ${data.name}`,

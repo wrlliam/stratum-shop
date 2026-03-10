@@ -3,7 +3,7 @@ import { db, orders, products, bundleProducts, inventoryLog } from '@/lib/db'
 import { eq, sql } from 'drizzle-orm'
 import { stripe } from '@/lib/stripe'
 import { requireAdmin } from '@/lib/api-guard'
-import { resend, FROM_EMAIL, APP_URL } from '@/lib/resend'
+import { FROM_EMAIL, APP_URL, getResend } from '@/lib/resend'
 import { renderAsync } from '@react-email/components'
 import { OrderCancellationEmail } from '@/lib/email/order-cancellation'
 import { logAuditEvent } from '@/lib/audit'
@@ -134,7 +134,7 @@ export async function POST(
       const html = await renderAsync(
         OrderCancellationEmail({ order, appUrl: APP_URL }) as React.ReactElement
       )
-      await resend.emails.send({
+      await getResend().emails.send({
         from: FROM_EMAIL,
         to: order.email,
         subject: `Refund Issued: ${order.orderNumber} — Stratum`,

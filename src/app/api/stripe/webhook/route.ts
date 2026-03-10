@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
-import { resend, FROM_EMAIL, APP_URL } from "@/lib/resend";
+import {  FROM_EMAIL, APP_URL, getResend } from "@/lib/resend";
 import { publishEvent, cacheDel, STATS_CACHE_KEY } from "@/lib/redis";
 import {
   db,
@@ -133,7 +133,7 @@ export async function POST(request: NextRequest) {
               })
               const adminEmail = process.env.ADMIN_EMAIL
               if (adminEmail) {
-                await resend.emails.send({
+                await getResend().emails.send({
                   from: FROM_EMAIL,
                   to: adminEmail,
                   subject: `Low Stock Alert: ${updatedProduct.name} — Stratum`,
@@ -175,7 +175,7 @@ export async function POST(request: NextRequest) {
             }) as React.ReactElement,
           );
 
-          await resend.emails.send({
+          await getResend().emails.send({
             from: FROM_EMAIL,
             to: order.email,
             subject: `Order Confirmed: ${order.orderNumber} — Stratum`,
