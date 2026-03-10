@@ -1,14 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db, inventoryLog, products } from '@/lib/db'
 import { eq, desc } from 'drizzle-orm'
-import { auth } from '@/lib/auth'
-import { headers } from 'next/headers'
+import { requireAdmin } from '@/lib/api-guard'
 
 export async function GET(request: NextRequest) {
-  const session = await auth.api.getSession({ headers: await headers() })
-  if (!session?.user || session.user.role !== 'admin') {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+  const authResult = await requireAdmin()
+  if (authResult instanceof NextResponse) return authResult
 
   const { searchParams } = new URL(request.url)
   const productId = searchParams.get('productId')

@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db, recommendations } from '@/lib/db'
 import { eq, desc } from 'drizzle-orm'
-import { auth } from '@/lib/auth'
-import { headers } from 'next/headers'
+import { requireAdmin } from '@/lib/api-guard'
 import { z } from 'zod'
 
 const createSchema = z.object({
@@ -14,10 +13,8 @@ const createSchema = z.object({
 })
 
 export async function GET(request: NextRequest) {
-  const session = await auth.api.getSession({ headers: await headers() })
-  if (!session?.user || session.user.role !== 'admin') {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+  const authResult = await requireAdmin()
+  if (authResult instanceof NextResponse) return authResult
 
   try {
     const rows = await db.query.recommendations.findMany({
@@ -47,10 +44,8 @@ export async function POST(request: NextRequest) {
 }
 
 export async function PATCH(request: NextRequest) {
-  const session = await auth.api.getSession({ headers: await headers() })
-  if (!session?.user || session.user.role !== 'admin') {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+  const authResult = await requireAdmin()
+  if (authResult instanceof NextResponse) return authResult
 
   try {
     const body = await request.json()

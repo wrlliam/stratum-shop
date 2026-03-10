@@ -3,6 +3,7 @@ import { db, products, productImages, productOptionGroups, productOptionChoices 
 import { eq, ilike, or, desc, asc, and, sql, gte, lte, gt } from 'drizzle-orm'
 import { auth } from '@/lib/auth'
 import { headers } from 'next/headers'
+import { requireAdmin } from '@/lib/api-guard'
 import { createSlug } from '@/lib/utils'
 import { z } from 'zod'
 import { optionGroupSchema, customOrderFieldSchema } from './_schemas'
@@ -138,10 +139,8 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  const session = await auth.api.getSession({ headers: await headers() })
-  if (!session?.user || session.user.role !== 'admin') {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+  const authResult = await requireAdmin()
+  if (authResult instanceof NextResponse) return authResult
 
   try {
     const body = await request.json()

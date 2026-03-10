@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { writeFile, mkdir } from 'fs/promises'
 import { join } from 'path'
-import { auth } from '@/lib/auth'
-import { headers } from 'next/headers'
+import { requireAdmin } from '@/lib/api-guard'
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
 const MAX_MODEL_FILE_SIZE = 50 * 1024 * 1024 // 50MB for 3D models and digital files
@@ -37,6 +36,13 @@ function isValidFile(buffer: Buffer, mimeType: string, filename: string): boolea
     return buffer[0] === 0x7B
   }
 
+  // Enhanced WebP validation: check RIFF header + "WEBP" at bytes 8-11
+  if (mimeType === 'image/webp') {
+    const sig = IMAGE_SIGNATURES.find(([type]) => type === 'image/webp')![1]
+    return sig.every((byte, i) => buffer[i] === byte) &&
+      buffer.length >= 12 && buffer[8] === 0x57 && buffer[9] === 0x45 && buffer[10] === 0x42 && buffer[11] === 0x50
+  }
+
   // Check magic number matches claimed image type
   for (const [type, sig] of IMAGE_SIGNATURES) {
     if (mimeType === type) {
@@ -47,10 +53,8 @@ function isValidFile(buffer: Buffer, mimeType: string, filename: string): boolea
 }
 
 export async function POST(request: NextRequest) {
-  const session = await auth.api.getSession({ headers: await headers() })
-  if (!session?.user || session.user.role !== 'admin') {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+  const authResult = await requireAdmin()
+  if (authResult instanceof NextResponse) return authResult
 
   try {
     const formData = await request.formData()

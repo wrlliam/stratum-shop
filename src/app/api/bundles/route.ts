@@ -3,6 +3,7 @@ import { db, bundles, bundleProducts, products, productImages } from '@/lib/db'
 import { eq, desc, asc, and } from 'drizzle-orm'
 import { auth } from '@/lib/auth'
 import { headers } from 'next/headers'
+import { requireAdmin } from '@/lib/api-guard'
 import { createSlug } from '@/lib/utils'
 import { z } from 'zod'
 
@@ -47,10 +48,8 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  const session = await auth.api.getSession({ headers: await headers() })
-  if (!session?.user || session.user.role !== 'admin') {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+  const authResult = await requireAdmin()
+  if (authResult instanceof NextResponse) return authResult
 
   try {
     const body = await request.json()

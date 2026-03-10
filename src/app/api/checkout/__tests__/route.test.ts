@@ -77,7 +77,9 @@ vi.mock('@/lib/db', () => ({
       set: (...args: unknown[]) => {
         mockUpdateSet(...args)
         return {
-          where: vi.fn(),
+          where: vi.fn().mockReturnValue({
+            returning: vi.fn().mockResolvedValue([]),
+          }),
         }
       },
     })),
@@ -94,6 +96,10 @@ vi.mock('@/lib/db', () => ({
 
 vi.mock('@/lib/utils', () => ({
   generateOrderNumber: () => 'STR-TEST-1234',
+}))
+
+vi.mock('@/lib/coupon-conditions', () => ({
+  evaluateConditions: vi.fn().mockReturnValue({ valid: true }),
 }))
 
 const validCheckoutPayload = {

@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db, printBatches, products } from '@/lib/db'
 import { eq, desc } from 'drizzle-orm'
-import { auth } from '@/lib/auth'
-import { headers } from 'next/headers'
+import { requireAdmin } from '@/lib/api-guard'
 import { z } from 'zod'
 
 const createBatchSchema = z.object({
@@ -12,10 +11,8 @@ const createBatchSchema = z.object({
 })
 
 export async function GET(request: NextRequest) {
-  const session = await auth.api.getSession({ headers: await headers() })
-  if (!session?.user || session.user.role !== 'admin') {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+  const authResult = await requireAdmin()
+  if (authResult instanceof NextResponse) return authResult
 
   const { searchParams } = new URL(request.url)
   const status = searchParams.get('status')
@@ -34,10 +31,8 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  const session = await auth.api.getSession({ headers: await headers() })
-  if (!session?.user || session.user.role !== 'admin') {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+  const authResult = await requireAdmin()
+  if (authResult instanceof NextResponse) return authResult
 
   try {
     const body = await request.json()
@@ -56,7 +51,7 @@ export async function POST(request: NextRequest) {
         productId: data.productId,
         quantity: data.quantity,
         notes: data.notes,
-        createdBy: session.user.id,
+        createdBy: authResult.userId,
       })
       .returning()
 

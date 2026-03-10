@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { NextRequest } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 
 // Mock next/headers
 vi.mock('next/headers', () => ({
@@ -65,6 +65,11 @@ vi.mock('@/lib/utils', () => ({
   createSlug: (text: string) => text.toLowerCase().replace(/\s+/g, '-'),
 }))
 
+const mockRequireAdmin = vi.fn()
+vi.mock('@/lib/api-guard', () => ({
+  requireAdmin: (...args: unknown[]) => mockRequireAdmin(...args),
+}))
+
 describe('GET /api/products', () => {
   beforeEach(() => {
     vi.clearAllMocks()
@@ -103,7 +108,9 @@ describe('POST /api/products', () => {
   })
 
   it('returns 401 for non-admin users', async () => {
-    mockGetSession.mockResolvedValue({ user: { role: 'customer' } })
+    mockRequireAdmin.mockResolvedValue(
+      NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    )
 
     const { POST } = await import('../route')
     const req = new NextRequest('http://localhost:3000/api/products', {
@@ -111,11 +118,13 @@ describe('POST /api/products', () => {
       body: JSON.stringify({ name: 'Test', price: 1000 }),
     })
     const res = await POST(req)
-    expect(res.status).toBe(401)
+    expect(res.status).toBe(403)
   })
 
   it('returns 401 for unauthenticated users', async () => {
-    mockGetSession.mockResolvedValue(null)
+    mockRequireAdmin.mockResolvedValue(
+      NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    )
 
     const { POST } = await import('../route')
     const req = new NextRequest('http://localhost:3000/api/products', {
@@ -127,7 +136,7 @@ describe('POST /api/products', () => {
   })
 
   it('returns 400 for invalid data', async () => {
-    mockGetSession.mockResolvedValue({ user: { id: '1', role: 'admin' } })
+    mockRequireAdmin.mockResolvedValue({ userId: '1' })
 
     const { POST } = await import('../route')
     const req = new NextRequest('http://localhost:3000/api/products', {
@@ -139,7 +148,7 @@ describe('POST /api/products', () => {
   })
 
   it('creates product for admin users', async () => {
-    mockGetSession.mockResolvedValue({ user: { id: '1', role: 'admin' } })
+    mockRequireAdmin.mockResolvedValue({ userId: '1' })
     const createdProduct = { id: 'new-1', name: 'New Product', slug: 'new-product', price: 2500 }
     mockInsertReturning.mockResolvedValue([createdProduct])
     mockFindFirst.mockResolvedValue({ ...createdProduct, images: [], optionGroups: [] })

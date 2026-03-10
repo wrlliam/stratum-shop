@@ -107,12 +107,8 @@ export async function POST(
     } catch (stripeErr: unknown) {
       const code = (stripeErr as { code?: string }).code;
       if (code !== "charge_already_refunded") {
-        // Surface the actual Stripe error message to the admin
-        const message =
-          stripeErr instanceof Error
-            ? stripeErr.message
-            : "Stripe refund failed";
-        return NextResponse.json({ error: message }, { status: 502 });
+        console.error('Stripe refund error:', stripeErr)
+        return NextResponse.json({ error: 'Refund could not be processed. Please contact support.' }, { status: 502 })
       }
       // charge_already_refunded: refund already exists in Stripe — fall through to sync DB state
     }

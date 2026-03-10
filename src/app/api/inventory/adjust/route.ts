@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db, products, inventoryLog } from '@/lib/db'
 import { eq, sql } from 'drizzle-orm'
-import { auth } from '@/lib/auth'
-import { headers } from 'next/headers'
+import { requireAdmin } from '@/lib/api-guard'
 import { z } from 'zod'
 
 const adjustSchema = z.object({
@@ -12,10 +11,8 @@ const adjustSchema = z.object({
 })
 
 export async function POST(request: NextRequest) {
-  const session = await auth.api.getSession({ headers: await headers() })
-  if (!session?.user || session.user.role !== 'admin') {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+  const authResult = await requireAdmin()
+  if (authResult instanceof NextResponse) return authResult
 
   try {
     const body = await request.json()
@@ -37,7 +34,7 @@ export async function POST(request: NextRequest) {
       productId: data.productId,
       quantityChange: data.quantityChange,
       reason: data.reason || 'manual',
-      userId: session.user.id,
+      userId: authResult.userId,
     })
 
     const updated = await db.query.products.findFirst({

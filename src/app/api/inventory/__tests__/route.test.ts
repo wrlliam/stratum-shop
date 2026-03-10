@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { NextRequest } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 
 // Mock next/headers
 vi.mock('next/headers', () => ({
@@ -41,13 +41,20 @@ vi.mock('@/lib/db', () => ({
   products: { id: 'id' },
 }))
 
+const mockRequireAdmin = vi.fn()
+vi.mock('@/lib/api-guard', () => ({
+  requireAdmin: (...args: unknown[]) => mockRequireAdmin(...args),
+}))
+
 describe('GET /api/inventory/batches', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
 
   it('returns 401 for non-admin', async () => {
-    mockGetSession.mockResolvedValue(null)
+    mockRequireAdmin.mockResolvedValue(
+      NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    )
 
     const { GET } = await import('../../inventory/batches/route')
     const req = new NextRequest('http://localhost:3000/api/inventory/batches')
@@ -56,7 +63,7 @@ describe('GET /api/inventory/batches', () => {
   })
 
   it('returns batches for admin', async () => {
-    mockGetSession.mockResolvedValue({ user: { id: 'admin-1', role: 'admin' } })
+    mockRequireAdmin.mockResolvedValue({ userId: 'admin-1' })
     const mockBatches = [
       { id: '1', productId: 'prod-1', quantity: 10, status: 'pending' },
     ]
@@ -71,7 +78,7 @@ describe('GET /api/inventory/batches', () => {
   })
 
   it('filters by status', async () => {
-    mockGetSession.mockResolvedValue({ user: { id: 'admin-1', role: 'admin' } })
+    mockRequireAdmin.mockResolvedValue({ userId: 'admin-1' })
     mockFindMany.mockResolvedValue([])
 
     const { GET } = await import('../../inventory/batches/route')
@@ -92,7 +99,9 @@ describe('POST /api/inventory/batches', () => {
   })
 
   it('returns 401 for non-admin', async () => {
-    mockGetSession.mockResolvedValue(null)
+    mockRequireAdmin.mockResolvedValue(
+      NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    )
 
     const { POST } = await import('../../inventory/batches/route')
     const req = new NextRequest('http://localhost:3000/api/inventory/batches', {
@@ -107,7 +116,7 @@ describe('POST /api/inventory/batches', () => {
   })
 
   it('returns 404 for non-existent product', async () => {
-    mockGetSession.mockResolvedValue({ user: { id: 'admin-1', role: 'admin' } })
+    mockRequireAdmin.mockResolvedValue({ userId: 'admin-1' })
     mockFindFirst.mockResolvedValue(null)
 
     const { POST } = await import('../../inventory/batches/route')
@@ -123,7 +132,7 @@ describe('POST /api/inventory/batches', () => {
   })
 
   it('creates batch for admin with valid product', async () => {
-    mockGetSession.mockResolvedValue({ user: { id: 'admin-1', role: 'admin' } })
+    mockRequireAdmin.mockResolvedValue({ userId: 'admin-1' })
     mockFindFirst.mockResolvedValue({ id: '550e8400-e29b-41d4-a716-446655440000', name: 'Product' })
     const batch = { id: 'batch-1', productId: '550e8400-e29b-41d4-a716-446655440000', quantity: 10, status: 'pending' }
     mockInsertReturning.mockResolvedValue([batch])
@@ -142,7 +151,7 @@ describe('POST /api/inventory/batches', () => {
   })
 
   it('returns 400 for invalid data', async () => {
-    mockGetSession.mockResolvedValue({ user: { id: 'admin-1', role: 'admin' } })
+    mockRequireAdmin.mockResolvedValue({ userId: 'admin-1' })
 
     const { POST } = await import('../../inventory/batches/route')
     const req = new NextRequest('http://localhost:3000/api/inventory/batches', {

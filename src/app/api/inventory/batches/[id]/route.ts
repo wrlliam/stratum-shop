@@ -1,17 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db, printBatches, products, inventoryLog } from '@/lib/db'
 import { eq, sql } from 'drizzle-orm'
-import { auth } from '@/lib/auth'
-import { headers } from 'next/headers'
+import { requireAdmin } from '@/lib/api-guard'
 
 export async function GET(
   _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await auth.api.getSession({ headers: await headers() })
-  if (!session?.user || session.user.role !== 'admin') {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+  const authResult = await requireAdmin()
+  if (authResult instanceof NextResponse) return authResult
 
   const { id } = await params
 
@@ -34,10 +31,8 @@ export async function PATCH(
   _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await auth.api.getSession({ headers: await headers() })
-  if (!session?.user || session.user.role !== 'admin') {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+  const authResult = await requireAdmin()
+  if (authResult instanceof NextResponse) return authResult
 
   const { id } = await params
 
@@ -73,7 +68,7 @@ export async function PATCH(
       quantityChange: batch.quantity,
       reason: 'batch_completed',
       batchId: batch.id,
-      userId: session.user.id,
+      userId: authResult.userId,
     })
 
     return NextResponse.json({ success: true })

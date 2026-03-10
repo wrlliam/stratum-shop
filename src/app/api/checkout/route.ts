@@ -2,10 +2,11 @@ import { NextRequest, NextResponse } from 'next/server'
 import type Stripe from 'stripe'
 import { stripe, getDeliveryOption, VAT_RATE } from '@/lib/stripe'
 import { db, products, bundles, orders, orderItems, productOptionGroups, productOptionChoices, coupons, couponProducts } from '@/lib/db'
-import { eq, asc, sql, inArray } from 'drizzle-orm'
+import { eq, asc, sql, and, inArray } from 'drizzle-orm'
 import { auth } from '@/lib/auth'
 import { headers } from 'next/headers'
 import { generateOrderNumber } from '@/lib/utils'
+import { evaluateConditions, type CouponCondition, type ConditionContext } from '@/lib/coupon-conditions'
 import { z } from 'zod'
 
 const selectedOptionSchema = z.object({
@@ -195,9 +196,7 @@ export async function POST(request: NextRequest) {
       if (couponRecord.expiresAt && new Date(couponRecord.expiresAt) < new Date()) {
         return NextResponse.json({ error: 'Coupon has expired' }, { status: 400 })
       }
-      if (couponRecord.maxUses && couponRecord.usedCount >= couponRecord.maxUses) {
-        return NextResponse.json({ error: 'Coupon usage limit reached' }, { status: 400 })
-      }
+      // maxUses is enforced atomically at increment time to prevent race conditions
 
       // Check product restrictions — empty = applies to everything
       const restrictions = await db
@@ -226,6 +225,37 @@ export async function POST(request: NextRequest) {
 
       if (couponRecord.minOrderAmount && eligibleSubtotal < couponRecord.minOrderAmount) {
         return NextResponse.json({ error: 'Order does not meet minimum amount for this coupon' }, { status: 400 })
+      }
+
+      // Evaluate advanced coupon conditions
+      if (couponRecord.conditions && Array.isArray(couponRecord.conditions) && couponRecord.conditions.length > 0) {
+        const condCtx: ConditionContext = {
+          cart: {
+            itemCount: lineItems.reduce((s, i) => s + i.quantity, 0),
+            productIds: lineItems.filter(i => i.productId).map(i => i.productId!),
+          },
+        }
+        if (userId) {
+          const userOrders = await db
+            .select({ id: orders.id, total: orders.total, status: orders.status })
+            .from(orders)
+            .where(eq(orders.userId, userId))
+          const paidOrders = userOrders.filter(o =>
+            ['paid', 'processing', 'prepared', 'shipped', 'delivered'].includes(o.status)
+          )
+          condCtx.account = {
+            orderCount: paidOrders.length,
+            totalSpent: paidOrders.reduce((s, o) => s + (o.total ?? 0), 0),
+            createdAtDays: 0,
+          }
+        }
+        const result = evaluateConditions(couponRecord.conditions as CouponCondition[], condCtx)
+        if (!result.valid) {
+          return NextResponse.json(
+            { error: 'You do not meet the requirements for this coupon', code: 'COUPON_CONDITION_FAILED' },
+            { status: 400 }
+          )
+        }
       }
 
       if (couponRecord.type === 'percentage') {
@@ -278,12 +308,23 @@ export async function POST(request: NextRequest) {
       }))
     )
 
-    // Increment coupon usage
+    // Increment coupon usage atomically (prevents race condition)
     if (couponRecord) {
-      await db
-        .update(coupons)
-        .set({ usedCount: sql`${coupons.usedCount} + 1` })
-        .where(eq(coupons.id, couponRecord.id))
+      if (couponRecord.maxUses) {
+        const [updated] = await db
+          .update(coupons)
+          .set({ usedCount: sql`${coupons.usedCount} + 1` })
+          .where(and(eq(coupons.id, couponRecord.id), sql`${coupons.usedCount} < ${couponRecord.maxUses}`))
+          .returning()
+        if (!updated) {
+          return NextResponse.json({ error: 'Coupon usage limit reached' }, { status: 400 })
+        }
+      } else {
+        await db
+          .update(coupons)
+          .set({ usedCount: sql`${coupons.usedCount} + 1` })
+          .where(eq(coupons.id, couponRecord.id))
+      }
     }
 
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'

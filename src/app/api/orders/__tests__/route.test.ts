@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { NextRequest } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 
 // Mock next/headers
 vi.mock('next/headers', () => ({
@@ -50,6 +50,11 @@ vi.mock('@/lib/db', () => ({
 
 vi.mock('@/lib/audit', () => ({
   logAuditEvent: vi.fn().mockResolvedValue(undefined),
+}))
+
+const mockRequireAdmin = vi.fn()
+vi.mock('@/lib/api-guard', () => ({
+  requireAdmin: (...args: unknown[]) => mockRequireAdmin(...args),
 }))
 
 // Mock email dependencies
@@ -170,7 +175,9 @@ describe('PATCH /api/orders/[id]', () => {
   })
 
   it('returns 401 for non-admin users', async () => {
-    mockGetSession.mockResolvedValue({ user: { id: 'user-1', role: 'customer' } })
+    mockRequireAdmin.mockResolvedValue(
+      NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    )
 
     const { PATCH } = await import('../../orders/[id]/route')
     const req = new NextRequest('http://localhost:3000/api/orders/order-1', {
@@ -182,7 +189,7 @@ describe('PATCH /api/orders/[id]', () => {
   })
 
   it('returns 404 for non-existent order', async () => {
-    mockGetSession.mockResolvedValue({ user: { id: 'admin-1', role: 'admin' } })
+    mockRequireAdmin.mockResolvedValue({ userId: 'admin-1' })
     mockFindFirst.mockResolvedValue(null)
 
     const { PATCH } = await import('../../orders/[id]/route')
@@ -195,7 +202,7 @@ describe('PATCH /api/orders/[id]', () => {
   })
 
   it('returns 400 for invalid status', async () => {
-    mockGetSession.mockResolvedValue({ user: { id: 'admin-1', role: 'admin' } })
+    mockRequireAdmin.mockResolvedValue({ userId: 'admin-1' })
 
     const { PATCH } = await import('../../orders/[id]/route')
     const req = new NextRequest('http://localhost:3000/api/orders/order-1', {
@@ -207,7 +214,7 @@ describe('PATCH /api/orders/[id]', () => {
   })
 
   it('updates order status for admin', async () => {
-    mockGetSession.mockResolvedValue({ user: { id: 'admin-1', role: 'admin' } })
+    mockRequireAdmin.mockResolvedValue({ userId: 'admin-1' })
     const order = { id: 'order-1', status: 'paid', email: 'test@test.com', items: [] }
     mockFindFirst
       .mockResolvedValueOnce(order)
