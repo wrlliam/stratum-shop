@@ -40,32 +40,34 @@ services:
       dockerfile: Dockerfile
     container_name: stratum_app
     restart: unless-stopped
+    env_file:
+      - .env    
     depends_on:
       postgres:
         condition: service_healthy
       redis:
         condition: service_healthy
-    environment:
-      DATABASE_URL: postgresql://stratum:stratum_pass@postgres:5432/stratum
-      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET}
-      BETTER_AUTH_URL: ${BETTER_AUTH_URL:-http://localhost:3000}
-      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
-      STRIPE_PUBLISHABLE_KEY: ${STRIPE_PUBLISHABLE_KEY}
-      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
-      NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}
-      RESEND_API_KEY: ${RESEND_API_KEY}
-      RESEND_FROM_EMAIL: ${RESEND_FROM_EMAIL:-orders@stratum.store}
-      NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
-      ADMIN_EMAIL: ${ADMIN_EMAIL}
-      MINIO_ENDPOINT: minio
-      MINIO_PORT: 9000
-      MINIO_USE_SSL: "false"
-      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY:-stratum}
-      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY:-stratum_minio_pass}
-      MINIO_BUCKET: ${MINIO_BUCKET:-stratum-custom-orders}
-      MINIO_PUBLIC_URL: ${MINIO_PUBLIC_URL:-http://localhost:9000}
-      REDIS_URL: ${REDIS_URL:-redis://redis:6379}
-      NODE_ENV: production
+    # environment:
+    #   DATABASE_URL: postgresql://stratum:stratum_pass@postgres:5432/stratum
+    #   BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET}
+    #   BETTER_AUTH_URL: ${BETTER_AUTH_URL:-http://localhost:3000}
+    #   STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+    #   STRIPE_PUBLISHABLE_KEY: ${STRIPE_PUBLISHABLE_KEY}
+    #   STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
+    #   NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}
+    #   RESEND_API_KEY: ${RESEND_API_KEY}
+    #   RESEND_FROM_EMAIL: ${RESEND_FROM_EMAIL:-orders@stratum.store}
+    #   NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
+    #   ADMIN_EMAIL: ${ADMIN_EMAIL}
+    #   MINIO_ENDPOINT: minio
+    #   MINIO_PORT: 9000
+    #   MINIO_USE_SSL: "false"
+    #   MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY:-stratum}
+    #   MINIO_SECRET_KEY: ${MINIO_SECRET_KEY:-stratum_minio_pass}
+    #   MINIO_BUCKET: ${MINIO_BUCKET:-stratum-custom-orders}
+    #   MINIO_PUBLIC_URL: ${MINIO_PUBLIC_URL:-http://localhost:9000}
+    #   REDIS_URL: ${REDIS_URL:-redis://redis:6379}
+    #   NODE_ENV: production
     ports:
       - "3000:3000"
     volumes:
