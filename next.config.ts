@@ -15,7 +15,7 @@ function parseMinioRemotePattern() {
 }
 
 const nextConfig: NextConfig = {
-  output: "standalone",
+  // output: "standalone",
   env: {
     NEXT_PUBLIC_APP_URL:
       process.env.NEXT_PUBLIC_APP_URL ?? "https://stratum3d.co.uk",
