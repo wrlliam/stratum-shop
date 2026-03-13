@@ -10,6 +10,9 @@ const createSchema = z.object({
   description: z.string().min(10),
   imageUrl: z.string().optional(),
   referenceUrl: z.string().url().optional(),
+  modelFileUrl: z.string().optional(),
+  estimatedVolumeCm3: z.number().int().positive().optional(),
+  estimatedPricePence: z.number().int().positive().optional(),
 })
 
 export async function GET(request: NextRequest) {

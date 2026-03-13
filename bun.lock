@@ -20,6 +20,7 @@
         "drizzle-orm": "^0.38.3",
         "embla-carousel-autoplay": "^8.5.1",
         "embla-carousel-react": "^8.5.1",
+        "fflate": "^0.8.2",
         "html5-qrcode": "^2.3.8",
         "ioredis": "^5.10.0",
         "jsbarcode": "^3.12.3",

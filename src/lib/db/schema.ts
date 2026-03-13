@@ -317,6 +317,9 @@ export const recommendations = pgTable('recommendations', {
   description: text('description').notNull(),
   imageUrl: text('image_url'),
   referenceUrl: text('reference_url'),
+  modelFileUrl: text('model_file_url'), // uploaded STL/3MF file URL
+  estimatedVolumeCm3: integer('estimated_volume_cm3'), // parsed from model file
+  estimatedPricePence: integer('estimated_price_pence'), // auto-quoted price
   status: text('status').notNull().default('pending'), // pending, reviewing, accepted, declined
   adminNotes: text('admin_notes'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
