@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import {
   AreaChart,
   Area,
@@ -21,6 +22,19 @@ import { formatPrice } from '@/lib/utils'
 import type { AdminStats } from '@/types'
 
 const COLORS = ['#6CBCE3', '#3A9FD4', '#AEB4BB', '#5b8dd9', '#22c55e', '#f59e0b']
+
+function useIsDarkMode() {
+  const [dark, setDark] = useState(false)
+  useEffect(() => {
+    const el = document.documentElement
+    const check = () => setDark(el.classList.contains('dark'))
+    check()
+    const observer = new MutationObserver(check)
+    observer.observe(el, { attributes: true, attributeFilter: ['class'] })
+    return () => observer.disconnect()
+  }, [])
+  return dark
+}
 
 const CustomTooltip = ({ active, payload, label }: {
   active?: boolean
@@ -44,6 +58,10 @@ const CustomTooltip = ({ active, payload, label }: {
 }
 
 export function RevenueChart({ data }: { data: AdminStats['revenueByMonth'] }) {
+  const dark = useIsDarkMode()
+  const gridColor = dark ? '#374151' : '#E8EAED'
+  const tickColor = dark ? '#9ca3af' : '#6b7280'
+
   return (
     <div className="bg-brand-surface border border-brand-border rounded-2xl p-6 shadow-card">
       <h3 className="text-sm font-semibold text-brand-text mb-1">Revenue Overview</h3>
@@ -56,15 +74,15 @@ export function RevenueChart({ data }: { data: AdminStats['revenueByMonth'] }) {
               <stop offset="95%" stopColor="#6CBCE3" stopOpacity={0} />
             </linearGradient>
           </defs>
-          <CartesianGrid strokeDasharray="3 3" stroke="#E8EAED" vertical={false} />
+          <CartesianGrid strokeDasharray="3 3" stroke={gridColor} vertical={false} />
           <XAxis
             dataKey="month"
-            tick={{ fill: '#6b7280', fontSize: 11 }}
+            tick={{ fill: tickColor, fontSize: 11 }}
             tickLine={false}
             axisLine={false}
           />
           <YAxis
-            tick={{ fill: '#6b7280', fontSize: 11 }}
+            tick={{ fill: tickColor, fontSize: 11 }}
             tickLine={false}
             axisLine={false}
             tickFormatter={(v) => `£${(v / 100).toFixed(0)}`}
@@ -84,21 +102,25 @@ export function RevenueChart({ data }: { data: AdminStats['revenueByMonth'] }) {
 }
 
 export function OrdersChart({ data }: { data: AdminStats['revenueByMonth'] }) {
+  const dark = useIsDarkMode()
+  const gridColor = dark ? '#374151' : '#E8EAED'
+  const tickColor = dark ? '#9ca3af' : '#6b7280'
+
   return (
     <div className="bg-brand-surface border border-brand-border rounded-2xl p-6 shadow-card">
       <h3 className="text-sm font-semibold text-brand-text mb-1">Orders</h3>
       <p className="text-xs text-brand-muted mb-6">Last 12 months</p>
       <ResponsiveContainer width="100%" height={260}>
         <BarChart data={data} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#E8EAED" vertical={false} />
+          <CartesianGrid strokeDasharray="3 3" stroke={gridColor} vertical={false} />
           <XAxis
             dataKey="month"
-            tick={{ fill: '#6b7280', fontSize: 11 }}
+            tick={{ fill: tickColor, fontSize: 11 }}
             tickLine={false}
             axisLine={false}
           />
           <YAxis
-            tick={{ fill: '#6b7280', fontSize: 11 }}
+            tick={{ fill: tickColor, fontSize: 11 }}
             tickLine={false}
             axisLine={false}
           />
@@ -111,22 +133,26 @@ export function OrdersChart({ data }: { data: AdminStats['revenueByMonth'] }) {
 }
 
 export function DailyOrdersChart({ data }: { data: AdminStats['dailyOrders'] }) {
+  const dark = useIsDarkMode()
+  const gridColor = dark ? '#374151' : '#E8EAED'
+  const tickColor = dark ? '#9ca3af' : '#6b7280'
+
   return (
     <div className="bg-brand-surface border border-brand-border rounded-2xl p-6 shadow-card">
       <h3 className="text-sm font-semibold text-brand-text mb-1">Daily Orders</h3>
       <p className="text-xs text-brand-muted mb-6">Last 30 days</p>
       <ResponsiveContainer width="100%" height={260}>
         <LineChart data={data} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#E8EAED" vertical={false} />
+          <CartesianGrid strokeDasharray="3 3" stroke={gridColor} vertical={false} />
           <XAxis
             dataKey="date"
-            tick={{ fill: '#6b7280', fontSize: 10 }}
+            tick={{ fill: tickColor, fontSize: 10 }}
             tickLine={false}
             axisLine={false}
             interval={4}
           />
           <YAxis
-            tick={{ fill: '#6b7280', fontSize: 11 }}
+            tick={{ fill: tickColor, fontSize: 11 }}
             tickLine={false}
             axisLine={false}
             allowDecimals={false}
@@ -147,6 +173,9 @@ export function DailyOrdersChart({ data }: { data: AdminStats['dailyOrders'] }) 
 }
 
 export function OrderStatusChart({ data }: { data: AdminStats['ordersByStatus'] }) {
+  const dark = useIsDarkMode()
+  const legendColor = dark ? '#9ca3af' : '#6b7280'
+
   const chartData = data.map((d) => ({
     name: d.status.charAt(0).toUpperCase() + d.status.slice(1),
     value: d.count,
@@ -182,7 +211,7 @@ export function OrderStatusChart({ data }: { data: AdminStats['ordersByStatus'] 
           />
           <Legend
             formatter={(value) => (
-              <span style={{ fontSize: 11, color: '#6b7280' }}>{value}</span>
+              <span style={{ fontSize: 11, color: legendColor }}>{value}</span>
             )}
           />
         </PieChart>
@@ -252,7 +281,7 @@ export function LowStockTable({ data }: { data: AdminStats['lowStockProducts'] }
             </span>
             <span
               className={`text-sm font-bold shrink-0 ${
-                product.stock === 0 ? 'text-red-600' : 'text-orange-600'
+                product.stock === 0 ? 'text-red-600 dark:text-red-400' : 'text-orange-600 dark:text-orange-400'
               }`}
             >
               {product.stock === 0 ? 'Out of stock' : `${product.stock} left`}

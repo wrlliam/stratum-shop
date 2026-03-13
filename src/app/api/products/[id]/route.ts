@@ -166,7 +166,12 @@ export async function DELETE(
 
   const { id } = await params
   try {
-    await db.delete(products).where(eq(products.id, id))
+    // Soft delete: set deletedAt and deactivate
+    await db.update(products).set({
+      deletedAt: new Date(),
+      active: false,
+      updatedAt: new Date(),
+    }).where(eq(products.id, id))
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error(error)

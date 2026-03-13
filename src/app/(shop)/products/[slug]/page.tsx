@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import { db, products, productImages, productOptionGroups, productOptionChoices } from '@/lib/db'
-import { eq, asc, ne, and } from 'drizzle-orm'
+import { eq, asc, ne, and, isNull } from 'drizzle-orm'
 import { ProductCarousel } from '@/components/shop/ProductCarousel'
 import { ProductCard } from '@/components/shop/ProductCard'
 import { AddToCartButton } from '@/components/shop/AddToCartButton'
@@ -57,7 +57,7 @@ export default async function ProductPage({ params }: Props) {
   const { slug } = await params
 
   const product = await db.query.products.findFirst({
-    where: and(eq(products.slug, slug), eq(products.active, true)),
+    where: and(eq(products.slug, slug), eq(products.active, true), isNull(products.deletedAt)),
     with: {
       images: { orderBy: asc(productImages.order) },
       optionGroups: {
@@ -71,7 +71,7 @@ export default async function ProductPage({ params }: Props) {
 
   // Related products
   const related = await db.query.products.findMany({
-    where: and(eq(products.active, true), ne(products.id, product.id)),
+    where: and(eq(products.active, true), ne(products.id, product.id), isNull(products.deletedAt)),
     with: { images: { orderBy: asc(productImages.order) } },
     limit: 4,
   })

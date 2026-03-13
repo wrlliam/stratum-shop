@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db, products, productImages, productOptionGroups, productOptionChoices } from '@/lib/db'
-import { eq, ilike, or, desc, asc, and, sql, gte, lte, gt } from 'drizzle-orm'
+import { eq, ilike, or, desc, asc, and, sql, gte, lte, gt, isNull } from 'drizzle-orm'
 import { auth } from '@/lib/auth'
 import { headers } from 'next/headers'
 import { requireAdmin } from '@/lib/api-guard'
@@ -64,6 +64,7 @@ export async function GET(request: NextRequest) {
 
     if (!isAdmin) {
       conditions.push(eq(products.active, true))
+      conditions.push(isNull(products.deletedAt))
     }
 
     if (search) {

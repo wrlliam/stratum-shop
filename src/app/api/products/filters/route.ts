@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { db, products } from '@/lib/db'
-import { eq, sql } from 'drizzle-orm'
+import { eq, and, isNull, sql } from 'drizzle-orm'
 
 export async function GET() {
   try {
@@ -8,7 +8,7 @@ export async function GET() {
     const materialsResult = await db
       .selectDistinct({ material: products.material })
       .from(products)
-      .where(eq(products.active, true))
+      .where(and(eq(products.active, true), isNull(products.deletedAt)))
 
     const materials = materialsResult
       .map((r) => r.material)
@@ -19,7 +19,7 @@ export async function GET() {
     const tagsResult = await db
       .select({ tags: products.tags })
       .from(products)
-      .where(eq(products.active, true))
+      .where(and(eq(products.active, true), isNull(products.deletedAt)))
 
     const tagSet = new Set<string>()
     for (const row of tagsResult) {
@@ -38,7 +38,7 @@ export async function GET() {
         max: sql<number>`COALESCE(MAX(${products.price}), 0)`,
       })
       .from(products)
-      .where(eq(products.active, true))
+      .where(and(eq(products.active, true), isNull(products.deletedAt)))
 
     return NextResponse.json({
       materials,

@@ -55,7 +55,6 @@ export default function AdminDashboard() {
   }, [loadStats])
 
   const handleStatsInvalidated = useCallback(() => {
-    // Slight delay so the DB write has committed before we re-fetch
     setTimeout(loadStats, 800)
   }, [loadStats])
 
@@ -77,7 +76,7 @@ export default function AdminDashboard() {
           sub:
             stats.revenueChangePercent !== 0 ? (
               <span
-                className={`text-xs flex items-center gap-0.5 ${stats.revenueChangePercent > 0 ? 'text-green-600' : 'text-red-500'}`}
+                className={`text-xs flex items-center gap-0.5 ${stats.revenueChangePercent > 0 ? 'text-green-600 dark:text-green-400' : 'text-red-500 dark:text-red-400'}`}
               >
                 {stats.revenueChangePercent > 0 ? (
                   <ArrowUpIcon className="w-3 h-3" />
@@ -91,27 +90,27 @@ export default function AdminDashboard() {
         {
           label: 'Total Orders',
           value: stats.totalOrders.toString(),
-          icon: <BackpackIcon className="w-4 h-4 text-blue-600" />,
-          bg: 'bg-blue-50',
-          color: 'text-blue-600',
+          icon: <BackpackIcon className="w-4 h-4 text-blue-600 dark:text-blue-400" />,
+          bg: 'bg-blue-50 dark:bg-blue-950/40',
+          color: 'text-blue-600 dark:text-blue-400',
           sub: stats.pendingOrders > 0 ? (
-            <span className="text-xs text-amber-600">{stats.pendingOrders} need attention</span>
+            <span className="text-xs text-amber-600 dark:text-amber-400">{stats.pendingOrders} need attention</span>
           ) : null,
         },
         {
           label: 'Avg Order Value',
           value: formatPrice(stats.avgOrderValue),
-          icon: <BoxIcon className="w-4 h-4 text-purple-600" />,
-          bg: 'bg-purple-50',
-          color: 'text-purple-600',
+          icon: <BoxIcon className="w-4 h-4 text-purple-600 dark:text-purple-400" />,
+          bg: 'bg-purple-50 dark:bg-purple-950/40',
+          color: 'text-purple-600 dark:text-purple-400',
           sub: null,
         },
         {
           label: 'Customers',
           value: stats.totalCustomers.toString(),
-          icon: <PersonIcon className="w-4 h-4 text-green-600" />,
-          bg: 'bg-green-50',
-          color: 'text-green-600',
+          icon: <PersonIcon className="w-4 h-4 text-green-600 dark:text-green-400" />,
+          bg: 'bg-green-50 dark:bg-green-950/40',
+          color: 'text-green-600 dark:text-green-400',
           sub:
             stats.repeatCustomerRate > 0 ? (
               <span className="text-xs text-brand-muted">{stats.repeatCustomerRate}% repeat</span>
@@ -141,7 +140,7 @@ export default function AdminDashboard() {
             <p className="text-[11px] font-semibold text-brand-muted uppercase tracking-wider mb-1">Today</p>
             <p className="text-xl font-bold text-brand-blue">{formatPrice(stats.todayRevenue)}</p>
             {todayChange !== 0 && (
-              <span className={`text-xs flex items-center gap-0.5 mt-0.5 ${todayChange > 0 ? 'text-green-600' : 'text-red-500'}`}>
+              <span className={`text-xs flex items-center gap-0.5 mt-0.5 ${todayChange > 0 ? 'text-green-600 dark:text-green-400' : 'text-red-500 dark:text-red-400'}`}>
                 {todayChange > 0 ? <ArrowUpIcon className="w-3 h-3" /> : <ArrowDownIcon className="w-3 h-3" />}
                 {Math.abs(todayChange)}% vs yesterday
               </span>
@@ -150,34 +149,34 @@ export default function AdminDashboard() {
           </div>
 
           {/* Pending orders */}
-          <div className="bg-amber-50 border border-amber-200/60 rounded-xl p-4">
-            <p className="text-[11px] font-semibold text-amber-600/70 uppercase tracking-wider mb-1">Pending</p>
-            <p className="text-xl font-bold text-amber-700">{stats.pendingOrders}</p>
-            <p className="text-xs text-amber-600/70 mt-1">orders to process</p>
+          <div className="bg-amber-50 dark:bg-amber-950/40 border border-amber-200/60 dark:border-amber-700/40 rounded-xl p-4">
+            <p className="text-[11px] font-semibold text-amber-600/70 dark:text-amber-400/70 uppercase tracking-wider mb-1">Pending</p>
+            <p className="text-xl font-bold text-amber-700 dark:text-amber-300">{stats.pendingOrders}</p>
+            <p className="text-xs text-amber-600/70 dark:text-amber-400/70 mt-1">orders to process</p>
           </div>
 
           {/* Open tickets */}
-          <div className={`${stats.openTickets > 0 ? 'bg-red-50 border-red-200/60' : 'bg-green-50 border-green-200/60'} border rounded-xl p-4`}>
-            <p className={`text-[11px] font-semibold uppercase tracking-wider mb-1 ${stats.openTickets > 0 ? 'text-red-500/70' : 'text-green-600/70'}`}>
+          <div className={`${stats.openTickets > 0 ? 'bg-red-50 dark:bg-red-950/40 border-red-200/60 dark:border-red-700/40' : 'bg-green-50 dark:bg-green-950/40 border-green-200/60 dark:border-green-700/40'} border rounded-xl p-4`}>
+            <p className={`text-[11px] font-semibold uppercase tracking-wider mb-1 ${stats.openTickets > 0 ? 'text-red-500/70 dark:text-red-400/70' : 'text-green-600/70 dark:text-green-400/70'}`}>
               Support
             </p>
-            <p className={`text-xl font-bold ${stats.openTickets > 0 ? 'text-red-600' : 'text-green-700'}`}>
+            <p className={`text-xl font-bold ${stats.openTickets > 0 ? 'text-red-600 dark:text-red-400' : 'text-green-700 dark:text-green-400'}`}>
               {stats.openTickets}
             </p>
-            <p className={`text-xs mt-1 ${stats.openTickets > 0 ? 'text-red-500/70' : 'text-green-600/70'}`}>
+            <p className={`text-xs mt-1 ${stats.openTickets > 0 ? 'text-red-500/70 dark:text-red-400/70' : 'text-green-600/70 dark:text-green-400/70'}`}>
               open tickets
             </p>
           </div>
 
           {/* Low stock */}
-          <div className={`${stats.lowStockCount > 0 ? 'bg-orange-50 border-orange-200/60' : 'bg-brand-arctic border-brand-border'} border rounded-xl p-4`}>
-            <p className={`text-[11px] font-semibold uppercase tracking-wider mb-1 ${stats.lowStockCount > 0 ? 'text-orange-500/70' : 'text-brand-muted'}`}>
+          <div className={`${stats.lowStockCount > 0 ? 'bg-orange-50 dark:bg-orange-950/40 border-orange-200/60 dark:border-orange-700/40' : 'bg-brand-arctic border-brand-border'} border rounded-xl p-4`}>
+            <p className={`text-[11px] font-semibold uppercase tracking-wider mb-1 ${stats.lowStockCount > 0 ? 'text-orange-500/70 dark:text-orange-400/70' : 'text-brand-muted'}`}>
               Low Stock
             </p>
-            <p className={`text-xl font-bold ${stats.lowStockCount > 0 ? 'text-orange-600' : 'text-brand-muted'}`}>
+            <p className={`text-xl font-bold ${stats.lowStockCount > 0 ? 'text-orange-600 dark:text-orange-400' : 'text-brand-muted'}`}>
               {stats.lowStockCount}
             </p>
-            <p className={`text-xs mt-1 ${stats.lowStockCount > 0 ? 'text-orange-500/70' : 'text-brand-muted'}`}>
+            <p className={`text-xs mt-1 ${stats.lowStockCount > 0 ? 'text-orange-500/70 dark:text-orange-400/70' : 'text-brand-muted'}`}>
               products
             </p>
           </div>

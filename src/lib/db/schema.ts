@@ -99,6 +99,7 @@ export const products = pgTable(
     filamentId: uuid('filament_id'), // reference to filaments table
     saleEndsAt: timestamp('sale_ends_at'),
     saleStopAtStock: integer('sale_stop_at_stock'),
+    deletedAt: timestamp('deleted_at'),
     createdAt: timestamp('created_at').defaultNow().notNull(),
     updatedAt: timestamp('updated_at').defaultNow().notNull(),
   },
@@ -368,6 +369,7 @@ export const timeEntries = pgTable('time_entries', {
   adminId: text('admin_id').references(() => user.id),
   description: text('description').notNull(),
   minutes: integer('minutes').notNull(),
+  category: text('category').notNull().default('labour'), // 'labour' | 'print_time'
   orderId: uuid('order_id').references(() => orders.id),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 })
@@ -378,6 +380,8 @@ export const costEntries = pgTable('cost_entries', {
   type: text('type').notNull(), // 'electricity' | 'filament' | 'shipping' | 'other'
   description: text('description').notNull(),
   amountPence: integer('amount_pence').notNull(),
+  filamentId: uuid('filament_id').references(() => filaments.id),
+  gramsUsed: integer('grams_used'),
   orderId: uuid('order_id').references(() => orders.id),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 })
@@ -628,6 +632,7 @@ export const timeEntriesRelations = relations(timeEntries, ({ one }) => ({
 export const costEntriesRelations = relations(costEntries, ({ one }) => ({
   admin: one(user, { fields: [costEntries.adminId], references: [user.id] }),
   order: one(orders, { fields: [costEntries.orderId], references: [orders.id] }),
+  filament: one(filaments, { fields: [costEntries.filamentId], references: [filaments.id] }),
 }))
 
 export const printItemsRelations = relations(printItems, ({ one }) => ({

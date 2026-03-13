@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { db, timeEntries, costEntries, settings } from '@/lib/db'
+import { db, timeEntries, costEntries, settings, filaments } from '@/lib/db'
 import { requireAdmin, requireJsonContentType } from '@/lib/api-guard'
-import { eq, gte, lte, and, sum } from 'drizzle-orm'
+import { eq, gte, lte, and, sum, sql } from 'drizzle-orm'
 import { z } from 'zod'
 
 const timeSchema = z.object({
   type: z.literal('time'),
   description: z.string().min(1),
   minutes: z.number().int().positive(),
+  category: z.enum(['labour', 'print_time']).default('labour'),
   orderId: z.string().uuid().optional(),
 })
 
@@ -15,7 +16,9 @@ const costSchema = z.object({
   type: z.literal('cost'),
   costType: z.enum(['electricity', 'filament', 'shipping', 'other']),
   description: z.string().min(1),
-  amountPence: z.number().int().positive(),
+  amountPence: z.number().int().positive().optional(),
+  filamentId: z.string().uuid().optional(),
+  gramsUsed: z.number().positive().optional(),
   orderId: z.string().uuid().optional(),
 })
 
@@ -44,10 +47,23 @@ export async function GET(request: NextRequest) {
       ? and(gte(costEntries.createdAt, from), lte(costEntries.createdAt, to))
       : undefined
 
-    const [totalMinutes] = await db
+    // Split time by category
+    const labourWhere = from && to
+      ? and(gte(timeEntries.createdAt, from), lte(timeEntries.createdAt, to), eq(timeEntries.category, 'labour'))
+      : eq(timeEntries.category, 'labour')
+    const printWhere = from && to
+      ? and(gte(timeEntries.createdAt, from), lte(timeEntries.createdAt, to), eq(timeEntries.category, 'print_time'))
+      : eq(timeEntries.category, 'print_time')
+
+    const [labourMinutesResult] = await db
       .select({ total: sum(timeEntries.minutes) })
       .from(timeEntries)
-      .where(timeWhere)
+      .where(labourWhere)
+
+    const [printMinutesResult] = await db
+      .select({ total: sum(timeEntries.minutes) })
+      .from(timeEntries)
+      .where(printWhere)
 
     const [totalCosts] = await db
       .select({ total: sum(costEntries.amountPence) })
@@ -62,6 +78,7 @@ export async function GET(request: NextRequest) {
 
     const recentCosts = await db.query.costEntries.findMany({
       where: costWhere,
+      with: { filament: true },
       orderBy: (t, { desc }) => desc(t.createdAt),
       limit: 50,
     })
@@ -72,11 +89,15 @@ export async function GET(request: NextRequest) {
     })
     const hourlyRatePence = rateRow ? parseInt(rateRow.value) : 1500 // default £15/hr
 
-    const totalMinutesNum = Number(totalMinutes?.total ?? 0)
-    const labourCostPence = Math.round((totalMinutesNum / 60) * hourlyRatePence)
+    const labourMinutes = Number(labourMinutesResult?.total ?? 0)
+    const printMinutes = Number(printMinutesResult?.total ?? 0)
+    const totalMinutes = labourMinutes + printMinutes
+    const labourCostPence = Math.round((labourMinutes / 60) * hourlyRatePence)
 
     return NextResponse.json({
-      totalMinutes: totalMinutesNum,
+      totalMinutes,
+      labourMinutes,
+      printMinutes,
       totalCostsPence: Number(totalCosts?.total ?? 0),
       labourCostPence,
       hourlyRatePence,
@@ -105,10 +126,45 @@ export async function POST(request: NextRequest) {
         adminId: authResult.userId,
         description: data.description,
         minutes: data.minutes,
+        category: data.category,
         orderId: data.orderId ?? null,
       }).returning()
       return NextResponse.json(entry)
     } else {
+      // If filament cost type with filamentId + gramsUsed, auto-calculate
+      if (data.costType === 'filament' && data.filamentId && data.gramsUsed) {
+        const filament = await db.query.filaments.findFirst({
+          where: eq(filaments.id, data.filamentId),
+        })
+        if (!filament) {
+          return NextResponse.json({ error: 'Filament not found' }, { status: 404 })
+        }
+
+        const amountPence = Math.round((data.gramsUsed / 1000) * filament.pricePerKgPence)
+
+        // Decrement filament stock
+        await db.update(filaments).set({
+          weightRemainingGrams: sql`${filaments.weightRemainingGrams} - ${Math.round(data.gramsUsed)}`,
+          updatedAt: new Date(),
+        }).where(eq(filaments.id, data.filamentId))
+
+        const [entry] = await db.insert(costEntries).values({
+          adminId: authResult.userId,
+          type: 'filament',
+          description: data.description,
+          amountPence,
+          filamentId: data.filamentId,
+          gramsUsed: Math.round(data.gramsUsed),
+          orderId: data.orderId ?? null,
+        }).returning()
+        return NextResponse.json(entry)
+      }
+
+      // Manual cost entry
+      if (!data.amountPence) {
+        return NextResponse.json({ error: 'amountPence is required for non-filament costs' }, { status: 400 })
+      }
+
       const [entry] = await db.insert(costEntries).values({
         adminId: authResult.userId,
         type: data.costType,
