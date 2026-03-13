@@ -7,8 +7,9 @@ import toast from 'react-hot-toast'
 import { OrderStatusSelect } from './OrderStatusSelect'
 import { formatPrice } from '@/lib/utils'
 import { formatDeliveryMethod } from '@/lib/delivery'
+import { printBulkBarcodes } from './PrintOrderBarcodeButton'
 
-const ORDER_STATUSES = ['pending', 'paid', 'processing', 'shipped', 'delivered', 'cancelled', 'refunded']
+const ORDER_STATUSES = ['pending', 'paid', 'processing', 'preparing', 'prepared', 'shipped', 'delivered', 'cancelled', 'refunded']
 
 interface OrderItem {
   id: string
@@ -184,6 +185,18 @@ export function BulkOrdersTable({ orders }: Props) {
             className="bg-brand-blue text-white px-4 py-1.5 rounded-lg text-sm font-semibold hover:bg-brand-blue/90 disabled:opacity-50 transition-colors"
           >
             {applying ? 'Applying…' : 'Apply'}
+          </button>
+          <span className="text-white/30">|</span>
+          <button
+            onClick={() => {
+              const selectedOrders = orders
+                .filter((o) => selected.has(o.id))
+                .map((o) => ({ id: o.id, orderNumber: o.orderNumber }))
+              printBulkBarcodes(selectedOrders)
+            }}
+            className="bg-white/10 text-white px-4 py-1.5 rounded-lg text-sm font-semibold hover:bg-white/20 transition-colors"
+          >
+            Print Barcodes
           </button>
           <button
             onClick={() => setSelected(new Set())}

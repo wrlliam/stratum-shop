@@ -12,6 +12,7 @@ import { TrackingForm } from '@/components/admin/TrackingForm'
 import { MessageForm } from '@/components/admin/MessageForm'
 import { RefundButton } from '@/components/admin/RefundButton'
 import { ResendConfirmationButton } from '@/components/admin/ResendConfirmationButton'
+import { PrintOrderBarcodeButton } from '@/components/admin/PrintOrderBarcodeButton'
 import { SubmissionFields } from '@/components/admin/SubmissionFields'
 import { getDeliveryOption } from '@/lib/stripe'
 import type { DeliveryAddress } from '@/types'
@@ -63,6 +64,7 @@ export default async function AdminOrderDetailPage({ params }: Props) {
           <p className="text-brand-muted text-sm mt-0.5">{order.email}</p>
         </div>
         <div className="ml-auto flex items-center gap-3">
+          <PrintOrderBarcodeButton orderId={order.id} orderNumber={order.orderNumber} />
           <ResendConfirmationButton orderId={order.id} />
           <OrderStatusSelect orderId={order.id} currentStatus={order.status} />
           <RefundButton orderId={order.id} orderStatus={order.status} />

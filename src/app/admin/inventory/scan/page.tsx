@@ -68,18 +68,34 @@ export default function ScanPage() {
     }
   }
 
-  const markOrderPrepared = async () => {
+  const SCAN_PROGRESSION: Record<string, string> = {
+    paid: 'preparing',
+    processing: 'preparing',
+    preparing: 'prepared',
+    prepared: 'shipped',
+  }
+
+  const SCAN_BUTTON_LABELS: Record<string, string> = {
+    paid: 'Start Preparing',
+    processing: 'Start Preparing',
+    preparing: 'Mark as Prepared',
+    prepared: 'Mark as Shipped',
+  }
+
+  const advanceOrderStatus = async () => {
     if (!order) return
+    const nextStatus = SCAN_PROGRESSION[order.status]
+    if (!nextStatus) return
     setMarkingPrepared(true)
     try {
       const res = await fetch(`/api/orders/${order.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: 'prepared' }),
+        body: JSON.stringify({ status: nextStatus }),
       })
       if (!res.ok) throw new Error()
-      toast.success('Order marked as prepared')
-      setOrder({ ...order, status: 'prepared' })
+      toast.success(`Order updated to ${nextStatus}`)
+      setOrder({ ...order, status: nextStatus })
     } catch {
       toast.error('Failed to update order status')
     } finally {
@@ -258,30 +274,48 @@ export default function ScanPage() {
       {/* Order result */}
       {order && !loading && (
         <div className="bg-brand-surface border border-brand-border rounded-2xl p-6 shadow-card space-y-3">
-          <h2 className="text-sm font-bold text-brand-text">Order Found</h2>
+          <div className="flex items-center justify-between">
+            <h2 className="text-sm font-bold text-brand-text">Order Found</h2>
+            <Link
+              href={`/admin/orders/${order.id}`}
+              className="text-xs text-brand-blue hover:underline font-medium"
+            >
+              View Details
+            </Link>
+          </div>
           <div className="space-y-1 text-sm">
             <p><span className="text-brand-muted">Order ID:</span> <span className="font-mono text-xs">{order.id}</span></p>
             {order.user && (
               <p><span className="text-brand-muted">Customer:</span> <span className="font-medium text-brand-text">{order.user.name} ({order.user.email})</span></p>
             )}
             <p><span className="text-brand-muted">Status:</span>{' '}
-              <span className={`font-medium capitalize ${order.status === 'prepared' ? 'text-amber-600' : order.status === 'shipped' || order.status === 'delivered' ? 'text-green-600' : 'text-brand-text'}`}>
+              <span className={`font-medium capitalize ${
+                order.status === 'preparing' ? 'text-amber-600' :
+                order.status === 'prepared' ? 'text-purple-600' :
+                order.status === 'shipped' || order.status === 'delivered' ? 'text-green-600' :
+                'text-brand-text'
+              }`}>
                 {order.status}
               </span>
             </p>
           </div>
-          {order.status === 'processing' && (
+          {SCAN_PROGRESSION[order.status] ? (
             <Button
               variant="primary"
               size="sm"
               loading={markingPrepared}
-              onClick={markOrderPrepared}
+              onClick={advanceOrderStatus}
             >
-              Mark as Prepared
+              {SCAN_BUTTON_LABELS[order.status]}
             </Button>
-          )}
-          {order.status === 'prepared' && (
-            <p className="text-sm text-amber-600 font-medium">Order is prepared and ready to ship.</p>
+          ) : (
+            <p className="text-sm text-brand-muted">
+              {['shipped', 'delivered'].includes(order.status)
+                ? 'Order has already been shipped.'
+                : ['cancelled', 'refunded'].includes(order.status)
+                  ? 'No further action available for this order.'
+                  : 'Order is pending payment.'}
+            </p>
           )}
         </div>
       )}

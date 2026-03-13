@@ -186,7 +186,7 @@ export const orders = pgTable(
     orderNumber: text('order_number').notNull().unique(),
     userId: text('user_id').references(() => user.id),
     email: text('email').notNull(),
-    status: text('status').notNull().default('pending'), // pending, paid, processing, shipped, delivered, cancelled, refunded
+    status: text('status').notNull().default('pending'), // pending, paid, processing, preparing, prepared, shipped, delivered, cancelled, refunded
     stripeSessionId: text('stripe_session_id').unique(),
     stripePaymentIntentId: text('stripe_payment_intent_id'),
     subtotal: integer('subtotal').notNull(), // pence

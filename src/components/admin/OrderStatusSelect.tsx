@@ -9,6 +9,7 @@ const STATUS_OPTIONS = [
   'pending',
   'paid',
   'processing',
+  'preparing',
   'prepared',
   'shipped',
   'delivered',
