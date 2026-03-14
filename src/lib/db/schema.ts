@@ -99,6 +99,24 @@ export const products = pgTable(
     filamentId: uuid('filament_id'), // reference to filaments table
     saleEndsAt: timestamp('sale_ends_at'),
     saleStopAtStock: integer('sale_stop_at_stock'),
+    // SEO & metadata
+    seoTitle: text('seo_title'),
+    metaDescription: text('meta_description'),
+    // Physical dimensions (mm)
+    dimensionLength: integer('dimension_length'),
+    dimensionWidth: integer('dimension_width'),
+    dimensionHeight: integer('dimension_height'),
+    // Shipping
+    shippingClass: text('shipping_class'), // 'standard' | 'oversized' | 'fragile' | 'free'
+    freeShipping: boolean('free_shipping').notNull().default(false),
+    // Scheduling
+    publishAt: timestamp('publish_at'),
+    // Extras
+    maxPerOrder: integer('max_per_order'),
+    minOrderQty: integer('min_order_qty'),
+    costPricePence: integer('cost_price_pence'), // actual cost for profit tracking
+    barcode: text('barcode'), // EAN/UPC
+    notes: text('notes'), // internal admin notes
     deletedAt: timestamp('deleted_at'),
     createdAt: timestamp('created_at').defaultNow().notNull(),
     updatedAt: timestamp('updated_at').defaultNow().notNull(),

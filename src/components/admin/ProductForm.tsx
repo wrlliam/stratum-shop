@@ -2,8 +2,9 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { UploadIcon, Cross1Icon, ChevronDownIcon } from '@radix-ui/react-icons'
+import { UploadIcon, Cross1Icon, ChevronDownIcon, EyeOpenIcon, Pencil1Icon } from '@radix-ui/react-icons'
 import Image from 'next/image'
+import ReactMarkdown from 'react-markdown'
 import { Button } from '@/components/ui/Button'
 import { Input, Textarea } from '@/components/ui/Input'
 import toast from 'react-hot-toast'
@@ -18,7 +19,7 @@ interface ProductFormProps { product?: ProductWithImagesAndOptions }
 interface ImageItem { url: string; alt: string; isNew?: boolean }
 
 type ProductRecord = Record<string, unknown>
-type Tab = 'basic' | 'media' | 'pricing' | 'print' | 'options'
+type Tab = 'basic' | 'media' | 'pricing' | 'print' | 'seo' | 'options' | 'advanced'
 
 const LS_KEY = 'stratum-pricing-defaults'
 
@@ -27,7 +28,9 @@ const TABS: { id: Tab; label: string }[] = [
   { id: 'media', label: 'Media' },
   { id: 'pricing', label: 'Pricing' },
   { id: 'print', label: 'Print & Inventory' },
+  { id: 'seo', label: 'SEO & Shipping' },
   { id: 'options', label: 'Options' },
+  { id: 'advanced', label: 'Advanced' },
 ]
 
 function calcRecommendedPrice(opts: {
@@ -68,6 +71,10 @@ function FieldLabel({ children }: { children: React.ReactNode }) {
   )
 }
 
+function SectionHeading({ children }: { children: React.ReactNode }) {
+  return <h2 className="text-sm font-bold text-brand-text">{children}</h2>
+}
+
 export function ProductForm({ product }: ProductFormProps) {
   const router = useRouter()
   const p = product as ProductRecord | undefined
@@ -83,6 +90,7 @@ export function ProductForm({ product }: ProductFormProps) {
 
   const [filaments, setFilaments] = useState<Filament[]>([])
   const [digitalFilePath, setDigitalFilePath] = useState((p?.digitalFilePath as string) || '')
+  const [descriptionMode, setDescriptionMode] = useState<'edit' | 'preview'>('edit')
 
   const [elecRate, setElecRate] = useState(29)
   const [wattage, setWattage] = useState(200)
@@ -120,6 +128,24 @@ export function ProductForm({ product }: ProductFormProps) {
     filamentId: (p?.filamentId as string) || '',
     saleEndsAt: p?.saleEndsAt ? new Date(p.saleEndsAt as string).toISOString().slice(0, 16) : '',
     saleStopAtStock: p?.saleStopAtStock ? String(p.saleStopAtStock) : '',
+    // SEO
+    seoTitle: (p?.seoTitle as string) || '',
+    metaDescription: (p?.metaDescription as string) || '',
+    // Dimensions
+    dimensionLength: p?.dimensionLength ? String(p.dimensionLength) : '',
+    dimensionWidth: p?.dimensionWidth ? String(p.dimensionWidth) : '',
+    dimensionHeight: p?.dimensionHeight ? String(p.dimensionHeight) : '',
+    // Shipping
+    shippingClass: (p?.shippingClass as string) || 'standard',
+    freeShipping: (p?.freeShipping as boolean) ?? false,
+    // Scheduling
+    publishAt: p?.publishAt ? new Date(p.publishAt as string).toISOString().slice(0, 16) : '',
+    // Advanced
+    maxPerOrder: p?.maxPerOrder ? String(p.maxPerOrder) : '',
+    minOrderQty: p?.minOrderQty ? String(p.minOrderQty) : '',
+    costPricePence: p?.costPricePence ? String((p.costPricePence as number) / 100) : '',
+    barcode: (p?.barcode as string) || '',
+    notes: (p?.notes as string) || '',
   })
 
   const [images, setImages] = useState<ImageItem[]>(
@@ -294,6 +320,24 @@ export function ProductForm({ product }: ProductFormProps) {
         digitalFilePath: digitalFilePath || undefined,
         saleEndsAt: form.saleEndsAt || undefined,
         saleStopAtStock: form.saleStopAtStock ? Number(form.saleStopAtStock) : undefined,
+        // SEO
+        seoTitle: form.seoTitle || undefined,
+        metaDescription: form.metaDescription || undefined,
+        // Dimensions
+        dimensionLength: form.dimensionLength ? Number(form.dimensionLength) : undefined,
+        dimensionWidth: form.dimensionWidth ? Number(form.dimensionWidth) : undefined,
+        dimensionHeight: form.dimensionHeight ? Number(form.dimensionHeight) : undefined,
+        // Shipping
+        shippingClass: form.shippingClass || undefined,
+        freeShipping: form.freeShipping,
+        // Scheduling
+        publishAt: form.publishAt || undefined,
+        // Advanced
+        maxPerOrder: form.maxPerOrder ? Number(form.maxPerOrder) : undefined,
+        minOrderQty: form.minOrderQty ? Number(form.minOrderQty) : undefined,
+        costPricePence: form.costPricePence ? Math.round(Number(form.costPricePence) * 100) : undefined,
+        barcode: form.barcode || undefined,
+        notes: form.notes || undefined,
         customOrderFields:
           form.productType === 'custom_order' && customFields.length > 0
             ? customFields.map((f) => ({
@@ -335,10 +379,17 @@ export function ProductForm({ product }: ProductFormProps) {
   const updateCustomField = (i: number, key: keyof CustomFieldForm, value: string | boolean) =>
     setCustomFields((prev) => prev.map((f, j) => (j === i ? { ...f, [key]: value } : f)))
 
+  // Profit margin calculation
+  const costPrice = form.costPricePence ? Number(form.costPricePence) : 0
+  const sellPrice = Number(form.price) || 0
+  const profitMargin = costPrice > 0 && sellPrice > 0
+    ? Math.round(((sellPrice - costPrice) / sellPrice) * 100)
+    : null
+
   return (
-    <form onSubmit={handleSubmit} className="max-w-3xl">
+    <form onSubmit={handleSubmit} className="w-full">
       {/* Tab bar */}
-      <div className="bg-brand-surface border border-brand-border rounded-t-2xl px-2 pt-2 flex gap-1">
+      <div className="bg-brand-surface border border-brand-border rounded-t-2xl px-2 pt-2 flex gap-1 overflow-x-auto">
         {TABS.map((tab) => (
           <button
             key={tab.id}
@@ -362,32 +413,122 @@ export function ProductForm({ product }: ProductFormProps) {
         {activeTab === 'basic' && (
           <>
             <div className="space-y-4">
-              <h2 className="text-sm font-bold text-brand-text">Product Info</h2>
+              <SectionHeading>Product Info</SectionHeading>
               <Input label="Product Name" placeholder="Articulated Dragon" value={form.name}
                 onChange={(e) => set('name', e.target.value)} error={errors.name} />
-              <Textarea label="Short Description" placeholder="Brief one-liner shown in listings…" rows={2}
+              <Textarea label="Short Description" placeholder="Brief one-liner shown in listings..." rows={2}
                 value={form.shortDescription} onChange={(e) => set('shortDescription', e.target.value)} />
-              <Textarea label="Full Description" placeholder="Detailed description, print settings, uses…" rows={6}
-                value={form.description} onChange={(e) => set('description', e.target.value)} />
+
+              {/* Markdown description */}
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="text-xs font-semibold text-brand-text uppercase tracking-wider">
+                    Full Description (Markdown)
+                  </label>
+                  <div className="flex items-center gap-1 bg-brand-arctic rounded-lg p-0.5">
+                    <button
+                      type="button"
+                      onClick={() => setDescriptionMode('edit')}
+                      className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${
+                        descriptionMode === 'edit' ? 'bg-brand-surface shadow-sm text-brand-text' : 'text-brand-muted hover:text-brand-text'
+                      }`}
+                    >
+                      <Pencil1Icon className="w-3 h-3" />
+                      Edit
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setDescriptionMode('preview')}
+                      className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${
+                        descriptionMode === 'preview' ? 'bg-brand-surface shadow-sm text-brand-text' : 'text-brand-muted hover:text-brand-text'
+                      }`}
+                    >
+                      <EyeOpenIcon className="w-3 h-3" />
+                      Preview
+                    </button>
+                  </div>
+                </div>
+                {descriptionMode === 'edit' ? (
+                  <>
+                    <textarea
+                      placeholder="Write your description using **Markdown** formatting...\n\n## Features\n- Feature one\n- Feature two\n\n> Tip: Use headings, lists, bold, links, and more."
+                      rows={12}
+                      value={form.description}
+                      onChange={(e) => set('description', e.target.value)}
+                      className="w-full px-3 py-2.5 text-sm border border-brand-border rounded-lg bg-brand-surface text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue font-mono resize-y min-h-[200px]"
+                    />
+                    <div className="flex flex-wrap gap-3 mt-1.5">
+                      {[
+                        { label: 'Bold', md: '**text**' },
+                        { label: 'Italic', md: '*text*' },
+                        { label: 'Heading', md: '## ' },
+                        { label: 'Link', md: '[text](url)' },
+                        { label: 'List', md: '- item' },
+                        { label: 'Numbered', md: '1. item' },
+                        { label: 'Quote', md: '> quote' },
+                        { label: 'Code', md: '`code`' },
+                        { label: 'Divider', md: '\n---\n' },
+                      ].map((btn) => (
+                        <button
+                          key={btn.label}
+                          type="button"
+                          onClick={() => set('description', form.description + btn.md)}
+                          className="text-[10px] font-medium text-brand-muted hover:text-brand-blue px-1.5 py-0.5 rounded hover:bg-brand-arctic transition-colors"
+                        >
+                          {btn.label}
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                ) : (
+                  <div className="min-h-[200px] px-4 py-3 border border-brand-border rounded-lg bg-brand-arctic/50">
+                    {form.description ? (
+                      <div className="prose prose-sm max-w-none text-brand-muted leading-relaxed
+                        prose-headings:text-brand-text prose-strong:text-brand-text
+                        prose-a:text-brand-blue prose-ul:list-disc prose-ol:list-decimal
+                        prose-code:bg-brand-surface prose-code:px-1 prose-code:rounded prose-code:text-xs
+                        prose-blockquote:border-brand-blue prose-hr:border-brand-border
+                      ">
+                        <ReactMarkdown>{form.description}</ReactMarkdown>
+                      </div>
+                    ) : (
+                      <p className="text-sm text-brand-muted italic">No description yet. Switch to Edit to start writing.</p>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
 
-            <div className="border-t border-brand-border pt-5">
-              <h2 className="text-sm font-bold text-brand-text mb-3">Identifier</h2>
+            <div className="border-t border-brand-border pt-5 grid grid-cols-1 lg:grid-cols-2 gap-4">
               <Input label="SKU" placeholder="STR-DRG-001" value={form.sku}
                 onChange={(e) => set('sku', e.target.value)} hint="Optional stock keeping unit" />
+              <Input label="Barcode (EAN/UPC)" placeholder="5060123456789" value={form.barcode}
+                onChange={(e) => set('barcode', e.target.value)} hint="For scanning and stock management" />
             </div>
 
             <div className="border-t border-brand-border pt-5">
-              <h2 className="text-sm font-bold text-brand-text mb-3">Tags</h2>
-              <Input label="Tags" placeholder="dragon, articulated, flexi" value={form.tags}
-                onChange={(e) => set('tags', e.target.value)} hint="Comma-separated · used for search and SEO" />
+              <SectionHeading>Tags</SectionHeading>
+              <div className="mt-3">
+                <Input label="Tags" placeholder="dragon, articulated, flexi, gift" value={form.tags}
+                  onChange={(e) => set('tags', e.target.value)} hint="Comma-separated - used for search, filtering, and SEO" />
+              </div>
+              {form.tags && (
+                <div className="flex flex-wrap gap-1.5 mt-2">
+                  {form.tags.split(',').map((t) => t.trim()).filter(Boolean).map((tag) => (
+                    <span key={tag} className="px-2 py-0.5 bg-brand-arctic text-brand-text text-xs rounded-full border border-brand-border">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
 
             <div className="border-t border-brand-border pt-5 space-y-4">
-              <h2 className="text-sm font-bold text-brand-text">Status</h2>
+              <SectionHeading>Status & Visibility</SectionHeading>
               {[
                 { key: 'active', label: 'Active', description: 'Visible in the shop' },
-                { key: 'featured', label: 'Featured', description: 'Shown on homepage' },
+                { key: 'featured', label: 'Featured', description: 'Shown on homepage and promoted' },
+                { key: 'freeShipping', label: 'Free Shipping', description: 'No delivery charge for this product' },
               ].map((toggle) => (
                 <label key={toggle.key} className="flex items-center justify-between cursor-pointer">
                   <div>
@@ -398,6 +539,13 @@ export function ProductForm({ product }: ProductFormProps) {
                     onClick={() => set(toggle.key, !form[toggle.key as keyof typeof form])} />
                 </label>
               ))}
+
+              <div>
+                <FieldLabel>Scheduled Publish</FieldLabel>
+                <input type="datetime-local" value={form.publishAt}
+                  onChange={(e) => set('publishAt', e.target.value)} className={sel} />
+                <p className="text-[11px] text-brand-muted mt-1">Leave empty to publish immediately. Set a future date to auto-publish later.</p>
+              </div>
             </div>
           </>
         )}
@@ -405,8 +553,8 @@ export function ProductForm({ product }: ProductFormProps) {
         {/* ── Media ── */}
         {activeTab === 'media' && (
           <div className="space-y-5">
-            <h2 className="text-sm font-bold text-brand-text">Images</h2>
-            <div className="grid grid-cols-3 sm:grid-cols-5 gap-3 mb-2">
+            <SectionHeading>Images</SectionHeading>
+            <div className="grid grid-cols-3 sm:grid-cols-5 lg:grid-cols-6 gap-3 mb-2">
               {images.map((img, i) => (
                 <div key={i} className="relative aspect-square rounded-xl overflow-hidden bg-brand-arctic group">
                   <Image src={img.url} alt={img.alt} fill className="object-cover" sizes="120px" />
@@ -429,7 +577,30 @@ export function ProductForm({ product }: ProductFormProps) {
             </div>
             <input ref={fileInputRef} type="file" accept="image/*" multiple className="sr-only"
               onChange={(e) => handleImageUpload(e.target.files)} />
-            <p className="text-xs text-brand-muted">First image is the cover.</p>
+            <p className="text-xs text-brand-muted">First image is the cover. Drag to reorder (coming soon). Recommended: square, 1000x1000px+.</p>
+
+            {/* Alt text editor */}
+            {images.length > 0 && (
+              <div className="border-t border-brand-border pt-4">
+                <SectionHeading>Image Alt Text</SectionHeading>
+                <p className="text-xs text-brand-muted mb-3">Describe each image for accessibility and SEO.</p>
+                <div className="space-y-2">
+                  {images.map((img, i) => (
+                    <div key={i} className="flex items-center gap-3">
+                      <div className="relative w-10 h-10 rounded-lg overflow-hidden bg-brand-arctic shrink-0">
+                        <Image src={img.url} alt="" fill className="object-cover" sizes="40px" />
+                      </div>
+                      <input
+                        placeholder={`Alt text for image ${i + 1}`}
+                        value={img.alt}
+                        onChange={(e) => setImages((prev) => prev.map((im, j) => j === i ? { ...im, alt: e.target.value } : im))}
+                        className={fieldInput}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {form.productType === '3d_model' && (
               <div className="pt-4 border-t border-brand-border">
@@ -460,20 +631,32 @@ export function ProductForm({ product }: ProductFormProps) {
         {activeTab === 'pricing' && (
           <div className="space-y-5">
             <div className="space-y-4">
-              <h2 className="text-sm font-bold text-brand-text">Pricing</h2>
-              <div className="grid grid-cols-2 gap-4">
+              <SectionHeading>Pricing</SectionHeading>
+              <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
                 <Input label="Price (£)" type="number" step="0.01" placeholder="12.99" value={form.price}
                   onChange={(e) => set('price', e.target.value)} error={errors.price} />
                 <Input label="Compare at Price (£)" type="number" step="0.01" placeholder="19.99"
                   value={form.compareAtPrice} onChange={(e) => set('compareAtPrice', e.target.value)}
                   hint="Original shown as strikethrough" />
+                <Input label="Cost Price (£)" type="number" step="0.01" placeholder="5.50"
+                  value={form.costPricePence} onChange={(e) => set('costPricePence', e.target.value)}
+                  hint="Your actual cost for profit tracking" />
               </div>
+              {profitMargin !== null && (
+                <div className="flex items-center gap-3 p-3 bg-brand-arctic rounded-xl">
+                  <span className="text-xs text-brand-muted">Profit margin:</span>
+                  <span className={`text-sm font-bold ${profitMargin >= 30 ? 'text-green-600' : profitMargin >= 10 ? 'text-amber-600' : 'text-red-500'}`}>
+                    {profitMargin}%
+                  </span>
+                  <span className="text-xs text-brand-muted">(£{(sellPrice - costPrice).toFixed(2)} profit per unit)</span>
+                </div>
+              )}
             </div>
 
             {/* Sale */}
             <div className="border-t border-brand-border pt-5">
               <div className="flex items-center justify-between mb-3">
-                <h2 className="text-sm font-bold text-brand-text">Sale</h2>
+                <SectionHeading>Sale</SectionHeading>
                 <Toggle on={saleOpen} onClick={() => setSaleOpen((v) => !v)} />
               </div>
               {saleOpen && (
@@ -517,7 +700,7 @@ export function ProductForm({ product }: ProductFormProps) {
             <div className="border-t border-brand-border pt-5">
               <button type="button" onClick={() => setCalcOpen((v) => !v)}
                 className="w-full flex items-center justify-between text-left">
-                <h2 className="text-sm font-bold text-brand-text">Recommended Price Calculator</h2>
+                <SectionHeading>Recommended Price Calculator</SectionHeading>
                 <ChevronDownIcon className={`w-4 h-4 text-brand-muted transition-transform duration-200 ${calcOpen ? 'rotate-180' : ''}`} />
               </button>
               {calcOpen && (
@@ -576,9 +759,8 @@ export function ProductForm({ product }: ProductFormProps) {
         {/* ── Print & Inventory ── */}
         {activeTab === 'print' && (
           <div className="space-y-6">
-            {/* Filament + print details */}
             <div className="space-y-4">
-              <h2 className="text-sm font-bold text-brand-text">Print Details</h2>
+              <SectionHeading>Print Details</SectionHeading>
               <div>
                 <FieldLabel>Filament</FieldLabel>
                 <div className="flex items-center gap-2">
@@ -614,24 +796,29 @@ export function ProductForm({ product }: ProductFormProps) {
                 )}
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+                <Input label="Material" placeholder="PLA" value={form.material}
+                  onChange={(e) => set('material', e.target.value)} hint="Auto-filled from filament" />
+                <Input label="Color" placeholder="Black" value={form.color}
+                  onChange={(e) => set('color', e.target.value)} hint="Auto-filled from filament" />
                 <Input label="Filament used (grams)" type="number" placeholder="85" value={form.weight}
                   onChange={(e) => set('weight', e.target.value)} />
-                <div>
-                  <FieldLabel>Print Time</FieldLabel>
-                  <div className="flex items-center gap-2">
-                    <div className="relative flex-1">
-                      <input type="number" min="0" placeholder="2" value={form.printTimeHours}
-                        onChange={(e) => set('printTimeHours', e.target.value)}
-                        className="w-full px-3 py-2.5 pr-8 text-sm border border-brand-border rounded-lg bg-brand-surface text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue" />
-                      <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-brand-muted pointer-events-none">h</span>
-                    </div>
-                    <div className="relative flex-1">
-                      <input type="number" min="0" max="59" placeholder="30" value={form.printTimeMinutes}
-                        onChange={(e) => set('printTimeMinutes', e.target.value)}
-                        className="w-full px-3 py-2.5 pr-8 text-sm border border-brand-border rounded-lg bg-brand-surface text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue" />
-                      <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-brand-muted pointer-events-none">m</span>
-                    </div>
+              </div>
+
+              <div>
+                <FieldLabel>Print Time</FieldLabel>
+                <div className="flex items-center gap-2">
+                  <div className="relative flex-1">
+                    <input type="number" min="0" placeholder="2" value={form.printTimeHours}
+                      onChange={(e) => set('printTimeHours', e.target.value)}
+                      className="w-full px-3 py-2.5 pr-8 text-sm border border-brand-border rounded-lg bg-brand-surface text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue" />
+                    <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-brand-muted pointer-events-none">h</span>
+                  </div>
+                  <div className="relative flex-1">
+                    <input type="number" min="0" max="59" placeholder="30" value={form.printTimeMinutes}
+                      onChange={(e) => set('printTimeMinutes', e.target.value)}
+                      className="w-full px-3 py-2.5 pr-8 text-sm border border-brand-border rounded-lg bg-brand-surface text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue" />
+                    <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-brand-muted pointer-events-none">m</span>
                   </div>
                 </div>
               </div>
@@ -639,78 +826,87 @@ export function ProductForm({ product }: ProductFormProps) {
 
             {/* Inventory */}
             <div className="border-t border-brand-border pt-5 space-y-4">
-              <h2 className="text-sm font-bold text-brand-text">Inventory</h2>
-              <div className="grid grid-cols-2 gap-4">
+              <SectionHeading>Inventory</SectionHeading>
+              <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
                 <Input label="Stock Quantity" type="number" min="0" placeholder="10" value={form.stock}
                   onChange={(e) => set('stock', e.target.value)} error={errors.stock} />
-                <Input label="Low Stock Alert Threshold" type="number" min="0" placeholder="5"
+                <Input label="Low Stock Alert" type="number" min="0" placeholder="5"
                   value={form.lowStockThreshold} onChange={(e) => set('lowStockThreshold', e.target.value)}
-                  hint="Alert when stock hits this level" />
-              </div>
-              <label className="flex items-center justify-between cursor-pointer">
-                <div>
-                  <p className="text-sm font-medium text-brand-text">Low Stock Alerts</p>
-                  <p className="text-xs text-brand-muted">Email admin when stock hits threshold</p>
+                  hint="Alert at this level" />
+                <div className="flex items-end pb-1">
+                  <label className="flex items-center gap-3 cursor-pointer">
+                    <Toggle on={form.lowStockAlerts} onClick={() => set('lowStockAlerts', !form.lowStockAlerts)} />
+                    <span className="text-xs text-brand-muted">Email alerts</span>
+                  </label>
                 </div>
-                <Toggle on={form.lowStockAlerts} onClick={() => set('lowStockAlerts', !form.lowStockAlerts)} />
-              </label>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <Input label="Min Order Qty" type="number" min="1" placeholder="1"
+                  value={form.minOrderQty} onChange={(e) => set('minOrderQty', e.target.value)}
+                  hint="Minimum quantity per order" />
+                <Input label="Max Per Order" type="number" min="1" placeholder="No limit"
+                  value={form.maxPerOrder} onChange={(e) => set('maxPerOrder', e.target.value)}
+                  hint="Maximum quantity per order" />
+              </div>
             </div>
 
             {/* Cost Tracking */}
             <div className="border-t border-brand-border pt-5">
-              <h2 className="text-sm font-bold text-brand-text mb-3">Cost Tracking</h2>
-              {autoTotalCost > 0 ? (
-                <div className="space-y-2 mb-3">
-                  {autoFilamentCost > 0 && (
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="text-brand-muted">
-                        Filament ({gramsNum}g × £{((selectedFilament?.pricePerKgPence ?? 0) / 100).toFixed(2)}/kg)
-                      </span>
-                      <span className="font-mono font-medium text-brand-text">{formatPrice(autoFilamentCost)}</span>
+              <SectionHeading>Cost Tracking</SectionHeading>
+              <div className="mt-3">
+                {autoTotalCost > 0 ? (
+                  <div className="space-y-2 mb-3">
+                    {autoFilamentCost > 0 && (
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-brand-muted">
+                          Filament ({gramsNum}g x £{((selectedFilament?.pricePerKgPence ?? 0) / 100).toFixed(2)}/kg)
+                        </span>
+                        <span className="font-mono font-medium text-brand-text">{formatPrice(autoFilamentCost)}</span>
+                      </div>
+                    )}
+                    {autoElecCost > 0 && (
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-brand-muted">
+                          Electricity ({printHrs.toFixed(1)}h x {wattage}W x {elecRate}p/kWh)
+                        </span>
+                        <span className="font-mono font-medium text-brand-text">{formatPrice(autoElecCost)}</span>
+                      </div>
+                    )}
+                    <div className="flex items-center justify-between text-sm pt-2 border-t border-brand-border">
+                      <span className="font-semibold text-brand-text">Total material cost</span>
+                      <span className="font-mono font-bold text-brand-blue">{formatPrice(autoTotalCost)}</span>
                     </div>
-                  )}
-                  {autoElecCost > 0 && (
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="text-brand-muted">
-                        Electricity ({printHrs.toFixed(1)}h × {wattage}W × {elecRate}p/kWh)
-                      </span>
-                      <span className="font-mono font-medium text-brand-text">{formatPrice(autoElecCost)}</span>
+                  </div>
+                ) : (
+                  <p className="text-xs text-brand-muted mb-3">
+                    Select a filament and enter grams + print time above to auto-calculate.
+                  </p>
+                )}
+                <button type="button" onClick={() => setElecOpen((v) => !v)}
+                  className="flex items-center gap-1 text-xs text-brand-muted hover:text-brand-text transition-colors">
+                  <ChevronDownIcon className={`w-3.5 h-3.5 transition-transform duration-200 ${elecOpen ? 'rotate-180' : ''}`} />
+                  Electricity settings
+                </button>
+                {elecOpen && (
+                  <div className="mt-3 grid grid-cols-2 gap-3">
+                    <div>
+                      <FieldLabel>Rate (p/kWh)</FieldLabel>
+                      <input type="number" min="0" step="0.1" value={elecRate}
+                        onChange={(e) => setElecRate(Number(e.target.value) || 0)} className={sel} />
                     </div>
-                  )}
-                  <div className="flex items-center justify-between text-sm pt-2 border-t border-brand-border">
-                    <span className="font-semibold text-brand-text">Total material cost</span>
-                    <span className="font-mono font-bold text-brand-blue">{formatPrice(autoTotalCost)}</span>
+                    <div>
+                      <FieldLabel>Wattage (W)</FieldLabel>
+                      <input type="number" min="0" value={wattage}
+                        onChange={(e) => setWattage(Number(e.target.value) || 0)} className={sel} />
+                    </div>
                   </div>
-                </div>
-              ) : (
-                <p className="text-xs text-brand-muted mb-3">
-                  Select a filament and enter grams + print time above to auto-calculate.
-                </p>
-              )}
-              <button type="button" onClick={() => setElecOpen((v) => !v)}
-                className="flex items-center gap-1 text-xs text-brand-muted hover:text-brand-text transition-colors">
-                <ChevronDownIcon className={`w-3.5 h-3.5 transition-transform duration-200 ${elecOpen ? 'rotate-180' : ''}`} />
-                Electricity settings
-              </button>
-              {elecOpen && (
-                <div className="mt-3 grid grid-cols-2 gap-3">
-                  <div>
-                    <FieldLabel>Rate (p/kWh)</FieldLabel>
-                    <input type="number" min="0" step="0.1" value={elecRate}
-                      onChange={(e) => setElecRate(Number(e.target.value) || 0)} className={sel} />
-                  </div>
-                  <div>
-                    <FieldLabel>Wattage (W)</FieldLabel>
-                    <input type="number" min="0" value={wattage}
-                      onChange={(e) => setWattage(Number(e.target.value) || 0)} className={sel} />
-                  </div>
-                </div>
-              )}
+                )}
+              </div>
             </div>
 
             {/* Product Type */}
             <div className="border-t border-brand-border pt-5 space-y-4">
-              <h2 className="text-sm font-bold text-brand-text">Product Type</h2>
+              <SectionHeading>Product Type</SectionHeading>
               <div>
                 <FieldLabel>Type</FieldLabel>
                 <select value={form.productType} onChange={(e) => set('productType', e.target.value)} className={sel}>
@@ -749,7 +945,7 @@ export function ProductForm({ product }: ProductFormProps) {
             {form.productType === 'custom_order' && (
               <div className="border-t border-brand-border pt-5">
                 <div className="flex items-center justify-between mb-3">
-                  <h2 className="text-sm font-bold text-brand-text">Custom Order Fields</h2>
+                  <SectionHeading>Custom Order Fields</SectionHeading>
                   <button type="button"
                     onClick={() => setCustomFields((prev) => [...prev, { type: 'text', label: '', required: false, placeholder: '', options: '' }])}
                     className="text-xs font-semibold text-brand-blue hover:underline">
@@ -803,11 +999,79 @@ export function ProductForm({ product }: ProductFormProps) {
           </div>
         )}
 
+        {/* ── SEO & Shipping ── */}
+        {activeTab === 'seo' && (
+          <div className="space-y-6">
+            <div className="space-y-4">
+              <SectionHeading>SEO & Metadata</SectionHeading>
+              <Input label="SEO Title" placeholder={form.name || 'Product name - Your Store'}
+                value={form.seoTitle} onChange={(e) => set('seoTitle', e.target.value)}
+                hint="Custom page title for search engines. Leave empty to use product name." />
+              <div>
+                <FieldLabel>Meta Description</FieldLabel>
+                <textarea
+                  placeholder="A brief description for search engine results (150-160 characters ideal)..."
+                  rows={3}
+                  value={form.metaDescription}
+                  onChange={(e) => set('metaDescription', e.target.value)}
+                  className={sel + ' resize-y'}
+                  maxLength={300}
+                />
+                <p className="text-[11px] text-brand-muted mt-1">
+                  {form.metaDescription.length}/300 characters
+                  {form.metaDescription.length > 160 && <span className="text-amber-500 ml-1">(search engines may truncate after ~160)</span>}
+                </p>
+              </div>
+
+              {/* SEO Preview */}
+              <div className="p-4 bg-brand-arctic rounded-xl border border-brand-border">
+                <p className="text-[10px] text-brand-muted uppercase tracking-wider mb-2">Search Preview</p>
+                <p className="text-blue-700 text-base font-medium leading-snug truncate">
+                  {form.seoTitle || form.name || 'Product Name'}
+                </p>
+                <p className="text-green-700 text-xs truncate mt-0.5">
+                  yourstore.com/products/{form.name ? form.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') : 'product-slug'}
+                </p>
+                <p className="text-gray-600 text-xs mt-1 line-clamp-2">
+                  {form.metaDescription || form.shortDescription || form.description?.slice(0, 160) || 'Product description will appear here...'}
+                </p>
+              </div>
+            </div>
+
+            <div className="border-t border-brand-border pt-5 space-y-4">
+              <SectionHeading>Physical Dimensions (mm)</SectionHeading>
+              <p className="text-xs text-brand-muted">Product dimensions for shipping calculations and display.</p>
+              <div className="grid grid-cols-3 gap-4">
+                <Input label="Length (mm)" type="number" min="0" placeholder="150"
+                  value={form.dimensionLength} onChange={(e) => set('dimensionLength', e.target.value)} />
+                <Input label="Width (mm)" type="number" min="0" placeholder="100"
+                  value={form.dimensionWidth} onChange={(e) => set('dimensionWidth', e.target.value)} />
+                <Input label="Height (mm)" type="number" min="0" placeholder="50"
+                  value={form.dimensionHeight} onChange={(e) => set('dimensionHeight', e.target.value)} />
+              </div>
+            </div>
+
+            <div className="border-t border-brand-border pt-5 space-y-4">
+              <SectionHeading>Shipping</SectionHeading>
+              <div>
+                <FieldLabel>Shipping Class</FieldLabel>
+                <select value={form.shippingClass} onChange={(e) => set('shippingClass', e.target.value)} className={sel}>
+                  <option value="standard">Standard</option>
+                  <option value="oversized">Oversized</option>
+                  <option value="fragile">Fragile</option>
+                  <option value="free">Free Shipping</option>
+                </select>
+                <p className="text-[11px] text-brand-muted mt-1">Affects packaging requirements and shipping cost calculation.</p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* ── Options ── */}
         {activeTab === 'options' && (
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-sm font-bold text-brand-text">Custom Options</h2>
+              <SectionHeading>Custom Options</SectionHeading>
               <button type="button"
                 onClick={() => setOptionGroups((prev) => [...prev, { name: '', type: 'select', choices: [{ label: '', priceModifier: '0' }] }])}
                 className="text-xs font-semibold text-brand-blue hover:underline">
@@ -901,6 +1165,82 @@ export function ProductForm({ product }: ProductFormProps) {
           </div>
         )}
 
+        {/* ── Advanced ── */}
+        {activeTab === 'advanced' && (
+          <div className="space-y-6">
+            <div className="space-y-4">
+              <SectionHeading>Internal Notes</SectionHeading>
+              <div>
+                <FieldLabel>Admin Notes</FieldLabel>
+                <textarea
+                  placeholder="Internal notes about this product (not visible to customers)..."
+                  rows={4}
+                  value={form.notes}
+                  onChange={(e) => set('notes', e.target.value)}
+                  className={sel + ' resize-y'}
+                />
+                <p className="text-[11px] text-brand-muted mt-1">Only visible to admin users. Use for print settings, supplier info, etc.</p>
+              </div>
+            </div>
+
+            <div className="border-t border-brand-border pt-5 space-y-4">
+              <SectionHeading>Product Summary</SectionHeading>
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="p-3 bg-brand-arctic rounded-xl text-center">
+                  <p className="text-[10px] text-brand-muted uppercase tracking-wider">Price</p>
+                  <p className="text-lg font-bold text-brand-text">{form.price ? `£${Number(form.price).toFixed(2)}` : '—'}</p>
+                </div>
+                <div className="p-3 bg-brand-arctic rounded-xl text-center">
+                  <p className="text-[10px] text-brand-muted uppercase tracking-wider">Stock</p>
+                  <p className="text-lg font-bold text-brand-text">{form.stock || '0'}</p>
+                </div>
+                <div className="p-3 bg-brand-arctic rounded-xl text-center">
+                  <p className="text-[10px] text-brand-muted uppercase tracking-wider">Images</p>
+                  <p className="text-lg font-bold text-brand-text">{images.length}</p>
+                </div>
+                <div className="p-3 bg-brand-arctic rounded-xl text-center">
+                  <p className="text-[10px] text-brand-muted uppercase tracking-wider">Options</p>
+                  <p className="text-lg font-bold text-brand-text">{optionGroups.length}</p>
+                </div>
+              </div>
+              {profitMargin !== null && (
+                <div className="p-3 bg-brand-arctic rounded-xl flex items-center justify-between">
+                  <span className="text-xs text-brand-muted">Profit margin</span>
+                  <span className={`font-bold ${profitMargin >= 30 ? 'text-green-600' : profitMargin >= 10 ? 'text-amber-600' : 'text-red-500'}`}>
+                    {profitMargin}% (£{(sellPrice - costPrice).toFixed(2)}/unit)
+                  </span>
+                </div>
+              )}
+            </div>
+
+            <div className="border-t border-brand-border pt-5 space-y-3">
+              <SectionHeading>Completeness Check</SectionHeading>
+              {[
+                { done: !!form.name, label: 'Product name' },
+                { done: !!form.description, label: 'Description' },
+                { done: images.length > 0, label: 'At least one image' },
+                { done: !!form.price && Number(form.price) > 0, label: 'Price set' },
+                { done: Number(form.stock) > 0, label: 'Stock available' },
+                { done: !!form.shortDescription, label: 'Short description' },
+                { done: !!form.seoTitle || !!form.metaDescription, label: 'SEO metadata' },
+                { done: !!form.tags, label: 'Tags added' },
+                { done: !!form.sku, label: 'SKU assigned' },
+              ].map((item) => (
+                <div key={item.label} className="flex items-center gap-2">
+                  <div className={`w-4 h-4 rounded-full flex items-center justify-center ${item.done ? 'bg-green-500' : 'bg-brand-border'}`}>
+                    {item.done && (
+                      <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                      </svg>
+                    )}
+                  </div>
+                  <span className={`text-xs ${item.done ? 'text-brand-text' : 'text-brand-muted'}`}>{item.label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Always-visible actions */}
         <div className="border-t border-brand-border pt-5 flex items-center gap-3">
           <Button type="submit" variant="primary" size="lg" loading={loading}>
@@ -909,6 +1249,11 @@ export function ProductForm({ product }: ProductFormProps) {
           <Button type="button" variant="ghost" size="md" onClick={() => router.back()}>
             Cancel
           </Button>
+          {product && (
+            <span className="ml-auto text-[10px] text-brand-muted">
+              Last updated: {new Date(product.updatedAt).toLocaleString('en-GB')}
+            </span>
+          )}
         </div>
       </div>
     </form>

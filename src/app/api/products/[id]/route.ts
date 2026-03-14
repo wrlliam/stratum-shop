@@ -32,6 +32,19 @@ const updateProductSchema = z.object({
   saleEndsAt: z.string().nullable().optional(),
   saleStopAtStock: z.number().int().min(0).nullable().optional(),
   customOrderFields: z.array(customOrderFieldSchema).nullable().optional(),
+  seoTitle: z.string().nullable().optional(),
+  metaDescription: z.string().nullable().optional(),
+  dimensionLength: z.number().int().nullable().optional(),
+  dimensionWidth: z.number().int().nullable().optional(),
+  dimensionHeight: z.number().int().nullable().optional(),
+  shippingClass: z.string().nullable().optional(),
+  freeShipping: z.boolean().optional(),
+  publishAt: z.string().nullable().optional(),
+  maxPerOrder: z.number().int().min(1).nullable().optional(),
+  minOrderQty: z.number().int().min(1).nullable().optional(),
+  costPricePence: z.number().int().min(0).nullable().optional(),
+  barcode: z.string().nullable().optional(),
+  notes: z.string().nullable().optional(),
   images: z.array(z.object({ url: z.string(), alt: z.string().optional() })).optional(),
   optionGroups: z.array(optionGroupSchema).optional(),
 })
@@ -87,11 +100,12 @@ export async function PATCH(
     const body = await request.json()
     const data = updateProductSchema.parse(body)
 
-    const { images, optionGroups, saleEndsAt, ...rest } = data
+    const { images, optionGroups, saleEndsAt, publishAt, ...rest } = data
 
     const setData = {
       ...rest,
       ...(saleEndsAt !== undefined ? { saleEndsAt: saleEndsAt ? new Date(saleEndsAt) : null } : {}),
+      ...(publishAt !== undefined ? { publishAt: publishAt ? new Date(publishAt) : null } : {}),
       updatedAt: new Date(),
     }
 

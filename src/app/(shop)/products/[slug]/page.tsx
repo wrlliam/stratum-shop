@@ -12,6 +12,7 @@ import { ProductViewTracker } from '@/components/shop/ProductViewTracker'
 import { RecentlyViewed } from '@/components/shop/RecentlyViewed'
 import type { ProductWithImagesAndOptions } from '@/types'
 import { ModelViewerClient } from '@/components/shop/ModelViewerClient'
+import { MarkdownDescription } from '@/components/shop/MarkdownDescription'
 
 interface Props {
   params: Promise<{ slug: string }>
@@ -271,9 +272,7 @@ export default async function ProductPage({ params }: Props) {
             {product.description && (
               <div className="mt-8 border-t border-brand-border pt-8">
                 <h2 className="text-lg font-bold text-brand-text mb-4">About this print</h2>
-                <div className="prose prose-sm max-w-none text-brand-muted leading-relaxed whitespace-pre-line">
-                  {product.description}
-                </div>
+                <MarkdownDescription content={product.description} />
               </div>
             )}
           </div>
