@@ -21,6 +21,7 @@ import {
 } from '@/components/admin/SalesChart'
 import { StatusBadge } from '@/components/ui/Badge'
 import { RealtimeAdmin } from '@/components/admin/RealtimeAdmin'
+import { OrderProcessingGuide } from '@/components/admin/OrderProcessingGuide'
 import type { AdminStats } from '@/types'
 import { useEffect } from 'react'
 
@@ -131,6 +132,9 @@ export default function AdminDashboard() {
           <p className="text-brand-muted text-sm mt-1">Welcome back, {userName}</p>
         )}
       </div>
+
+      {/* Order processing guide */}
+      <OrderProcessingGuide />
 
       {/* Today at a glance strip */}
       {stats && (

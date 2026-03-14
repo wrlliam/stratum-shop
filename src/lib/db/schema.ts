@@ -320,6 +320,7 @@ export const recommendations = pgTable('recommendations', {
   modelFileUrl: text('model_file_url'), // uploaded STL/3MF file URL
   estimatedVolumeCm3: integer('estimated_volume_cm3'), // parsed from model file
   estimatedPricePence: integer('estimated_price_pence'), // auto-quoted price
+  plates: jsonb('plates'), // [{id, name, volumeCm3, selected}]
   status: text('status').notNull().default('pending'), // pending, reviewing, accepted, declined
   adminNotes: text('admin_notes'),
   createdAt: timestamp('created_at').defaultNow().notNull(),

@@ -8,6 +8,8 @@ import { OrderStatusSelect } from './OrderStatusSelect'
 import { formatPrice } from '@/lib/utils'
 import { formatDeliveryMethod } from '@/lib/delivery'
 import { printBulkBarcodes } from './PrintOrderBarcodeButton'
+import { bulkLabelsHtml, getSender } from '@/lib/label-html'
+import type { DeliveryAddress } from '@/types'
 
 const ORDER_STATUSES = ['pending', 'paid', 'processing', 'preparing', 'prepared', 'shipped', 'delivered', 'cancelled', 'refunded']
 
@@ -21,6 +23,7 @@ interface Order {
   orderNumber: string
   email: string
   deliveryMethod: string
+  deliveryAddress: unknown
   total: number
   status: string
   createdAt: Date
@@ -75,6 +78,30 @@ export function BulkOrdersTable({ orders }: Props) {
     if (failed > 0) toast.error(`${failed} order(s) failed to update`)
     if (successCount > 0) toast.success(`${successCount} order(s) updated to "${bulkStatus}"`)
     router.refresh()
+  }
+
+  const handlePrintLabels = () => {
+    const selectedOrders = orders.filter((o) => selected.has(o.id))
+    const labelsData = selectedOrders
+      .filter((o) => o.deliveryAddress)
+      .map((o) => ({
+        orderNumber: o.orderNumber,
+        deliveryLabel: formatDeliveryMethod(o.deliveryMethod),
+        address: o.deliveryAddress as DeliveryAddress,
+      }))
+
+    if (labelsData.length === 0) {
+      toast.error('No orders with delivery addresses selected')
+      return
+    }
+
+    const sender = getSender()
+    const html = bulkLabelsHtml(labelsData, 'branded', sender)
+    const win = window.open('', '_blank')
+    if (win) {
+      win.document.write(html)
+      win.document.close()
+    }
   }
 
   return (
@@ -184,9 +211,15 @@ export function BulkOrdersTable({ orders }: Props) {
             disabled={applying}
             className="bg-brand-blue text-white px-4 py-1.5 rounded-lg text-sm font-semibold hover:bg-brand-blue/90 disabled:opacity-50 transition-colors"
           >
-            {applying ? 'Applying…' : 'Apply'}
+            {applying ? 'Applying...' : 'Apply'}
           </button>
           <span className="text-white/30">|</span>
+          <button
+            onClick={handlePrintLabels}
+            className="bg-white/10 text-white px-4 py-1.5 rounded-lg text-sm font-semibold hover:bg-white/20 transition-colors"
+          >
+            Print Labels
+          </button>
           <button
             onClick={() => {
               const selectedOrders = orders

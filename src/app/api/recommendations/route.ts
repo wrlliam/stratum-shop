@@ -13,6 +13,12 @@ const createSchema = z.object({
   modelFileUrl: z.string().optional(),
   estimatedVolumeCm3: z.number().int().positive().optional(),
   estimatedPricePence: z.number().int().positive().optional(),
+  plates: z.array(z.object({
+    id: z.string(),
+    name: z.string(),
+    volumeCm3: z.number(),
+    selected: z.boolean(),
+  })).optional(),
 })
 
 export async function GET(request: NextRequest) {

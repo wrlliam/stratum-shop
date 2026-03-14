@@ -8,6 +8,7 @@ import { formatPrice } from '@/lib/utils'
 import { StatusBadge } from '@/components/ui/Badge'
 import { OrderStatusSelect } from '@/components/admin/OrderStatusSelect'
 import { PrintLabelButton } from '@/components/admin/PrintLabelButton'
+import { NextStepBar } from '@/components/admin/NextStepBar'
 import { TrackingForm } from '@/components/admin/TrackingForm'
 import { MessageForm } from '@/components/admin/MessageForm'
 import { RefundButton } from '@/components/admin/RefundButton'
@@ -70,6 +71,12 @@ export default async function AdminOrderDetailPage({ params }: Props) {
           <RefundButton orderId={order.id} orderStatus={order.status} />
         </div>
       </div>
+
+      <NextStepBar
+        orderId={order.id}
+        currentStatus={order.status}
+        hasTrackingNumber={!!order.trackingNumber}
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Items */}
