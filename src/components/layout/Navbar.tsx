@@ -14,6 +14,7 @@ import {
   PersonIcon,
   MagnifyingGlassIcon,
 } from '@radix-ui/react-icons'
+import { AnimatePresence, motion } from 'motion/react'
 import { useCart } from '@/components/providers/CartProvider'
 import { useSession, signOut } from '@/lib/auth-client'
 import { cn } from '@/lib/utils'
@@ -360,77 +361,91 @@ export function Navbar() {
       </div>
 
       {/* Mobile menu */}
-      {menuOpen && (
-        <div className="md:hidden border-t border-brand-border bg-brand-surface">
-          <div className="px-4 py-4 space-y-1">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={cn(
-                  'flex items-center px-4 py-3 rounded-xl text-sm font-medium transition-all',
-                  pathname === link.href
-                    ? 'text-brand-blue bg-brand-blue-light font-semibold'
-                    : 'text-brand-text hover:text-brand-blue hover:bg-brand-arctic'
-                )}
-              >
-                {link.label}
-              </Link>
-            ))}
+      <AnimatePresence>
+        {menuOpen && (
+          <motion.div
+            className="md:hidden border-t border-brand-border bg-brand-surface overflow-hidden"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.2, ease: 'easeInOut' }}
+          >
+            <div className="px-4 py-4 space-y-1">
+              {navLinks.map((link, i) => (
+                <motion.div
+                  key={link.href}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.15, delay: i * 0.03 }}
+                >
+                  <Link
+                    href={link.href}
+                    className={cn(
+                      'flex items-center px-4 py-3 rounded-xl text-sm font-medium transition-all',
+                      pathname === link.href
+                        ? 'text-brand-blue bg-brand-blue-light font-semibold'
+                        : 'text-brand-text hover:text-brand-blue hover:bg-brand-arctic'
+                    )}
+                  >
+                    {link.label}
+                  </Link>
+                </motion.div>
+              ))}
 
-            <div className="pt-2 border-t border-brand-border">
-              {session?.user ? (
-                <>
-                  <Link
-                    href="/account"
-                    className="flex items-center gap-2 px-4 py-3 rounded-xl text-sm text-brand-text hover:text-brand-blue hover:bg-brand-arctic transition-all"
-                  >
-                    <PersonIcon className="w-4 h-4" />
-                    Account
-                  </Link>
-                  <Link
-                    href="/orders"
-                    className="flex items-center gap-2 px-4 py-3 rounded-xl text-sm text-brand-text hover:text-brand-blue hover:bg-brand-arctic transition-all"
-                  >
-                    <BackpackIcon className="w-4 h-4" />
-                    My Orders
-                  </Link>
-                  <Link
-                    href="/support"
-                    className="flex items-center gap-2 px-4 py-3 rounded-xl text-sm text-brand-text hover:text-brand-blue hover:bg-brand-arctic transition-all"
-                  >
-                    <svg width="16" height="16" viewBox="0 0 15 15" fill="none" className="w-4 h-4"><path d="M7.5 1a6.5 6.5 0 1 0 0 13A6.5 6.5 0 0 0 7.5 1zM0 7.5a7.5 7.5 0 1 1 15 0 7.5 7.5 0 0 1-15 0zm7.5-3a1 1 0 0 0-1 1H5a2.5 2.5 0 0 1 5 0c0 .84-.65 1.47-1.15 1.87-.25.21-.45.39-.58.55-.12.15-.27.37-.27.63H7c0-.47.18-.77.37-1.01.2-.25.46-.47.7-.66C8.5 6.48 9 6.06 9 5.5a1 1 0 0 0-1-1zm-.75 6a.75.75 0 1 1 1.5 0 .75.75 0 0 1-1.5 0z" fill="currentColor" fillRule="evenodd" clipRule="evenodd"/></svg>
-                    Support
-                  </Link>
-                  {(session.user as { role?: string }).role === 'admin' && (
+              <div className="pt-2 border-t border-brand-border">
+                {session?.user ? (
+                  <>
                     <Link
-                      href="/admin"
+                      href="/account"
                       className="flex items-center gap-2 px-4 py-3 rounded-xl text-sm text-brand-text hover:text-brand-blue hover:bg-brand-arctic transition-all"
                     >
-                      <DashboardIcon className="w-4 h-4" />
-                      Admin
+                      <PersonIcon className="w-4 h-4" />
+                      Account
                     </Link>
-                  )}
-                  <button
-                    onClick={() => signOut()}
-                    className="w-full flex items-center gap-2 px-4 py-3 rounded-xl text-sm text-brand-muted hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950 dark:hover:text-red-400 transition-all"
+                    <Link
+                      href="/orders"
+                      className="flex items-center gap-2 px-4 py-3 rounded-xl text-sm text-brand-text hover:text-brand-blue hover:bg-brand-arctic transition-all"
+                    >
+                      <BackpackIcon className="w-4 h-4" />
+                      My Orders
+                    </Link>
+                    <Link
+                      href="/support"
+                      className="flex items-center gap-2 px-4 py-3 rounded-xl text-sm text-brand-text hover:text-brand-blue hover:bg-brand-arctic transition-all"
+                    >
+                      <svg width="16" height="16" viewBox="0 0 15 15" fill="none" className="w-4 h-4"><path d="M7.5 1a6.5 6.5 0 1 0 0 13A6.5 6.5 0 0 0 7.5 1zM0 7.5a7.5 7.5 0 1 1 15 0 7.5 7.5 0 0 1-15 0zm7.5-3a1 1 0 0 0-1 1H5a2.5 2.5 0 0 1 5 0c0 .84-.65 1.47-1.15 1.87-.25.21-.45.39-.58.55-.12.15-.27.37-.27.63H7c0-.47.18-.77.37-1.01.2-.25.46-.47.7-.66C8.5 6.48 9 6.06 9 5.5a1 1 0 0 0-1-1zm-.75 6a.75.75 0 1 1 1.5 0 .75.75 0 0 1-1.5 0z" fill="currentColor" fillRule="evenodd" clipRule="evenodd"/></svg>
+                      Support
+                    </Link>
+                    {(session.user as { role?: string }).role === 'admin' && (
+                      <Link
+                        href="/admin"
+                        className="flex items-center gap-2 px-4 py-3 rounded-xl text-sm text-brand-text hover:text-brand-blue hover:bg-brand-arctic transition-all"
+                      >
+                        <DashboardIcon className="w-4 h-4" />
+                        Admin
+                      </Link>
+                    )}
+                    <button
+                      onClick={() => signOut()}
+                      className="w-full flex items-center gap-2 px-4 py-3 rounded-xl text-sm text-brand-muted hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950 dark:hover:text-red-400 transition-all"
+                    >
+                      <ExitIcon className="w-4 h-4" />
+                      Sign out
+                    </button>
+                  </>
+                ) : (
+                  <Link
+                    href="/login"
+                    className="flex items-center px-4 py-3 rounded-xl text-sm font-medium text-brand-text hover:text-brand-blue hover:bg-brand-arctic transition-all"
                   >
-                    <ExitIcon className="w-4 h-4" />
-                    Sign out
-                  </button>
-                </>
-              ) : (
-                <Link
-                  href="/login"
-                  className="flex items-center px-4 py-3 rounded-xl text-sm font-medium text-brand-text hover:text-brand-blue hover:bg-brand-arctic transition-all"
-                >
-                  Sign in
-                </Link>
-              )}
+                    Sign in
+                  </Link>
+                )}
+              </div>
             </div>
-          </div>
-        </div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </nav>
     </div>
   )

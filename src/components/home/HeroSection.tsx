@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import * as motion from 'motion/react-client'
-import { useTheme } from 'next-themes'
 
 const stats = [
   { value: 'FDM', label: 'Print Technology' },
@@ -11,46 +10,33 @@ const stats = [
   { value: '48hr', label: 'Avg. Turnaround' },
 ]
 
-const lightRings = [
-  { rx: 160, ry: 150, cx: 190, cy: 195, color: '#e8f4fa', width: 1.5, delay: 0.6 },
-  { rx: 140, ry: 132, cx: 188, cy: 192, color: '#d4ecf6', width: 1.5, delay: 0.75 },
-  { rx: 120, ry: 112, cx: 186, cy: 189, color: '#bbe2f1', width: 1.5, delay: 0.9 },
-  { rx: 100, ry: 94, cx: 184, cy: 186, color: '#9ed5eb', width: 1.5, delay: 1.05 },
-  { rx: 82, ry: 76, cx: 182, cy: 183, color: '#82c9e5', width: 1.5, delay: 1.2 },
-  { rx: 64, ry: 60, cx: 180, cy: 180, color: '#6CBCE3', width: 2, delay: 1.35 },
-  { rx: 46, ry: 44, cx: 178, cy: 177, color: '#54aed8', width: 2, delay: 1.5 },
-  { rx: 30, ry: 28, cx: 176, cy: 175, color: '#3A9FD4', width: 2.5, delay: 1.65 },
-  { rx: 14, ry: 13, cx: 175, cy: 173, color: '#2d8bc2', width: 2.5, delay: 1.8 },
+/* Floating hex fragments around the main prism */
+const fragments = [
+  { x: 40, y: 60, size: 18, delay: 1.2 },
+  { x: 320, y: 50, size: 14, delay: 1.4 },
+  { x: 50, y: 300, size: 16, delay: 1.6 },
+  { x: 310, y: 290, size: 12, delay: 1.3 },
+  { x: 100, y: 30, size: 10, delay: 1.8 },
+  { x: 280, y: 330, size: 11, delay: 1.5 },
 ]
 
-const darkRings = [
-  { rx: 160, ry: 150, cx: 190, cy: 195, color: '#0d1a20', width: 1.5, delay: 0.6 },
-  { rx: 140, ry: 132, cx: 188, cy: 192, color: '#102030', width: 1.5, delay: 0.75 },
-  { rx: 120, ry: 112, cx: 186, cy: 189, color: '#142840', width: 1.5, delay: 0.9 },
-  { rx: 100, ry: 94, cx: 184, cy: 186, color: '#1a3550', width: 1.5, delay: 1.05 },
-  { rx: 82, ry: 76, cx: 182, cy: 183, color: '#224468', width: 1.5, delay: 1.2 },
-  { rx: 64, ry: 60, cx: 180, cy: 180, color: '#2d5880', width: 2, delay: 1.35 },
-  { rx: 46, ry: 44, cx: 178, cy: 177, color: '#3a6e9a', width: 2, delay: 1.5 },
-  { rx: 30, ry: 28, cx: 176, cy: 175, color: '#6CBCE3', width: 2.5, delay: 1.65 },
-  { rx: 14, ry: 13, cx: 175, cy: 173, color: '#5db3de', width: 2.5, delay: 1.8 },
-]
+function hexPoints(cx: number, cy: number, r: number) {
+  return Array.from({ length: 6 }, (_, i) => {
+    const angle = (Math.PI / 3) * i - Math.PI / 6
+    return `${cx + r * Math.cos(angle)},${cy + r * Math.sin(angle)}`
+  }).join(' ')
+}
 
 export function HeroSection() {
-  const { resolvedTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
   useEffect(() => setMounted(true), [])
 
-  const isDark = mounted && resolvedTheme === 'dark'
-  const rings = isDark ? darkRings : lightRings
-  const accentColor = isDark ? '#505050' : '#b0b8c4'
-  const dotColor = isDark ? '#262626' : '#d0d5dc'
-
   return (
-    <section className="relative pt-28 pb-20 lg:pb-32 overflow-hidden bg-brand-bg dot-grid-bg">
+    <section className="relative pt-28 pb-20 lg:pb-32 overflow-hidden bg-brand-bg hex-grid-bg">
       {/* Background glow orb */}
       <motion.div
-        className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[700px] h-[350px] rounded-full pointer-events-none"
-        style={{ background: 'radial-gradient(ellipse, rgba(108,188,227,0.06) 0%, transparent 70%)' }}
+        className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[900px] h-[450px] rounded-full pointer-events-none"
+        style={{ background: 'radial-gradient(ellipse, rgba(108,188,227,0.10) 0%, transparent 70%)' }}
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 1.5, delay: 0.3 }}
@@ -138,7 +124,7 @@ export function HeroSection() {
             </motion.div>
           </div>
 
-          {/* Right — abstract topographic contour map */}
+          {/* Right — 3D isometric hexagonal prism */}
           <motion.div
             className="hidden lg:flex items-center justify-center"
             initial={{ opacity: 0 }}
@@ -147,77 +133,81 @@ export function HeroSection() {
           >
             <div className="relative w-[380px] h-[380px]">
               <svg viewBox="0 0 380 380" className="w-full h-full" fill="none">
-                {/* Topographic contour rings */}
-                {rings.map((ring, i) => (
-                  <motion.ellipse
-                    key={i}
-                    cx={ring.cx}
-                    cy={ring.cy}
-                    rx={ring.rx}
-                    ry={ring.ry}
-                    stroke={ring.color}
-                    strokeWidth={ring.width}
-                    fill="none"
-                    initial={{ pathLength: 0, opacity: 0 }}
-                    animate={{ pathLength: 1, opacity: 1 }}
-                    transition={{
-                      pathLength: { duration: 1.2, delay: ring.delay, ease: 'easeOut' },
-                      opacity: { duration: 0.3, delay: ring.delay },
-                    }}
+                {/* Isometric hexagonal prism — 3 visible faces */}
+                {/* Top face (lightest) */}
+                <motion.polygon
+                  points="190,100 260,135 190,170 120,135"
+                  className="fill-brand-blue/25 stroke-brand-blue/50"
+                  strokeWidth="1.5"
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.6, delay: 0.6 }}
+                  style={{ transformOrigin: '190px 135px' }}
+                />
+                {/* Left face (mid shade) */}
+                <motion.polygon
+                  points="120,135 190,170 190,260 120,225"
+                  className="fill-brand-blue/15 stroke-brand-blue/40"
+                  strokeWidth="1.5"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.6, delay: 0.75 }}
+                />
+                {/* Right face (darkest) */}
+                <motion.polygon
+                  points="260,135 260,225 190,260 190,170"
+                  className="fill-brand-blue/8 stroke-brand-blue/30"
+                  strokeWidth="1.5"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.6, delay: 0.9 }}
+                />
+
+                {/* Layer lines on left face */}
+                {[190, 210, 230, 250].map((y, i) => (
+                  <motion.line
+                    key={`ll-${i}`}
+                    x1={120 + (y - 170) * (0 / 90)}
+                    y1={135 + (y - 170)}
+                    x2={190}
+                    y2={y}
+                    className="stroke-brand-blue/20"
+                    strokeWidth="0.5"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.3, delay: 1.0 + i * 0.08 }}
                   />
                 ))}
 
-                {/* Center peak marker */}
-                <motion.circle
-                  cx="175"
-                  cy="173"
-                  r="3"
-                  fill="#3A9FD4"
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ duration: 0.3, delay: 2.0, type: 'spring' }}
-                />
-
-                {/* Elevation labels along a diagonal */}
-                {[
-                  { x: 320, y: 320, text: '0mm', delay: 2.1 },
-                  { x: 280, y: 270, text: '2mm', delay: 2.2 },
-                  { x: 240, y: 235, text: '4mm', delay: 2.3 },
-                ].map((label, i) => (
-                  <motion.text
-                    key={i}
-                    x={label.x}
-                    y={label.y}
-                    fill={accentColor}
-                    fontSize="9"
-                    className="font-mono"
+                {/* Layer lines on right face */}
+                {[190, 210, 230, 250].map((y, i) => (
+                  <motion.line
+                    key={`rl-${i}`}
+                    x1={190}
+                    y1={y}
+                    x2={260}
+                    y2={135 + (y - 170)}
+                    className="stroke-brand-blue/15"
+                    strokeWidth="0.5"
                     initial={{ opacity: 0 }}
-                    animate={{ opacity: 0.6 }}
-                    transition={{ duration: 0.4, delay: label.delay }}
-                  >
-                    {label.text}
-                  </motion.text>
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.3, delay: 1.0 + i * 0.08 }}
+                  />
                 ))}
 
-                {/* Thin dashed cross-hair through peak */}
-                <motion.line
-                  x1="175" y1="40" x2="175" y2="340"
-                  stroke={accentColor}
-                  strokeWidth="0.5"
-                  strokeDasharray="4 4"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 0.25 }}
-                  transition={{ duration: 0.5, delay: 2.0 }}
-                />
-                <motion.line
-                  x1="30" y1="173" x2="340" y2="173"
-                  stroke={accentColor}
-                  strokeWidth="0.5"
-                  strokeDasharray="4 4"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 0.25 }}
-                  transition={{ duration: 0.5, delay: 2.0 }}
-                />
+                {/* Floating hex fragments */}
+                {mounted && fragments.map((f, i) => (
+                  <motion.polygon
+                    key={`frag-${i}`}
+                    points={hexPoints(f.x, f.y, f.size)}
+                    className="fill-brand-blue/5 stroke-brand-blue/25"
+                    strokeWidth="0.75"
+                    initial={{ opacity: 0, scale: 0, rotate: -30 }}
+                    animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                    transition={{ duration: 0.5, delay: f.delay, type: 'spring', stiffness: 120 }}
+                    style={{ transformOrigin: `${f.x}px ${f.y}px` }}
+                  />
+                ))}
 
                 {/* Grid dots in corners for technical feel */}
                 {[
@@ -231,12 +221,32 @@ export function HeroSection() {
                     cx={x}
                     cy={y}
                     r="1"
-                    fill={dotColor}
+                    className="fill-brand-border"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.3, delay: 0.5 + i * 0.03 }}
                   />
                 ))}
+
+                {/* Thin dashed cross-hair */}
+                <motion.line
+                  x1="190" y1="40" x2="190" y2="340"
+                  className="stroke-brand-muted"
+                  strokeWidth="0.5"
+                  strokeDasharray="4 4"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 0.15 }}
+                  transition={{ duration: 0.5, delay: 1.5 }}
+                />
+                <motion.line
+                  x1="40" y1="180" x2="340" y2="180"
+                  className="stroke-brand-muted"
+                  strokeWidth="0.5"
+                  strokeDasharray="4 4"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 0.15 }}
+                  transition={{ duration: 0.5, delay: 1.5 }}
+                />
               </svg>
 
               {/* Floating labels */}
@@ -244,18 +254,18 @@ export function HeroSection() {
                 className="absolute top-6 left-6 bg-brand-surface/80 backdrop-blur-sm border border-brand-border rounded-lg px-3 py-1.5"
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.4, delay: 2.2 }}
+                transition={{ duration: 0.4, delay: 1.8 }}
               >
-                <span className="text-2xs font-mono text-brand-muted">TOPO / SECTION A-A&apos;</span>
+                <span className="text-2xs font-mono text-brand-muted">FDM / PLA</span>
               </motion.div>
 
               <motion.div
                 className="absolute bottom-6 right-6 bg-brand-surface/80 backdrop-blur-sm border border-brand-border rounded-lg px-3 py-1.5"
                 initial={{ opacity: 0, x: 10 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.4, delay: 2.4 }}
+                transition={{ duration: 0.4, delay: 2.0 }}
               >
-                <span className="text-2xs font-mono text-brand-muted">Scale 1:1</span>
+                <span className="text-2xs font-mono text-brand-muted">0.4mm layers</span>
               </motion.div>
             </div>
           </motion.div>

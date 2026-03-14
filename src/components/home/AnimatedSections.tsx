@@ -16,7 +16,9 @@ export function ValueProps() {
   ]
 
   return (
-    <section className="border-y border-brand-border bg-brand-surface">
+    <section className="relative border-y border-brand-border bg-brand-surface">
+      {/* Blue gradient accent line */}
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-brand-blue/40 to-transparent" />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-brand-border">
           {items.map((item, i) => (
@@ -130,7 +132,7 @@ export function ProcessSection() {
   ]
 
   return (
-    <section className="py-20 bg-brand-surface">
+    <section className="py-20 bg-gradient-to-b from-brand-surface to-brand-bg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           className="max-w-2xl mb-14"
@@ -159,9 +161,9 @@ export function ProcessSection() {
             >
               {/* Connector line (not on last item) */}
               {i < steps.length - 1 && (
-                <div className="hidden lg:block absolute top-5 left-full w-full h-px border-t border-dashed border-brand-border -translate-x-4" />
+                <div className="hidden lg:block absolute top-5 left-full w-full h-px border-t border-dashed border-brand-blue/20 -translate-x-4" />
               )}
-              <div className="text-3xl font-bold text-brand-blue/20 font-mono mb-3 leading-none">
+              <div className="text-3xl font-bold text-brand-blue/30 font-mono mb-3 leading-none">
                 {step.number}
               </div>
               <h3 className="text-base font-bold text-brand-text mb-2">{step.title}</h3>
@@ -217,8 +219,7 @@ export function MaterialsSection() {
         >
           <div className="flex items-center gap-4 mb-6">
             <div
-              className="w-12 h-12 rounded-lg shadow-inner"
-              style={{ backgroundColor: '#6CBCE3' }}
+              className="w-12 h-12 rounded-lg shadow-inner bg-brand-blue"
             />
             <div>
               <h3 className="text-xl font-bold text-brand-text">PLA Filament</h3>
@@ -244,7 +245,7 @@ export function BundleSection({ activeBundles }: { activeBundles: BundleWithProd
   if (activeBundles.length === 0) return null
 
   return (
-    <section className="py-20 bg-brand-arctic border-y border-brand-border">
+    <section className="py-20 bg-brand-surface border-y border-brand-blue/10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           className="flex items-end justify-between mb-10"
@@ -447,11 +448,11 @@ export function CTASection() {
     <section className="py-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <ScrollReveal3D
-          className="relative overflow-hidden rounded-2xl bg-[#0a1820] border border-brand-blue/20 p-12 sm:p-16"
+          className="relative overflow-hidden rounded-2xl bg-[#080c12] border border-brand-blue/20 p-12 sm:p-16"
           rotateX={12}
         >
           {/* Strata accent lines */}
-          <svg className="absolute inset-0 w-full h-full opacity-10" preserveAspectRatio="none" viewBox="0 0 800 400">
+          <svg className="absolute inset-0 w-full h-full opacity-15" preserveAspectRatio="none" viewBox="0 0 800 400">
             <path d="M0 80 Q200 60 400 100 T800 70" stroke="#6CBCE3" strokeWidth="1.5" fill="none" />
             <path d="M0 160 Q250 140 500 180 T800 150" stroke="#6CBCE3" strokeWidth="1" fill="none" />
             <path d="M0 240 Q180 220 450 260 T800 230" stroke="#6CBCE3" strokeWidth="1.5" fill="none" />

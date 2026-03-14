@@ -518,7 +518,7 @@ export default function AdminPricingPage() {
 
             <button
               onClick={exportInvoice}
-              className="mt-4 w-full px-4 py-2.5 text-sm font-semibold bg-brand-text text-white rounded-xl hover:bg-brand-text/90 transition-colors"
+              className="mt-4 w-full px-4 py-2.5 text-sm font-semibold bg-brand-blue text-white rounded-xl hover:bg-brand-blue-dark transition-colors"
             >
               Export as Invoice
             </button>

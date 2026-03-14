@@ -58,7 +58,7 @@ export function BundleCard({ bundle }: BundleCardProps) {
             {bundle.bundleProducts.slice(0, 3).map((bp, i) => (
               <div
                 key={bp.id}
-                className="w-10 h-10 rounded-lg overflow-hidden border-2 border-white bg-brand-arctic shadow-card"
+                className="w-10 h-10 rounded-lg overflow-hidden border-2 border-brand-surface bg-brand-arctic shadow-card"
                 style={{ zIndex: 3 - i }}
               >
                 {bp.product.images[0] ? (
@@ -75,7 +75,7 @@ export function BundleCard({ bundle }: BundleCardProps) {
               </div>
             ))}
             {bundle.bundleProducts.length > 3 && (
-              <div className="w-10 h-10 rounded-lg bg-brand-surface border-2 border-white shadow-card flex items-center justify-center text-xs font-bold text-brand-text">
+              <div className="w-10 h-10 rounded-lg bg-brand-surface border-2 border-brand-surface shadow-card flex items-center justify-center text-xs font-bold text-brand-text">
                 +{bundle.bundleProducts.length - 3}
               </div>
             )}

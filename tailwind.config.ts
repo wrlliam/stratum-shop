@@ -47,6 +47,7 @@ const config: Config = {
         'slide-right': 'slideRight 0.3s ease-out',
         'scan-line': 'scanLine 1.2s ease-in-out',
         'glow-pulse': 'glowPulse 2s ease-in-out infinite',
+        'slide-down': 'slideDown 0.25s ease-out forwards',
       },
       keyframes: {
         fadeIn: {
@@ -68,6 +69,10 @@ const config: Config = {
         glowPulse: {
           '0%, 100%': { opacity: '0.4' },
           '50%': { opacity: '0.8' },
+        },
+        slideDown: {
+          '0%': { opacity: '0', maxHeight: '0', transform: 'translateY(-8px)' },
+          '100%': { opacity: '1', maxHeight: '600px', transform: 'translateY(0)' },
         },
       },
     },
