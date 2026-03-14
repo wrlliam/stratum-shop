@@ -33,7 +33,20 @@ export function OrderProcessingGuide() {
     setHidden(true)
   }
 
-  if (hidden) return null
+  if (hidden) return (
+    <div className="mb-4 flex justify-end">
+      <button
+        onClick={() => { localStorage.removeItem(STORAGE_KEY); setHidden(false) }}
+        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-brand-muted hover:text-brand-blue border border-brand-border hover:border-brand-blue/30 rounded-lg transition-colors"
+        title="Show order processing workflow"
+      >
+        <svg width="14" height="14" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" className="opacity-70">
+          <path d="M7.5 0.875C3.83152 0.875 0.875 3.83152 0.875 7.5C0.875 11.1685 3.83152 14.125 7.5 14.125C11.1685 14.125 14.125 11.1685 14.125 7.5C14.125 3.83152 11.1685 0.875 7.5 0.875ZM7.5 3.5C7.77614 3.5 8 3.72386 8 4V7.5C8 7.77614 7.77614 8 7.5 8C7.22386 8 7 7.77614 7 7.5V4C7 3.72386 7.22386 3.5 7.5 3.5ZM7.5 9.5C7.22386 9.5 7 9.72386 7 10C7 10.2761 7.22386 10.5 7.5 10.5C7.77614 10.5 8 10.2761 8 10C8 9.72386 7.77614 9.5 7.5 9.5Z" fill="currentColor" fillRule="evenodd" clipRule="evenodd" />
+        </svg>
+        Show workflow guide
+      </button>
+    </div>
+  )
 
   return (
     <div className="bg-brand-surface border border-brand-border rounded-2xl p-6 shadow-card mb-6 relative">

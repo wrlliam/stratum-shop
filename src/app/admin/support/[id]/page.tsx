@@ -123,6 +123,29 @@ export default function SupportTicketPage({ params }: { params: Promise<{ id: st
     }
   }
 
+  const [closing, setClosing] = useState(false)
+  const handleQuickClose = async () => {
+    if (!confirm('Close this ticket? An automated message will be sent to the customer.')) return
+    setClosing(true)
+    try {
+      const closeMessage = 'This ticket has been closed by the support team. If you need further help, feel free to open a new ticket or reply here at any time — we\'re happy to assist!'
+      const res = await fetch(`/api/support/tickets/${id}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ body: closeMessage, status: 'closed' }),
+      })
+      if (!res.ok) throw new Error('Failed')
+      const msg = await res.json()
+      setTicket((prev) => prev ? { ...prev, messages: [...prev.messages, msg], status: 'closed' } : prev)
+      setStatus('closed')
+      toast.success('Ticket closed')
+    } catch {
+      toast.error('Failed to close ticket')
+    } finally {
+      setClosing(false)
+    }
+  }
+
   if (loading) {
     return <div className="p-8 flex items-center justify-center"><div className="animate-spin w-6 h-6 border-2 border-brand-blue border-t-transparent rounded-full" /></div>
   }
@@ -150,6 +173,15 @@ export default function SupportTicketPage({ params }: { params: Promise<{ id: st
           >
             {STATUS_OPTS.map((s) => <option key={s} value={s}>{s.replace('_', ' ')}</option>)}
           </select>
+          {ticket.status !== 'closed' && (
+            <button
+              onClick={handleQuickClose}
+              disabled={closing}
+              className="px-3 py-1.5 text-xs font-semibold bg-red-50 text-red-600 border border-red-200 rounded-lg hover:bg-red-100 disabled:opacity-50 transition-colors"
+            >
+              {closing ? 'Closing…' : 'Close Ticket'}
+            </button>
+          )}
         </div>
       </div>
 
