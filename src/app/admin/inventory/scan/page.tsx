@@ -213,7 +213,7 @@ export default function ScanPage() {
   }
 
   return (
-    <div className="p-8 max-w-2xl">
+    <div className="p-8">
       <div className="flex items-center gap-4 mb-8">
         <Link
           href="/admin/inventory"

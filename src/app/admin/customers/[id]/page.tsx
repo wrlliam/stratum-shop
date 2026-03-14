@@ -86,7 +86,7 @@ export default function CustomerDetailPage({ params }: { params: Promise<{ id: s
   }
 
   return (
-    <div className="p-8 max-w-4xl">
+    <div className="p-8">
       <div className="flex items-center gap-2 mb-6">
         <Link href="/admin/customers" className="text-brand-muted hover:text-brand-text text-sm">
           ← Customers

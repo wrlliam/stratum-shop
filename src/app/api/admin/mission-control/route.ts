@@ -32,10 +32,11 @@ export async function GET() {
     })
 
     // Today stats
+    const todayIso = todayStart.toISOString()
     const [todayStats] = await db
       .select({
-        revenue: sql<number>`COALESCE(SUM(CASE WHEN ${orders.createdAt} >= ${todayStart} AND ${orders.status} != 'pending' AND ${orders.status} != 'cancelled' THEN ${orders.total} ELSE 0 END), 0)`,
-        todayOrders: sql<number>`COUNT(CASE WHEN ${orders.createdAt} >= ${todayStart} AND ${orders.status} != 'pending' THEN 1 END)`,
+        revenue: sql<number>`COALESCE(SUM(CASE WHEN ${orders.createdAt} >= ${todayIso} AND ${orders.status} != 'pending' AND ${orders.status} != 'cancelled' THEN ${orders.total} ELSE 0 END), 0)`,
+        todayOrders: sql<number>`COUNT(CASE WHEN ${orders.createdAt} >= ${todayIso} AND ${orders.status} != 'pending' THEN 1 END)`,
         totalOrders: sql<number>`COUNT(CASE WHEN ${orders.status} != 'pending' THEN 1 END)`,
         paidOrders: sql<number>`COUNT(CASE WHEN ${orders.status} = 'paid' THEN 1 END)`,
         processingOrders: sql<number>`COUNT(CASE WHEN ${orders.status} IN ('processing', 'preparing', 'prepared') THEN 1 END)`,

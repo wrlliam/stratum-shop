@@ -133,7 +133,7 @@ export default function CostsPage() {
   }
 
   return (
-    <div className="p-8 max-w-5xl">
+    <div className="p-8">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-xl font-bold text-brand-text">Cost Tracking</h1>
         <input

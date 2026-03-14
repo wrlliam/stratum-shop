@@ -152,7 +152,7 @@ export default function SupportTicketPage({ params }: { params: Promise<{ id: st
   if (!ticket) return <div className="p-8 text-brand-muted">Ticket not found</div>
 
   return (
-    <div className="p-8 max-w-3xl">
+    <div className="p-8">
       <Link href="/admin/support" className="text-brand-muted hover:text-brand-text text-sm mb-6 inline-block">← Support</Link>
 
       <div className="flex items-start justify-between mb-6 gap-4">

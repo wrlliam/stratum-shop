@@ -48,7 +48,7 @@ export default function MassEmailPage() {
   }
 
   return (
-    <div className="p-8 max-w-3xl">
+    <div className="p-8">
       <div className="mb-6">
         <h1 className="text-xl font-bold text-brand-text">Mass Email</h1>
         <p className="text-sm text-brand-muted mt-1">

@@ -342,7 +342,7 @@ export default function AdminPricingPage() {
   if (!loaded) return null;
 
   return (
-    <div className="p-8 max-w-5xl">
+    <div className="p-8">
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-brand-text">
           Pricing Calculator
