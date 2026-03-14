@@ -8,6 +8,13 @@ interface Sender {
   country: string
 }
 
+export interface LabelMeta {
+  orderDate?: string
+  itemCount?: number
+  email?: string
+  total?: string
+}
+
 export function getSender(): Sender {
   return {
     name: process.env.NEXT_PUBLIC_SENDER_NAME || 'Stratum',
@@ -22,7 +29,8 @@ export function classicLabelHtml(
   orderNumber: string,
   deliveryLabel: string,
   address: DeliveryAddress,
-  sender: Sender
+  sender: Sender,
+  meta?: LabelMeta
 ) {
   return `<!DOCTYPE html>
 <html>
@@ -31,7 +39,7 @@ export function classicLabelHtml(
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: Arial, Helvetica, sans-serif; padding: 20mm; }
-    .label { border: 2px solid #000; padding: 8mm; width: 100mm; }
+    .label { border: 2px solid #000; padding: 8mm; width: 105mm; }
     .section { margin-bottom: 6mm; }
     .section-title { font-size: 8pt; text-transform: uppercase; letter-spacing: 1px; color: #666; margin-bottom: 2mm; border-bottom: 1px solid #ccc; padding-bottom: 1mm; }
     .address { font-size: 12pt; line-height: 1.5; }
@@ -40,6 +48,9 @@ export function classicLabelHtml(
     .order-info { display: flex; justify-content: space-between; align-items: center; border-top: 2px solid #000; padding-top: 4mm; margin-top: 4mm; }
     .order-number { font-weight: bold; font-size: 11pt; font-family: monospace; }
     .delivery-method { font-size: 9pt; background: #000; color: #fff; padding: 2mm 4mm; font-weight: bold; }
+    .meta-row { display: flex; justify-content: space-between; font-size: 8pt; color: #666; margin-top: 3mm; padding-top: 3mm; border-top: 1px dashed #ccc; }
+    .meta-row span { display: inline-block; }
+    .country-tag { font-size: 8pt; color: #666; margin-top: 1mm; }
     @media print { body { padding: 0; } .no-print { display: none; } }
   </style>
 </head>
@@ -64,12 +75,18 @@ export function classicLabelHtml(
         <div>${address.city}</div>
         ${address.county ? `<div>${address.county}</div>` : ''}
         <div class="postcode">${address.postcode}</div>
+        <div class="country-tag">${address.country || 'GB'}</div>
       </div>
     </div>
     <div class="order-info">
       <span class="order-number">${orderNumber}</span>
       <span class="delivery-method">${deliveryLabel}</span>
     </div>
+    ${meta ? `<div class="meta-row">
+      ${meta.orderDate ? `<span>Date: ${meta.orderDate}</span>` : ''}
+      ${meta.itemCount ? `<span>Items: ${meta.itemCount}</span>` : ''}
+      ${meta.total ? `<span>Value: ${meta.total}</span>` : ''}
+    </div>` : ''}
   </div>
   <script>window.onload = function() { window.print(); }</script>
 </body>
@@ -80,7 +97,8 @@ export function brandedLabelHtml(
   orderNumber: string,
   deliveryLabel: string,
   address: DeliveryAddress,
-  sender: Sender
+  sender: Sender,
+  meta?: LabelMeta
 ) {
   return `<!DOCTYPE html>
 <html>
@@ -103,6 +121,10 @@ export function brandedLabelHtml(
     .footer { display: flex; align-items: center; justify-content: space-between; margin-top: 4mm; padding-top: 4mm; border-top: 1px solid #e2e8f0; }
     .postcode { font-family: monospace; font-size: 16pt; font-weight: 900; color: #1a1a2e; letter-spacing: 2px; }
     .badge { background: #6CBCE3; color: #fff; padding: 1.5mm 4mm; border-radius: 6px; font-size: 8pt; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+    .country-tag { font-size: 9pt; color: #94a3b8; margin-top: 1mm; }
+    .meta-strip { display: flex; gap: 4mm; padding: 3mm 6mm; background: #f8fafc; border-top: 1px solid #e2e8f0; }
+    .meta-strip .meta-item { font-size: 7pt; color: #64748b; }
+    .meta-strip .meta-item strong { color: #334155; font-weight: 600; }
     @media print { body { background: none; padding: 0; } .no-print { display: none; } }
   </style>
 </head>
@@ -132,6 +154,7 @@ export function brandedLabelHtml(
           ${address.line2 ? `<div>${address.line2}</div>` : ''}
           <div>${address.city}</div>
           ${address.county ? `<div>${address.county}</div>` : ''}
+          <div class="country-tag">${address.country || 'GB'}</div>
         </div>
       </div>
       <div class="footer">
@@ -139,6 +162,11 @@ export function brandedLabelHtml(
         <span class="badge">${deliveryLabel}</span>
       </div>
     </div>
+    ${meta ? `<div class="meta-strip">
+      ${meta.orderDate ? `<div class="meta-item">Date: <strong>${meta.orderDate}</strong></div>` : ''}
+      ${meta.itemCount ? `<div class="meta-item">Items: <strong>${meta.itemCount}</strong></div>` : ''}
+      ${meta.total ? `<div class="meta-item">Value: <strong>${meta.total}</strong></div>` : ''}
+    </div>` : ''}
   </div>
   <script>window.onload = function() { window.print(); }</script>
 </body>
@@ -146,11 +174,23 @@ export function brandedLabelHtml(
 }
 
 export function bulkLabelsHtml(
-  labels: { orderNumber: string; deliveryLabel: string; address: DeliveryAddress }[],
+  labels: { orderNumber: string; deliveryLabel: string; address: DeliveryAddress; meta?: LabelMeta }[],
   style: 'classic' | 'branded',
   sender: Sender
 ): string {
   const labelBodies = labels.map((l) => {
+    const metaHtml = l.meta ? (style === 'branded'
+      ? `<div class="meta-strip">
+      ${l.meta.orderDate ? `<div class="meta-item">Date: <strong>${l.meta.orderDate}</strong></div>` : ''}
+      ${l.meta.itemCount ? `<div class="meta-item">Items: <strong>${l.meta.itemCount}</strong></div>` : ''}
+      ${l.meta.total ? `<div class="meta-item">Value: <strong>${l.meta.total}</strong></div>` : ''}
+    </div>`
+      : `<div class="meta-row">
+      ${l.meta.orderDate ? `<span>Date: ${l.meta.orderDate}</span>` : ''}
+      ${l.meta.itemCount ? `<span>Items: ${l.meta.itemCount}</span>` : ''}
+      ${l.meta.total ? `<span>Value: ${l.meta.total}</span>` : ''}
+    </div>`) : ''
+
     if (style === 'branded') {
       return `<div class="label">
     <div class="header">
@@ -177,6 +217,7 @@ export function bulkLabelsHtml(
           ${l.address.line2 ? `<div>${l.address.line2}</div>` : ''}
           <div>${l.address.city}</div>
           ${l.address.county ? `<div>${l.address.county}</div>` : ''}
+          <div class="country-tag">${l.address.country || 'GB'}</div>
         </div>
       </div>
       <div class="footer">
@@ -184,6 +225,7 @@ export function bulkLabelsHtml(
         <span class="badge">${l.deliveryLabel}</span>
       </div>
     </div>
+    ${metaHtml}
   </div>`
     }
     return `<div class="label">
@@ -206,12 +248,14 @@ export function bulkLabelsHtml(
         <div>${l.address.city}</div>
         ${l.address.county ? `<div>${l.address.county}</div>` : ''}
         <div class="postcode">${l.address.postcode}</div>
+        <div class="country-tag">${l.address.country || 'GB'}</div>
       </div>
     </div>
     <div class="order-info">
       <span class="order-number">${l.orderNumber}</span>
       <span class="delivery-method">${l.deliveryLabel}</span>
     </div>
+    ${metaHtml}
   </div>`
   })
 
@@ -232,10 +276,14 @@ export function bulkLabelsHtml(
     .footer { display: flex; align-items: center; justify-content: space-between; margin-top: 4mm; padding-top: 4mm; border-top: 1px solid #e2e8f0; }
     .postcode { font-family: monospace; font-size: 16pt; font-weight: 900; color: #1a1a2e; letter-spacing: 2px; }
     .badge { background: #6CBCE3; color: #fff; padding: 1.5mm 4mm; border-radius: 6px; font-size: 8pt; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+    .country-tag { font-size: 9pt; color: #94a3b8; margin-top: 1mm; }
+    .meta-strip { display: flex; gap: 4mm; padding: 3mm 6mm; background: #f8fafc; border-top: 1px solid #e2e8f0; }
+    .meta-strip .meta-item { font-size: 7pt; color: #64748b; }
+    .meta-strip .meta-item strong { color: #334155; font-weight: 600; }
     @media print { body { background: none; padding: 0; } .label:last-child { page-break-after: avoid; } }`
     : `* { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: Arial, Helvetica, sans-serif; padding: 20mm; display: flex; flex-direction: column; align-items: flex-start; gap: 10mm; }
-    .label { border: 2px solid #000; padding: 8mm; width: 100mm; page-break-after: always; }
+    .label { border: 2px solid #000; padding: 8mm; width: 105mm; page-break-after: always; }
     .section { margin-bottom: 6mm; }
     .section-title { font-size: 8pt; text-transform: uppercase; letter-spacing: 1px; color: #666; margin-bottom: 2mm; border-bottom: 1px solid #ccc; padding-bottom: 1mm; }
     .address { font-size: 12pt; line-height: 1.5; }
@@ -244,6 +292,9 @@ export function bulkLabelsHtml(
     .order-info { display: flex; justify-content: space-between; align-items: center; border-top: 2px solid #000; padding-top: 4mm; margin-top: 4mm; }
     .order-number { font-weight: bold; font-size: 11pt; font-family: monospace; }
     .delivery-method { font-size: 9pt; background: #000; color: #fff; padding: 2mm 4mm; font-weight: bold; }
+    .meta-row { display: flex; justify-content: space-between; font-size: 8pt; color: #666; margin-top: 3mm; padding-top: 3mm; border-top: 1px dashed #ccc; }
+    .meta-row span { display: inline-block; }
+    .country-tag { font-size: 8pt; color: #666; margin-top: 1mm; }
     @media print { body { padding: 0; } .label:last-child { page-break-after: avoid; } }`
 
   return `<!DOCTYPE html>

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useConfirm } from '@/components/providers/ConfirmProvider'
 import { TrashIcon, Pencil1Icon, Cross1Icon, CheckIcon } from '@radix-ui/react-icons'
+import { Select } from '@/components/ui/Select'
 import toast from 'react-hot-toast'
 import type { Banner } from '@/lib/db/schema'
 import { OptionDropdown } from '@/components/shop/AddToCartButton'
@@ -176,19 +177,12 @@ export default function BannersPage() {
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
               {/* Type */}
-              <div>
-                <label className="block text-xs font-medium text-brand-muted mb-1.5">Type</label>
-               
-                <select
-                  value={form.type}
-                  onChange={(e) => set('type', e.target.value)}
-                  className="w-full px-3 py-2.5 text-sm border border-brand-border rounded-xl bg-brand-surface focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue"
-                >
-                  {Object.entries(TYPE_META).map(([value, { label }]) => (
-                    <option key={value} value={value}>{label}</option>
-                  ))}
-                </select>
-              </div>
+              <Select
+                label="Type"
+                value={form.type}
+                onChange={(e) => set('type', e.target.value)}
+                options={Object.entries(TYPE_META).map(([value, { label }]) => ({ value, label }))}
+              />
 
               {/* Link */}
               <div className="sm:col-span-2">

@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useConfirm } from '@/components/providers/ConfirmProvider'
 import { Button } from '@/components/ui/Button'
+import { Select } from '@/components/ui/Select'
 import { Input } from '@/components/ui/Input'
 import { formatPrice } from '@/lib/utils'
 import toast from 'react-hot-toast'
@@ -279,19 +280,15 @@ function CreateCouponForm({
             onChange={(e) => setCode(e.target.value)}
             required
           />
-          <div>
-            <label className="block text-xs font-semibold text-brand-text uppercase tracking-wider mb-1.5">
-              Type
-            </label>
-            <select
-              value={type}
-              onChange={(e) => setType(e.target.value as 'fixed' | 'percentage')}
-              className="w-full bg-brand-surface border border-brand-border rounded-lg px-3 py-2.5 text-sm text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-blue"
-            >
-              <option value="percentage">Percentage</option>
-              <option value="fixed">Fixed Amount</option>
-            </select>
-          </div>
+          <Select
+            label="Type"
+            value={type}
+            onChange={(e) => setType(e.target.value as 'fixed' | 'percentage')}
+            options={[
+              { value: 'percentage', label: 'Percentage' },
+              { value: 'fixed', label: 'Fixed Amount' },
+            ]}
+          />
           <Input
             label={type === 'percentage' ? 'Value (%)' : 'Value (£)'}
             type="number"

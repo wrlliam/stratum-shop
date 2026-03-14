@@ -3,6 +3,7 @@
 import { useState, useEffect, use } from 'react'
 import Link from 'next/link'
 import toast from 'react-hot-toast'
+import { Select } from '@/components/ui/Select'
 import { formatPrice } from '@/lib/utils'
 
 interface CustomerDetail {
@@ -110,13 +111,12 @@ export default function CustomerDetailPage({ params }: { params: Promise<{ id: s
           <div className="bg-brand-surface border border-brand-border rounded-2xl p-5 shadow-card">
             <h2 className="text-sm font-bold text-brand-text mb-4">Role Management</h2>
             <div className="flex gap-2">
-              <select
+              <Select
                 value={role}
                 onChange={(e) => setRole(e.target.value)}
-                className="flex-1 px-3 py-2 text-sm border border-brand-border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-blue/20"
-              >
-                {ROLES.map((r) => <option key={r} value={r}>{r}</option>)}
-              </select>
+                options={ROLES.map((r) => ({ value: r, label: r }))}
+                className="flex-1"
+              />
               <button
                 onClick={handleRoleChange}
                 disabled={savingRole || role === customer.role}

@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { Button } from '@/components/ui/Button'
+import { Select } from '@/components/ui/Select'
 import toast from 'react-hot-toast'
 
 interface StockAdjustFormProps {
@@ -60,15 +61,15 @@ export function StockAdjustForm({ productId, productName, currentStock, onAdjust
           onChange={(e) => setChange(e.target.value)}
           className="flex-1 px-3 py-2 text-sm border border-brand-border rounded-lg bg-brand-surface focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue"
         />
-        <select
+        <Select
           value={reason}
           onChange={(e) => setReason(e.target.value)}
-          className="px-3 py-2 text-sm border border-brand-border rounded-lg bg-brand-surface focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue"
-        >
-          <option value="manual">Manual</option>
-          <option value="batch_completed">Batch Completed</option>
-          <option value="refund">Refund</option>
-        </select>
+          options={[
+            { value: 'manual', label: 'Manual' },
+            { value: 'batch_completed', label: 'Batch Completed' },
+            { value: 'refund', label: 'Refund' },
+          ]}
+        />
       </div>
       <Button type="submit" variant="primary" size="sm" loading={loading}>
         Adjust Stock

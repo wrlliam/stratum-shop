@@ -9,7 +9,13 @@ import { formatPrice } from '@/lib/utils'
 import { formatDeliveryMethod } from '@/lib/delivery'
 import { printBulkBarcodes } from './PrintOrderBarcodeButton'
 import { bulkLabelsHtml, getSender } from '@/lib/label-html'
+import { PrintOrderBarcodeButton } from './PrintOrderBarcodeButton'
 import type { DeliveryAddress } from '@/types'
+import {
+  CaretSortIcon,
+  CaretUpIcon,
+  CaretDownIcon,
+} from '@radix-ui/react-icons'
 
 const ORDER_STATUSES = ['pending', 'paid', 'processing', 'preparing', 'prepared', 'shipped', 'delivered', 'cancelled', 'refunded']
 
@@ -34,11 +40,30 @@ interface Props {
   orders: Order[]
 }
 
+type SortKey = 'orderNumber' | 'email' | 'items' | 'delivery' | 'total' | 'status' | 'date'
+type SortDir = 'asc' | 'desc'
+
+const STATUS_PRIORITY: Record<string, number> = {
+  paid: 0, processing: 1, preparing: 2, prepared: 3, shipped: 4,
+  delivered: 5, cancelled: 6, refunded: 7, pending: 8,
+}
+
+function isUrgent(createdAt: Date): boolean {
+  const twoDaysMs = 2 * 24 * 60 * 60 * 1000
+  return Date.now() - new Date(createdAt).getTime() > twoDaysMs
+}
+
+function daysOld(createdAt: Date): number {
+  return Math.floor((Date.now() - new Date(createdAt).getTime()) / (24 * 60 * 60 * 1000))
+}
+
 export function BulkOrdersTable({ orders }: Props) {
   const router = useRouter()
   const [selected, setSelected] = useState<Set<string>>(new Set())
   const [bulkStatus, setBulkStatus] = useState('processing')
   const [applying, setApplying] = useState(false)
+  const [sortKey, setSortKey] = useState<SortKey>('date')
+  const [sortDir, setSortDir] = useState<SortDir>('desc')
 
   const allSelected = selected.size === orders.length && orders.length > 0
 
@@ -54,6 +79,43 @@ export function BulkOrdersTable({ orders }: Props) {
       return next
     })
   }
+
+  const handleSort = (key: SortKey) => {
+    if (sortKey === key) {
+      setSortDir(sortDir === 'asc' ? 'desc' : 'asc')
+    } else {
+      setSortKey(key)
+      setSortDir(key === 'date' ? 'desc' : 'asc')
+    }
+  }
+
+  const sortedOrders = [...orders].sort((a, b) => {
+    const dir = sortDir === 'asc' ? 1 : -1
+    switch (sortKey) {
+      case 'orderNumber':
+        return a.orderNumber.localeCompare(b.orderNumber) * dir
+      case 'email':
+        return a.email.localeCompare(b.email) * dir
+      case 'items': {
+        const ai = a.items.reduce((s, i) => s + i.quantity, 0)
+        const bi = b.items.reduce((s, i) => s + i.quantity, 0)
+        return (ai - bi) * dir
+      }
+      case 'delivery':
+        return formatDeliveryMethod(a.deliveryMethod).localeCompare(formatDeliveryMethod(b.deliveryMethod)) * dir
+      case 'total':
+        return (a.total - b.total) * dir
+      case 'status': {
+        const pa = STATUS_PRIORITY[a.status] ?? 10
+        const pb = STATUS_PRIORITY[b.status] ?? 10
+        return (pa - pb) * dir
+      }
+      case 'date':
+        return (new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()) * dir
+      default:
+        return 0
+    }
+  })
 
   const applyBulk = async () => {
     if (!selected.size) return
@@ -88,6 +150,11 @@ export function BulkOrdersTable({ orders }: Props) {
         orderNumber: o.orderNumber,
         deliveryLabel: formatDeliveryMethod(o.deliveryMethod),
         address: o.deliveryAddress as DeliveryAddress,
+        meta: {
+          orderDate: new Date(o.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }),
+          itemCount: o.items.reduce((sum, i) => sum + i.quantity, 0),
+          total: formatPrice(o.total),
+        },
       }))
 
     if (labelsData.length === 0) {
@@ -104,6 +171,25 @@ export function BulkOrdersTable({ orders }: Props) {
     }
   }
 
+  const SortHeader = ({ label, sortKeyName }: { label: string; sortKeyName: SortKey }) => {
+    const active = sortKey === sortKeyName
+    return (
+      <th
+        className="px-4 py-3 text-left text-xs font-medium text-brand-muted uppercase tracking-wider whitespace-nowrap cursor-pointer hover:text-brand-text select-none group transition-colors"
+        onClick={() => handleSort(sortKeyName)}
+      >
+        <span className="inline-flex items-center gap-1">
+          {label}
+          {active ? (
+            sortDir === 'asc' ? <CaretUpIcon className="w-3.5 h-3.5 text-brand-blue" /> : <CaretDownIcon className="w-3.5 h-3.5 text-brand-blue" />
+          ) : (
+            <CaretSortIcon className="w-3.5 h-3.5 opacity-0 group-hover:opacity-50 transition-opacity" />
+          )}
+        </span>
+      </th>
+    )
+  }
+
   return (
     <>
       <div className="overflow-x-auto">
@@ -118,67 +204,84 @@ export function BulkOrdersTable({ orders }: Props) {
                   className="rounded border-brand-border"
                 />
               </th>
-              {['Order #', 'Customer', 'Items', 'Delivery', 'Total', 'Status', 'Date', 'Actions'].map((col) => (
-                <th
-                  key={col}
-                  className="px-4 py-3 text-left text-xs font-medium text-brand-muted uppercase tracking-wider whitespace-nowrap"
-                >
-                  {col}
-                </th>
-              ))}
+              <SortHeader label="Order #" sortKeyName="orderNumber" />
+              <SortHeader label="Customer" sortKeyName="email" />
+              <SortHeader label="Items" sortKeyName="items" />
+              <SortHeader label="Delivery" sortKeyName="delivery" />
+              <SortHeader label="Total" sortKeyName="total" />
+              <SortHeader label="Status" sortKeyName="status" />
+              <SortHeader label="Date" sortKeyName="date" />
+              <th className="px-4 py-3 text-left text-xs font-medium text-brand-muted uppercase tracking-wider whitespace-nowrap">
+                Actions
+              </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-brand-border">
-            {orders.map((order) => (
-              <tr
-                key={order.id}
-                className={`hover:bg-brand-arctic transition-colors ${selected.has(order.id) ? 'bg-blue-50/40' : ''}`}
-              >
-                <td className="px-4 py-4">
-                  <input
-                    type="checkbox"
-                    checked={selected.has(order.id)}
-                    onChange={() => toggle(order.id)}
-                    className="rounded border-brand-border"
-                  />
-                </td>
-                <td className="px-4 py-4">
-                  <span className="font-mono text-xs text-brand-blue font-bold">{order.orderNumber}</span>
-                </td>
-                <td className="px-4 py-4">
-                  <div className="max-w-[160px]">
-                    <p className="text-brand-text truncate text-xs">{order.email}</p>
-                  </div>
-                </td>
-                <td className="px-4 py-4 text-brand-muted">
-                  {order.items.reduce((sum, i) => sum + i.quantity, 0)}
-                </td>
-                <td className="px-4 py-4">
-                  <span className="text-xs text-brand-muted">
-                    {formatDeliveryMethod(order.deliveryMethod)}
-                  </span>
-                </td>
-                <td className="px-4 py-4 font-bold text-brand-text">{formatPrice(order.total)}</td>
-                <td className="px-4 py-4">
-                  <OrderStatusSelect orderId={order.id} currentStatus={order.status} />
-                </td>
-                <td className="px-4 py-4 text-brand-muted text-xs whitespace-nowrap">
-                  {new Date(order.createdAt).toLocaleDateString('en-GB', {
-                    day: 'numeric',
-                    month: 'short',
-                    year: 'numeric',
-                  })}
-                </td>
-                <td className="px-4 py-4">
-                  <Link
-                    href={`/admin/orders/${order.id}`}
-                    className="text-xs text-brand-blue hover:underline font-medium"
-                  >
-                    View
-                  </Link>
-                </td>
-              </tr>
-            ))}
+            {sortedOrders.map((order) => {
+              const urgent = isUrgent(order.createdAt) && !['delivered', 'cancelled', 'refunded', 'shipped'].includes(order.status)
+              const age = daysOld(order.createdAt)
+              return (
+                <tr
+                  key={order.id}
+                  className={`hover:bg-brand-arctic transition-colors ${
+                    selected.has(order.id) ? 'bg-blue-50/40 dark:bg-blue-950/20' :
+                    urgent ? 'bg-red-50/40 dark:bg-red-950/15' : ''
+                  }`}
+                >
+                  <td className="px-4 py-4">
+                    <input
+                      type="checkbox"
+                      checked={selected.has(order.id)}
+                      onChange={() => toggle(order.id)}
+                      className="rounded border-brand-border"
+                    />
+                  </td>
+                  <td className="px-4 py-4">
+                    <span className="font-mono text-xs text-brand-blue font-bold">{order.orderNumber}</span>
+                  </td>
+                  <td className="px-4 py-4">
+                    <div className="max-w-[160px]">
+                      <p className="text-brand-text truncate text-xs">{order.email}</p>
+                    </div>
+                  </td>
+                  <td className="px-4 py-4 text-brand-muted">
+                    {order.items.reduce((sum, i) => sum + i.quantity, 0)}
+                  </td>
+                  <td className="px-4 py-4">
+                    <span className="text-xs text-brand-muted">
+                      {formatDeliveryMethod(order.deliveryMethod)}
+                    </span>
+                  </td>
+                  <td className="px-4 py-4 font-bold text-brand-text">{formatPrice(order.total)}</td>
+                  <td className="px-4 py-4">
+                    <OrderStatusSelect orderId={order.id} currentStatus={order.status} />
+                  </td>
+                  <td className="px-4 py-4 text-xs whitespace-nowrap">
+                    <span className={urgent ? 'text-red-600 dark:text-red-400 font-semibold' : 'text-brand-muted'}>
+                      {new Date(order.createdAt).toLocaleDateString('en-GB', {
+                        day: 'numeric',
+                        month: 'short',
+                        year: 'numeric',
+                      })}
+                    </span>
+                    {urgent && (
+                      <span className="ml-1.5 text-[10px] text-red-500 dark:text-red-400 font-medium">
+                        {age}d ago
+                      </span>
+                    )}
+                  </td>
+                  <td className="px-4 py-4 flex items-center gap-2">
+                    <Link
+                      href={`/admin/orders/${order.id}`}
+                      className="text-xs text-brand-blue hover:underline font-medium"
+                    >
+                      View
+                    </Link>
+                    <PrintOrderBarcodeButton orderId={order.id} orderNumber={order.orderNumber} />
+                  </td>
+                </tr>
+              )
+            })}
             {orders.length === 0 && (
               <tr>
                 <td colSpan={9} className="px-4 py-12 text-center text-brand-muted">

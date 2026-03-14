@@ -5,16 +5,18 @@ import { Button } from '@/components/ui/Button'
 import type { DeliveryAddress } from '@/types'
 import { formatDeliveryMethod } from '@/lib/delivery'
 import { classicLabelHtml, brandedLabelHtml, getSender } from '@/lib/label-html'
+import type { LabelMeta } from '@/lib/label-html'
 
 interface Props {
   orderNumber: string
   deliveryMethod: string
   address: DeliveryAddress
+  meta?: LabelMeta
 }
 
 type LabelStyle = 'classic' | 'branded'
 
-export function PrintLabelButton({ orderNumber, deliveryMethod, address }: Props) {
+export function PrintLabelButton({ orderNumber, deliveryMethod, address, meta }: Props) {
   const [showPicker, setShowPicker] = useState(false)
   const [selectedStyle, setSelectedStyle] = useState<LabelStyle>('branded')
 
@@ -24,8 +26,8 @@ export function PrintLabelButton({ orderNumber, deliveryMethod, address }: Props
     const sender = getSender()
     const html =
       selectedStyle === 'branded'
-        ? brandedLabelHtml(orderNumber, deliveryLabel, address, sender)
-        : classicLabelHtml(orderNumber, deliveryLabel, address, sender)
+        ? brandedLabelHtml(orderNumber, deliveryLabel, address, sender, meta)
+        : classicLabelHtml(orderNumber, deliveryLabel, address, sender, meta)
 
     const win = window.open('', '_blank')
     if (win) {

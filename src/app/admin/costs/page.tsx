@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { Select } from '@/components/ui/Select'
 import { formatPrice } from '@/lib/utils'
 import toast from 'react-hot-toast'
 
@@ -236,13 +237,11 @@ export default function CostsPage() {
         <div className="bg-brand-surface border border-brand-border rounded-2xl p-5 shadow-card">
           <h2 className="text-sm font-bold text-brand-text mb-4">Log Cost</h2>
           <form onSubmit={submitCost} className="space-y-3">
-            <select
+            <Select
               value={costForm.costType}
               onChange={(e) => setCostForm((p) => ({ ...p, costType: e.target.value, filamentId: '', gramsUsed: '', amountPounds: '' }))}
-              className="w-full px-3 py-2 text-sm border border-brand-border rounded-xl focus:outline-none bg-brand-surface capitalize text-brand-text"
-            >
-              {COST_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
-            </select>
+              options={COST_TYPES.map((t) => ({ value: t, label: t.charAt(0).toUpperCase() + t.slice(1) }))}
+            />
 
             {costForm.costType === 'filament' ? (
               <>

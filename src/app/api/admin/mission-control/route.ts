@@ -33,10 +33,13 @@ export async function GET() {
 
     // Today stats
     const todayIso = todayStart.toISOString()
+    const weekIso = sevenDaysAgo.toISOString()
     const [todayStats] = await db
       .select({
         revenue: sql<number>`COALESCE(SUM(CASE WHEN ${orders.createdAt} >= ${todayIso} AND ${orders.status} != 'pending' AND ${orders.status} != 'cancelled' THEN ${orders.total} ELSE 0 END), 0)`,
         todayOrders: sql<number>`COUNT(CASE WHEN ${orders.createdAt} >= ${todayIso} AND ${orders.status} != 'pending' THEN 1 END)`,
+        weekRevenue: sql<number>`COALESCE(SUM(CASE WHEN ${orders.createdAt} >= ${weekIso} AND ${orders.status} != 'pending' AND ${orders.status} != 'cancelled' THEN ${orders.total} ELSE 0 END), 0)`,
+        weekOrders: sql<number>`COUNT(CASE WHEN ${orders.createdAt} >= ${weekIso} AND ${orders.status} != 'pending' THEN 1 END)`,
         totalOrders: sql<number>`COUNT(CASE WHEN ${orders.status} != 'pending' THEN 1 END)`,
         paidOrders: sql<number>`COUNT(CASE WHEN ${orders.status} = 'paid' THEN 1 END)`,
         processingOrders: sql<number>`COUNT(CASE WHEN ${orders.status} IN ('processing', 'preparing', 'prepared') THEN 1 END)`,
@@ -44,6 +47,21 @@ export async function GET() {
         pendingOrders: sql<number>`COUNT(CASE WHEN ${orders.status} = 'paid' THEN 1 END)`,
       })
       .from(orders)
+
+    // Average fulfillment time (paid → shipped, last 30 days)
+    const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
+    const thirtyDaysIso = thirtyDaysAgo.toISOString()
+    const [fulfillmentResult] = await db
+      .select({
+        avgHours: sql<number>`COALESCE(ROUND(AVG(EXTRACT(EPOCH FROM (${orders.updatedAt} - ${orders.createdAt})) / 3600)::numeric), 0)`,
+      })
+      .from(orders)
+      .where(
+        and(
+          inArray(orders.status, ['shipped', 'delivered']),
+          gte(orders.createdAt, thirtyDaysAgo),
+        )
+      )
 
     return NextResponse.json({
       orders: activeOrders.map((o) => ({
@@ -59,10 +77,13 @@ export async function GET() {
         totalOrders: Number(todayStats.totalOrders),
         todayRevenue: Number(todayStats.revenue),
         todayOrders: Number(todayStats.todayOrders),
+        weekRevenue: Number(todayStats.weekRevenue),
+        weekOrders: Number(todayStats.weekOrders),
         paidOrders: Number(todayStats.paidOrders),
         processingOrders: Number(todayStats.processingOrders),
         shippedOrders: Number(todayStats.shippedOrders),
         pendingOrders: Number(todayStats.pendingOrders),
+        avgFulfillmentHours: Number(fulfillmentResult.avgHours),
       },
     })
   } catch (error) {

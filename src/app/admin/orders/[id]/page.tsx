@@ -134,6 +134,11 @@ export default async function AdminOrderDetailPage({ params }: Props) {
                   orderNumber={order.orderNumber}
                   deliveryMethod={order.deliveryMethod}
                   address={address}
+                  meta={{
+                    orderDate: new Date(order.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }),
+                    itemCount: order.items.reduce((sum, i) => sum + i.quantity, 0),
+                    total: formatPrice(order.total),
+                  }}
                 />
               </div>
               <div className="text-sm text-brand-text space-y-0.5">

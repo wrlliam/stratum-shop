@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useConfirm } from '@/components/providers/ConfirmProvider'
 import { Button } from '@/components/ui/Button'
+import { Select } from '@/components/ui/Select'
 import { Input } from '@/components/ui/Input'
 import { formatPrice } from '@/lib/utils'
 import toast from 'react-hot-toast'
@@ -122,13 +123,12 @@ export default function FilamentsPage() {
           <form onSubmit={submit} className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             <Input label="Brand" placeholder="Bambu, Polymaker..." value={form.brand ?? ''} onChange={(e) => set('brand', e.target.value)} />
 
-            <div>
-              <label className="block text-xs font-semibold text-brand-text uppercase tracking-wider mb-1.5">Material</label>
-              <select value={form.material ?? 'PLA'} onChange={(e) => set('material', e.target.value)}
-                className="w-full bg-brand-surface border border-brand-border rounded-lg px-3 py-2.5 text-sm text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-blue">
-                {MATERIALS.map((m) => <option key={m} value={m}>{m}</option>)}
-              </select>
-            </div>
+            <Select
+              label="Material"
+              value={form.material ?? 'PLA'}
+              onChange={(e) => set('material', e.target.value)}
+              options={MATERIALS.map((m) => ({ value: m, label: m }))}
+            />
 
             <Input label="Color Name" placeholder="Silk Gold" value={form.color ?? ''} onChange={(e) => set('color', e.target.value)} required />
 

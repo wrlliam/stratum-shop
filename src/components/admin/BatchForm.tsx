@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { Button } from '@/components/ui/Button'
+import { Select } from '@/components/ui/Select'
 import toast from 'react-hot-toast'
 
 interface Product {
@@ -56,22 +57,12 @@ export function BatchForm({ products, onCreated }: BatchFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-3">
-      <div>
-        <label className="text-xs font-semibold text-brand-muted uppercase tracking-wider mb-1 block">
-          Product
-        </label>
-        <select
-          value={productId}
-          onChange={(e) => setProductId(e.target.value)}
-          className="w-full px-3 py-2 text-sm border border-brand-border rounded-lg bg-brand-surface focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue"
-        >
-          {products.map((p) => (
-            <option key={p.id} value={p.id}>
-              {p.name}
-            </option>
-          ))}
-        </select>
-      </div>
+      <Select
+        label="Product"
+        value={productId}
+        onChange={(e) => setProductId(e.target.value)}
+        options={products.map((p) => ({ value: p.id, label: p.name }))}
+      />
       <div>
         <label className="text-xs font-semibold text-brand-muted uppercase tracking-wider mb-1 block">
           Quantity
