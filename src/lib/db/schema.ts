@@ -338,9 +338,13 @@ export const recommendations = pgTable('recommendations', {
   modelFileUrl: text('model_file_url'), // uploaded STL/3MF file URL
   estimatedVolumeCm3: integer('estimated_volume_cm3'), // parsed from model file
   estimatedPricePence: integer('estimated_price_pence'), // auto-quoted price
+  finalPricePence: integer('final_price_pence'), // admin-set price (overrides estimate)
   plates: jsonb('plates'), // [{id, name, volumeCm3, selected}]
-  status: text('status').notNull().default('pending'), // pending, reviewing, accepted, declined
+  status: text('status').notNull().default('pending'), // pending, reviewing, quoted, awaiting_payment, paid, printing, completed, declined
   adminNotes: text('admin_notes'),
+  orderId: uuid('order_id').references(() => orders.id),
+  userId: text('user_id').references(() => user.id),
+  paymentSessionId: text('payment_session_id'), // Stripe checkout session ID
   createdAt: timestamp('created_at').defaultNow().notNull(),
 })
 

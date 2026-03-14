@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
-import { db, orders } from '@/lib/db'
+import { db, orders, recommendations } from '@/lib/db'
 import { requireAdmin } from '@/lib/api-guard'
-import { sql, desc, gte, and, inArray } from 'drizzle-orm'
+import { sql, desc, gte, and, inArray, eq } from 'drizzle-orm'
 
 export const dynamic = 'force-dynamic'
 
@@ -63,6 +63,12 @@ export async function GET() {
         )
       )
 
+    // Ready-to-print count (recommendations with status 'paid')
+    const [readyToPrint] = await db
+      .select({ count: sql<number>`COUNT(*)` })
+      .from(recommendations)
+      .where(eq(recommendations.status, 'paid'))
+
     return NextResponse.json({
       orders: activeOrders.map((o) => ({
         id: o.id,
@@ -84,6 +90,7 @@ export async function GET() {
         shippedOrders: Number(todayStats.shippedOrders),
         pendingOrders: Number(todayStats.pendingOrders),
         avgFulfillmentHours: Number(fulfillmentResult.avgHours),
+        readyToPrint: Number(readyToPrint.count),
       },
     })
   } catch (error) {

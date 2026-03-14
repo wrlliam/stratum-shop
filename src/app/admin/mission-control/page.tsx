@@ -59,6 +59,7 @@ interface MissionStats {
   avgFulfillmentHours: number
   weekRevenue: number
   weekOrders: number
+  readyToPrint: number
 }
 
 const STATUS_PRIORITY: Record<string, number> = {
@@ -348,6 +349,17 @@ export default function MissionControlPage() {
             icon={<ClockIcon className="w-4 h-4" />}
             color="text-brand-text"
           />
+          {stats.readyToPrint > 0 && (
+            <a href="/admin/recommendations?filter=paid">
+              <StatCard
+                label="Ready to Print"
+                value={stats.readyToPrint.toString()}
+                icon={<RocketIcon className="w-4 h-4" />}
+                color="text-emerald-600 dark:text-emerald-400"
+                pulse
+              />
+            </a>
+          )}
         </div>
       )}
 
@@ -600,6 +612,15 @@ export default function MissionControlPage() {
               <span>Ship prepared orders</span>
               <span className="text-xs bg-blue-200 dark:bg-blue-800 px-2 py-0.5 rounded-full">{statusCounts.prepared || 0}</span>
             </a>
+            {stats && stats.readyToPrint > 0 && (
+              <a
+                href="/admin/recommendations?filter=paid"
+                className="flex items-center justify-between px-4 py-3 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 rounded-xl text-sm font-medium text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-950/50 transition-colors"
+              >
+                <span>Custom prints ready</span>
+                <span className="text-xs bg-emerald-200 dark:bg-emerald-800 px-2 py-0.5 rounded-full">{stats.readyToPrint}</span>
+              </a>
+            )}
             <a
               href="/admin/orders"
               className="flex items-center justify-between px-4 py-3 bg-brand-arctic dark:bg-brand-surface border border-brand-border rounded-xl text-sm font-medium text-brand-text hover:bg-brand-arctic/80 dark:hover:bg-brand-arctic/10 transition-colors"

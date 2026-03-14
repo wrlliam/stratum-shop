@@ -60,7 +60,7 @@ export async function PATCH(request: NextRequest) {
     const body = await request.json()
     const updateSchema = z.object({
       id: z.string().uuid(),
-      status: z.enum(['pending', 'reviewing', 'accepted', 'declined']),
+      status: z.enum(['pending', 'reviewing', 'quoted', 'awaiting_payment', 'paid', 'printing', 'completed', 'declined']),
       adminNotes: z.string().max(2000).nullable().optional(),
     })
     const data = updateSchema.parse(body)

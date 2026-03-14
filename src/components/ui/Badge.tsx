@@ -50,6 +50,10 @@ export function StatusBadge({ status }: { status: string }) {
     reviewing: { label: 'Reviewing', variant: 'blue' },
     accepted: { label: 'Accepted', variant: 'green' },
     declined: { label: 'Declined', variant: 'red' },
+    quoted: { label: 'Quoted', variant: 'amber' },
+    awaiting_payment: { label: 'Awaiting Payment', variant: 'amber' },
+    printing: { label: 'Printing', variant: 'purple' },
+    completed: { label: 'Completed', variant: 'green' },
   }
 
   const config = map[status] || { label: status, variant: 'default' as const }

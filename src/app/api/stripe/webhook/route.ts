@@ -11,6 +11,7 @@ import {
   inventoryLog,
   costEntries,
   timeEntries,
+  recommendations,
 } from "@/lib/db";
 import { eq, sql, and } from "drizzle-orm";
 import { OrderConfirmationEmail } from "@/lib/email/order-confirmation";
@@ -181,6 +182,15 @@ export async function POST(request: NextRequest) {
             subject: `Order Confirmed: ${order.orderNumber} — Stratum`,
             html,
           });
+
+          // Sync recommendation status if this order is linked to one
+          if (session.metadata?.recommendationId) {
+            await db
+              .update(recommendations)
+              .set({ status: 'paid' })
+              .where(eq(recommendations.id, session.metadata.recommendationId))
+              .catch(console.error)
+          }
 
           // Invalidate stats cache + push real-time event
           await cacheDel(STATS_CACHE_KEY)
