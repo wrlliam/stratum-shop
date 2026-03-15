@@ -159,9 +159,9 @@ function generateInvoiceHtml(
   const printTimeStr = `${inputs.printTimeHours}h ${inputs.printTimeMinutes}min`;
 
   const row = (label: string, value: string, bold = false) =>
-    `<tr style="border-bottom:1px solid #E8EAED">
-      <td style="padding:9px 0;color:${bold ? "#1a1a2e" : "#6b7280"};font-size:13px;${bold ? "font-weight:600" : ""}">${label}</td>
-      <td style="padding:9px 0;text-align:right;font-family:monospace;font-size:13px;${bold ? "font-weight:700;color:#1a1a2e" : "color:#374151"}">${value}</td>
+    `<tr style="border-bottom:1px solid #22242f">
+      <td style="padding:9px 0;color:${bold ? "#ffffff" : "#9ca3af"};font-size:13px;${bold ? "font-weight:600" : ""}">${label}</td>
+      <td style="padding:9px 0;text-align:right;font-family:monospace;font-size:13px;${bold ? "font-weight:700;color:#ffffff" : "color:#e5e7eb"}">${value}</td>
     </tr>`;
 
   return `<!DOCTYPE html>
@@ -171,32 +171,33 @@ function generateInvoiceHtml(
 <title>${ref} — Stratum Cost Estimate</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; background: #F8F9FA; color: #1a1a2e; padding: 40px; max-width: 720px; margin: 0 auto; }
+  body { font-family: 'DM Sans', system-ui, -apple-system, 'Segoe UI', sans-serif; background: #0a0a10; color: #e5e7eb; padding: 40px; max-width: 720px; margin: 0 auto; }
   @media print {
-    body { padding: 20px; background: #fff; }
+    body { padding: 20px; background: #0a0a10; color: #e5e7eb; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     .no-print { display: none !important; }
     @page { margin: 1cm; }
   }
-  .card { background: #fff; border-radius: 12px; border: 1px solid #E8EAED; overflow: hidden; }
-  .accent-bar { height: 4px; background: #6CBCE3; }
-  .header-inner { display: flex; justify-content: space-between; align-items: flex-start; padding: 24px 28px; border-bottom: 1px solid #E8EAED; }
-  .logo { font-size: 24px; font-weight: 900; letter-spacing: 6px; color: #1a1a2e; }
-  .logo-sub { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: #6CBCE3; margin-top: 4px; }
+  .card { background: #10101a; border: 1px solid #22242f; overflow: hidden; }
+  .accent-bar { height: 3px; background: #6CBCE3; }
+  .header-inner { display: flex; justify-content: space-between; align-items: flex-start; padding: 24px 28px; border-bottom: 1px solid #22242f; background: #0a0a10; }
+  .logo { font-size: 22px; font-weight: 800; letter-spacing: 6px; color: #ffffff; text-transform: uppercase; }
+  .logo-sub { font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: #6CBCE3; margin-top: 6px; font-weight: 600; }
   .doc-title { text-align: right; }
-  .doc-title h1 { font-size: 20px; font-weight: 700; color: #1a1a2e; }
-  .doc-title p { font-size: 12px; color: #6b7280; margin-top: 4px; }
+  .doc-title h1 { font-size: 20px; font-weight: 700; color: #ffffff; }
+  .doc-title p { font-size: 12px; color: #9ca3af; margin-top: 4px; }
   .body-inner { padding: 24px 28px; }
   .meta { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; }
-  .meta-block { background: #F5F5F5; border: 1px solid #E8EAED; border-radius: 8px; padding: 14px; }
-  .meta-block h3 { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: #3A9FD4; margin-bottom: 8px; }
-  .meta-block p { font-size: 13px; color: #374151; line-height: 1.7; }
-  .section-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: #3A9FD4; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 2px solid #6CBCE3; }
+  .meta-block { background: #16161e; border: 1px solid #22242f; padding: 14px; }
+  .meta-block h3 { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: #6CBCE3; margin-bottom: 8px; }
+  .meta-block p { font-size: 13px; color: #e5e7eb; line-height: 1.7; }
+  .section-title { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: #6CBCE3; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 2px solid #6CBCE3; }
   table { width: 100%; border-collapse: collapse; }
-  .total-row td { padding: 12px 0; font-weight: 700; font-size: 15px; color: #1a1a2e; border-top: 2px solid #E8EAED; }
+  .total-row td { padding: 12px 0; font-weight: 700; font-size: 15px; color: #ffffff; border-top: 2px solid #22242f; }
   .total-row td:last-child { color: #6CBCE3; }
-  .note { margin-top: 20px; padding: 12px 16px; background: #EBF6FC; border: 1px solid #6CBCE3; border-radius: 8px; font-size: 12px; color: #374151; line-height: 1.6; }
-  .print-btn { display: inline-block; margin-bottom: 24px; padding: 10px 24px; background: #6CBCE3; color: #1a1a2e; font-weight: 700; font-size: 14px; border: none; border-radius: 8px; cursor: pointer; }
-  .footer { margin-top: 24px; padding-top: 16px; font-size: 11px; color: #9ca3af; text-align: center; }
+  .note { margin-top: 20px; padding: 12px 16px; background: #16161e; border: 1px solid #22242f; border-left: 3px solid #6CBCE3; font-size: 12px; color: #9ca3af; line-height: 1.6; }
+  .print-btn { display: inline-block; margin-bottom: 24px; padding: 10px 24px; background: #6CBCE3; color: #0a0a10; font-weight: 700; font-size: 14px; border: none; cursor: pointer; letter-spacing: 0.5px; }
+  .print-btn:hover { background: #3A9FD4; }
+  .footer { margin-top: 24px; padding-top: 16px; border-top: 1px solid #22242f; font-size: 11px; color: #9ca3af; text-align: center; }
 </style>
 </head>
 <body>
@@ -233,7 +234,7 @@ function generateInvoiceHtml(
           Labour: ${inputs.labourMinutes} min @ ${fmtGbp(inputs.labourCostPerHour)}/hr<br>
           Failure buffer: ${inputs.failureRate}%<br>
           Profit margin: ${inputs.profitMargin}%<br>
-          VAT rate: 20%
+          VAT rate: ${vatInclusive ? 'Inclusive (0% shown)' : '20%'}
         </p>
       </div>
     </div>
@@ -272,7 +273,7 @@ function generateInvoiceHtml(
 </div>
 
 <div class="footer">
-  Stratum · Precision 3D Prints · hello@stratum3d.co.uk
+  Stratum &middot; Precision 3D Prints &middot; hello@stratum3d.co.uk
 </div>
 </body>
 </html>`;
