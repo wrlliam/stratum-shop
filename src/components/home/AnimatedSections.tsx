@@ -159,12 +159,13 @@ export function ProcessSection() {
               delay={i * 0.1}
               rotateX={10}
             >
-              {/* Connector line (not on last item) */}
-              {i < steps.length - 1 && (
-                <div className="hidden lg:block absolute top-5 left-10 right-0 h-px border-t border-dashed border-brand-blue/20" />
-              )}
-              <div className="text-3xl text-brand-blue/30 font-display mb-3 leading-none">
-                {step.number}
+              <div className="flex items-center gap-3 mb-3">
+                <span className="text-3xl text-brand-blue/30 font-display leading-none shrink-0">
+                  {step.number}
+                </span>
+                {i < steps.length - 1 && (
+                  <div className="hidden lg:block flex-1 h-px border-t border-dashed border-brand-blue/20" />
+                )}
               </div>
               <h3 className="text-base font-bold text-brand-text mb-2">{step.title}</h3>
               <p className="text-xs text-brand-muted leading-relaxed">{step.description}</p>
