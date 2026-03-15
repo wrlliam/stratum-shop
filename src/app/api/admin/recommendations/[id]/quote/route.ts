@@ -14,6 +14,7 @@ const quoteSchema = z.object({
   pricePence: z.number().int().positive(),
   adminNotes: z.string().max(2000).optional(),
   deliveryMethodId: z.string().optional(),
+  vatInclusive: z.boolean().optional(), // true = price already includes VAT, show 0% VAT
 })
 
 export async function POST(
@@ -59,7 +60,7 @@ export async function POST(
     const deliveryPrice = isFreeShipping ? 0 : deliveryOption!.price
     const subtotal = itemPrice
     const preTaxTotal = subtotal + deliveryPrice
-    const taxAmount = Math.round(preTaxTotal * VAT_RATE)
+    const taxAmount = data.vatInclusive ? 0 : Math.round(preTaxTotal * VAT_RATE)
     const total = preTaxTotal + taxAmount
     const itemName = `Custom 3D Print: ${rec.name.length > 80 ? rec.name.slice(0, 80) + '…' : rec.name}`
 
@@ -135,14 +136,16 @@ export async function POST(
             quantity: 1,
           }]
         : []),
-      {
-        price_data: {
-          currency: 'gbp',
-          product_data: { name: 'VAT (20%)' },
-          unit_amount: taxAmount,
-        },
-        quantity: 1,
-      },
+      ...(taxAmount > 0
+        ? [{
+            price_data: {
+              currency: 'gbp',
+              product_data: { name: 'VAT (20%)' },
+              unit_amount: taxAmount,
+            },
+            quantity: 1,
+          }]
+        : []),
     ]
 
     // Create Stripe Checkout Session

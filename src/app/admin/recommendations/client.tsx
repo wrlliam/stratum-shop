@@ -113,6 +113,7 @@ function RecCard({
   )
   const [adminNotes, setAdminNotes] = useState(rec.adminNotes || '')
   const [deliveryMethodId, setDeliveryMethodId] = useState('royal_mail_tracked_48')
+  const [vatInclusive, setVatInclusive] = useState(false)
 
   const canQuote = ['pending', 'reviewing', 'quoted', 'awaiting_payment'].includes(rec.status)
   const isResend = ['quoted', 'awaiting_payment'].includes(rec.status)
@@ -131,6 +132,7 @@ function RecCard({
           pricePence,
           adminNotes: adminNotes || undefined,
           deliveryMethodId,
+          vatInclusive,
         }),
       })
       const result = await res.json()
@@ -300,7 +302,7 @@ function RecCard({
               />
             </div>
           </div>
-          <div className="mt-4 flex items-center gap-3">
+          <div className="mt-4 flex items-center gap-3 flex-wrap">
             <button
               onClick={handleSendQuote}
               disabled={sending || pricePence <= 0}
@@ -308,6 +310,15 @@ function RecCard({
             >
               {sending ? 'Sending…' : isResend ? 'Resend Quote & Payment Link' : 'Send Quote & Payment Link'}
             </button>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={vatInclusive}
+                onChange={(e) => setVatInclusive(e.target.checked)}
+                className="w-4 h-4 rounded-sm border-brand-border text-brand-blue focus:ring-brand-blue/30"
+              />
+              <span className="text-xs text-brand-muted">VAT inclusive (0% VAT shown)</span>
+            </label>
             <span className="text-xs text-brand-muted">
               Customer will receive an email with a payment link
             </span>
