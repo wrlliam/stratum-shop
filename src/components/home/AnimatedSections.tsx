@@ -161,7 +161,7 @@ export function ProcessSection() {
             >
               {/* Connector line (not on last item) */}
               {i < steps.length - 1 && (
-                <div className="hidden lg:block absolute top-5 left-full w-full h-px border-t border-dashed border-brand-blue/20 -translate-x-4" />
+                <div className="hidden lg:block absolute top-5 left-10 right-0 h-px border-t border-dashed border-brand-blue/20" />
               )}
               <div className="text-3xl text-brand-blue/30 font-display mb-3 leading-none">
                 {step.number}
