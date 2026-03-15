@@ -61,20 +61,20 @@ export function QRScanner({ onScan }: QRScannerProps) {
 
   return (
     <div className="space-y-3">
-      <div id="qr-reader" ref={scannerRef} className="w-full max-w-sm mx-auto rounded-xl overflow-hidden" />
+      <div id="qr-reader" ref={scannerRef} className="w-full max-w-sm mx-auto rounded-sm overflow-hidden" />
       {error && <p className="text-sm text-red-500">{error}</p>}
       <div className="flex gap-2">
         {!active ? (
           <button
             onClick={start}
-            className="px-4 py-2 text-sm font-medium bg-brand-blue text-white rounded-lg hover:bg-brand-blue/90 transition-colors"
+            className="px-4 py-2 text-sm font-medium bg-brand-blue text-white rounded-sm hover:bg-brand-blue/90 transition-colors"
           >
             Start Camera
           </button>
         ) : (
           <button
             onClick={stop}
-            className="px-4 py-2 text-sm font-medium bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+            className="px-4 py-2 text-sm font-medium bg-red-500 text-white rounded-sm hover:bg-red-600 transition-colors"
           >
             Stop Camera
           </button>

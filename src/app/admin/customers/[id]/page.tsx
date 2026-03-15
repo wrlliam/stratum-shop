@@ -97,7 +97,7 @@ export default function CustomerDetailPage({ params }: { params: Promise<{ id: s
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Customer Info */}
         <div className="lg:col-span-1 space-y-4">
-          <div className="bg-brand-surface border border-brand-border rounded-2xl p-5 shadow-card">
+          <div className="bg-brand-surface border border-brand-border rounded-sm p-5 shadow-card">
             <h2 className="text-sm font-bold text-brand-text mb-4">Account Info</h2>
             <div className="space-y-2 text-sm">
               <p><span className="text-brand-muted">Name:</span> <span className="font-medium text-brand-text">{customer.name}</span></p>
@@ -108,7 +108,7 @@ export default function CustomerDetailPage({ params }: { params: Promise<{ id: s
             </div>
           </div>
 
-          <div className="bg-brand-surface border border-brand-border rounded-2xl p-5 shadow-card">
+          <div className="bg-brand-surface border border-brand-border rounded-sm p-5 shadow-card">
             <h2 className="text-sm font-bold text-brand-text mb-4">Role Management</h2>
             <div className="flex gap-2">
               <Select
@@ -120,7 +120,7 @@ export default function CustomerDetailPage({ params }: { params: Promise<{ id: s
               <button
                 onClick={handleRoleChange}
                 disabled={savingRole || role === customer.role}
-                className="px-4 py-2 text-sm font-semibold bg-brand-blue text-white rounded-xl hover:bg-brand-blue/90 disabled:opacity-50"
+                className="px-4 py-2 text-sm font-semibold bg-brand-blue text-white rounded-sm hover:bg-brand-blue/90 disabled:opacity-50"
               >
                 {savingRole ? '…' : 'Save'}
               </button>
@@ -130,7 +130,7 @@ export default function CustomerDetailPage({ params }: { params: Promise<{ id: s
 
         {/* Order History */}
         <div className="lg:col-span-2">
-          <div className="bg-brand-surface border border-brand-border rounded-2xl shadow-card">
+          <div className="bg-brand-surface border border-brand-border rounded-sm shadow-card">
             <div className="p-4 border-b border-brand-border">
               <h2 className="text-sm font-bold text-brand-text">Order History ({orders.length})</h2>
             </div>

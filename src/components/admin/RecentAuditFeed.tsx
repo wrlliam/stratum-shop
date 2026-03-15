@@ -92,7 +92,7 @@ export function RecentAuditFeed() {
                 return (
                   <div
                     key={entry.id}
-                    className="flex items-start gap-2 px-2 py-1.5 rounded-lg hover:bg-brand-arctic transition-colors"
+                    className="flex items-start gap-2 px-2 py-1.5 rounded-sm hover:bg-brand-arctic transition-colors"
                   >
                     <span className={cn('w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0', dot)} />
                     <div className="min-w-0 flex-1">

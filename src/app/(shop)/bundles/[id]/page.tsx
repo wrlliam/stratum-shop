@@ -41,7 +41,7 @@ export default async function BundlePage({ params }: Props) {
         {/* Header */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
           {/* Cover image */}
-          <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-brand-arctic border border-brand-border">
+          <div className="relative aspect-[4/3] rounded-sm overflow-hidden bg-brand-arctic border border-brand-border">
             {bundle.imageUrl ? (
               <Image
                 src={bundle.imageUrl}
@@ -53,7 +53,7 @@ export default async function BundlePage({ params }: Props) {
             ) : (
               <div className="absolute inset-0 grid grid-cols-2 gap-2 p-4">
                 {bundle.bundleProducts.slice(0, 4).map((bp) => (
-                  <div key={bp.id} className="relative rounded-xl overflow-hidden bg-brand-arctic">
+                  <div key={bp.id} className="relative rounded-sm overflow-hidden bg-brand-arctic">
                     {bp.product.images[0] ? (
                       <Image
                         src={bp.product.images[0].url}
@@ -85,7 +85,7 @@ export default async function BundlePage({ params }: Props) {
             )}
 
             {/* Pricing */}
-            <div className="p-6 bg-brand-surface border border-brand-border rounded-2xl mb-6 shadow-card">
+            <div className="p-6 bg-brand-surface border border-brand-border rounded-sm mb-6 shadow-card">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm text-brand-muted">Original price</span>
                 <span className="text-brand-muted line-through">{formatPrice(originalTotal)}</span>

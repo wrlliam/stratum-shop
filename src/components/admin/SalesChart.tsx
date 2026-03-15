@@ -43,7 +43,7 @@ const CustomTooltip = ({ active, payload, label }: {
 }) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-brand-surface border border-brand-border rounded-xl px-4 py-3 shadow-card-lg">
+      <div className="bg-brand-surface border border-brand-border rounded-sm px-4 py-3 shadow-card-lg">
         <p className="text-xs text-brand-muted mb-1">{label}</p>
         {payload.map((entry, i) => (
           <p key={i} className="text-sm font-semibold" style={{ color: entry.color }}>
@@ -63,7 +63,7 @@ export function RevenueChart({ data }: { data: AdminStats['revenueByMonth'] }) {
   const tickColor = dark ? '#9ca3af' : '#6b7280'
 
   return (
-    <div className="bg-brand-surface border border-brand-border rounded-2xl p-6 shadow-card">
+    <div className="bg-brand-surface border border-brand-border rounded-sm p-6 shadow-card">
       <h3 className="text-sm font-semibold text-brand-text mb-1">Revenue Overview</h3>
       <p className="text-xs text-brand-muted mb-6">Last 12 months</p>
       <ResponsiveContainer width="100%" height={260}>
@@ -107,7 +107,7 @@ export function OrdersChart({ data }: { data: AdminStats['revenueByMonth'] }) {
   const tickColor = dark ? '#9ca3af' : '#6b7280'
 
   return (
-    <div className="bg-brand-surface border border-brand-border rounded-2xl p-6 shadow-card">
+    <div className="bg-brand-surface border border-brand-border rounded-sm p-6 shadow-card">
       <h3 className="text-sm font-semibold text-brand-text mb-1">Orders</h3>
       <p className="text-xs text-brand-muted mb-6">Last 12 months</p>
       <ResponsiveContainer width="100%" height={260}>
@@ -138,7 +138,7 @@ export function DailyOrdersChart({ data }: { data: AdminStats['dailyOrders'] }) 
   const tickColor = dark ? '#9ca3af' : '#6b7280'
 
   return (
-    <div className="bg-brand-surface border border-brand-border rounded-2xl p-6 shadow-card">
+    <div className="bg-brand-surface border border-brand-border rounded-sm p-6 shadow-card">
       <h3 className="text-sm font-semibold text-brand-text mb-1">Daily Orders</h3>
       <p className="text-xs text-brand-muted mb-6">Last 30 days</p>
       <ResponsiveContainer width="100%" height={260}>
@@ -182,7 +182,7 @@ export function OrderStatusChart({ data }: { data: AdminStats['ordersByStatus'] 
   }))
 
   return (
-    <div className="bg-brand-surface border border-brand-border rounded-2xl p-6 shadow-card">
+    <div className="bg-brand-surface border border-brand-border rounded-sm p-6 shadow-card">
       <h3 className="text-sm font-semibold text-brand-text mb-1">Orders by Status</h3>
       <p className="text-xs text-brand-muted mb-6">All time</p>
       <ResponsiveContainer width="100%" height={220}>
@@ -222,7 +222,7 @@ export function OrderStatusChart({ data }: { data: AdminStats['ordersByStatus'] 
 
 export function TopProductsChart({ data }: { data: AdminStats['topProducts'] }) {
   return (
-    <div className="bg-brand-surface border border-brand-border rounded-2xl p-6 shadow-card">
+    <div className="bg-brand-surface border border-brand-border rounded-sm p-6 shadow-card">
       <h3 className="text-sm font-semibold text-brand-text mb-1">Top Products</h3>
       <p className="text-xs text-brand-muted mb-6">By units sold</p>
       <div className="space-y-3">
@@ -267,14 +267,14 @@ export function LowStockTable({ data }: { data: AdminStats['lowStockProducts'] }
   if (data.length === 0) return null
 
   return (
-    <div className="bg-brand-surface border border-brand-border rounded-2xl p-6 shadow-card">
+    <div className="bg-brand-surface border border-brand-border rounded-sm p-6 shadow-card">
       <h3 className="text-sm font-semibold text-brand-text mb-1">Low Stock Alerts</h3>
       <p className="text-xs text-brand-muted mb-4">Products with 5 or fewer in stock</p>
       <div className="space-y-2">
         {data.map((product) => (
           <div
             key={product.id}
-            className="flex items-center justify-between px-3 py-2 rounded-lg bg-red-50 border border-red-100 dark:bg-red-950/50 dark:border-red-900"
+            className="flex items-center justify-between px-3 py-2 rounded-sm bg-red-50 border border-red-100 dark:bg-red-950/50 dark:border-red-900"
           >
             <span className="text-sm font-medium text-brand-text truncate pr-2">
               {product.name}

@@ -42,7 +42,7 @@ export function RefundButton({ orderId, orderStatus }: RefundButtonProps) {
 
   if (confirming) {
     return (
-      <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-xl">
+      <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-sm">
         <p className="text-xs text-red-700 flex-1">
           This will issue a full refund via Stripe and restore stock. Continue?
         </p>

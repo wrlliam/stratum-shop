@@ -10,9 +10,9 @@ export default function ProductsLoading() {
 
         {/* Filter bar */}
         <div className="flex items-center gap-3 mb-8">
-          <div className="skeleton h-9 w-28 rounded-lg" />
-          <div className="skeleton h-9 w-32 rounded-lg" />
-          <div className="ml-auto skeleton h-9 w-36 rounded-lg" />
+          <div className="skeleton h-9 w-28 rounded-sm" />
+          <div className="skeleton h-9 w-32 rounded-sm" />
+          <div className="ml-auto skeleton h-9 w-36 rounded-sm" />
         </div>
 
         {/* Grid */}
@@ -20,7 +20,7 @@ export default function ProductsLoading() {
           {[...Array(8)].map((_, i) => (
             <div
               key={i}
-              className="rounded-lg bg-brand-surface border border-brand-border overflow-hidden"
+              className="rounded-sm bg-brand-surface border border-brand-border overflow-hidden"
               style={{ animationDelay: `${i * 60}ms` }}
             >
               <div className="skeleton aspect-square" />

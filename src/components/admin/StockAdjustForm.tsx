@@ -59,7 +59,7 @@ export function StockAdjustForm({ productId, productName, currentStock, onAdjust
           placeholder="+5 or -3"
           value={change}
           onChange={(e) => setChange(e.target.value)}
-          className="flex-1 px-3 py-2 text-sm border border-brand-border rounded-lg bg-brand-surface focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue"
+          className="flex-1 px-3 py-2 text-sm border border-brand-border rounded-sm bg-brand-surface focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue"
         />
         <Select
           value={reason}

@@ -289,7 +289,7 @@ export default function MissionControlPage() {
           </div>
           <button
             onClick={fetchOrders}
-            className="p-2 rounded-lg text-brand-muted hover:text-brand-text hover:bg-brand-arctic transition-colors"
+            className="p-2 rounded-sm text-brand-muted hover:text-brand-text hover:bg-brand-arctic transition-colors"
             title="Refresh"
           >
             <CounterClockwiseClockIcon className="w-4 h-4" />
@@ -367,7 +367,7 @@ export default function MissionControlPage() {
       {stats && statusChartData.length > 0 && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
           {/* Status breakdown donut */}
-          <div className="bg-brand-surface border border-brand-border rounded-2xl p-6 shadow-card">
+          <div className="bg-brand-surface border border-brand-border rounded-sm p-6 shadow-card">
             <h3 className="text-sm font-semibold text-brand-text mb-1">Active Orders by Status</h3>
             <p className="text-xs text-brand-muted mb-4">Current pipeline</p>
             <ResponsiveContainer width="100%" height={220}>
@@ -404,7 +404,7 @@ export default function MissionControlPage() {
           </div>
 
           {/* Orders by hour */}
-          <div className="bg-brand-surface border border-brand-border rounded-2xl p-6 shadow-card">
+          <div className="bg-brand-surface border border-brand-border rounded-sm p-6 shadow-card">
             <h3 className="text-sm font-semibold text-brand-text mb-1">Orders by Hour</h3>
             <p className="text-xs text-brand-muted mb-4">Active order distribution</p>
             <ResponsiveContainer width="100%" height={220}>
@@ -446,7 +446,7 @@ export default function MissionControlPage() {
             <button
               onClick={() => setFilter(null)}
               className={cn(
-                'px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors',
+                'px-3 py-1.5 rounded-sm text-xs font-semibold transition-colors',
                 !filter ? 'bg-brand-blue text-white' : 'bg-brand-arctic dark:bg-brand-surface text-brand-muted hover:text-brand-text'
               )}
             >
@@ -459,7 +459,7 @@ export default function MissionControlPage() {
                   key={s}
                   onClick={() => setFilter(filter === s ? null : s)}
                   className={cn(
-                    'px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors capitalize',
+                    'px-3 py-1.5 rounded-sm text-xs font-semibold transition-colors capitalize',
                     filter === s ? 'bg-brand-blue text-white' : 'bg-brand-arctic dark:bg-brand-surface text-brand-muted hover:text-brand-text'
                   )}
                 >
@@ -469,7 +469,7 @@ export default function MissionControlPage() {
           </div>
 
           {/* Orders table */}
-          <div className="bg-brand-surface border border-brand-border rounded-2xl shadow-card overflow-hidden">
+          <div className="bg-brand-surface border border-brand-border rounded-sm shadow-card overflow-hidden">
             {loading ? (
               <div className="flex items-center justify-center py-16">
                 <div className="animate-spin w-6 h-6 border-2 border-brand-blue border-t-transparent rounded-full" />
@@ -549,7 +549,7 @@ export default function MissionControlPage() {
             <LightningBoltIcon className="w-4 h-4 text-brand-blue" />
             Live Event Feed
           </h2>
-          <div className="bg-brand-surface border border-brand-border rounded-2xl shadow-card overflow-hidden">
+          <div className="bg-brand-surface border border-brand-border rounded-sm shadow-card overflow-hidden">
             {events.length === 0 ? (
               <div className="text-center py-12 text-brand-muted text-xs">
                 <p>Listening for events…</p>
@@ -577,7 +577,7 @@ export default function MissionControlPage() {
 
           {/* Pipeline summary */}
           {stats && (
-            <div className="mt-4 bg-brand-surface border border-brand-border rounded-2xl shadow-card p-4">
+            <div className="mt-4 bg-brand-surface border border-brand-border rounded-sm shadow-card p-4">
               <h3 className="text-xs font-bold text-brand-text uppercase tracking-wider mb-3">Pipeline Summary</h3>
               <div className="space-y-2">
                 {[
@@ -600,14 +600,14 @@ export default function MissionControlPage() {
           <div className="mt-4 space-y-2">
             <a
               href="/admin/orders?status=paid"
-              className="flex items-center justify-between px-4 py-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-xl text-sm font-medium text-amber-700 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-950/50 transition-colors"
+              className="flex items-center justify-between px-4 py-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-sm text-sm font-medium text-amber-700 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-950/50 transition-colors"
             >
               <span>Process paid orders</span>
               <span className="text-xs bg-amber-200 dark:bg-amber-800 px-2 py-0.5 rounded-full">{statusCounts.paid || 0}</span>
             </a>
             <a
               href="/admin/orders?status=prepared"
-              className="flex items-center justify-between px-4 py-3 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-xl text-sm font-medium text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-950/50 transition-colors"
+              className="flex items-center justify-between px-4 py-3 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-sm text-sm font-medium text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-950/50 transition-colors"
             >
               <span>Ship prepared orders</span>
               <span className="text-xs bg-blue-200 dark:bg-blue-800 px-2 py-0.5 rounded-full">{statusCounts.prepared || 0}</span>
@@ -615,7 +615,7 @@ export default function MissionControlPage() {
             {stats && stats.readyToPrint > 0 && (
               <a
                 href="/admin/recommendations?filter=paid"
-                className="flex items-center justify-between px-4 py-3 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 rounded-xl text-sm font-medium text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-950/50 transition-colors"
+                className="flex items-center justify-between px-4 py-3 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 rounded-sm text-sm font-medium text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-950/50 transition-colors"
               >
                 <span>Custom prints ready</span>
                 <span className="text-xs bg-emerald-200 dark:bg-emerald-800 px-2 py-0.5 rounded-full">{stats.readyToPrint}</span>
@@ -623,7 +623,7 @@ export default function MissionControlPage() {
             )}
             <a
               href="/admin/orders"
-              className="flex items-center justify-between px-4 py-3 bg-brand-arctic dark:bg-brand-surface border border-brand-border rounded-xl text-sm font-medium text-brand-text hover:bg-brand-arctic/80 dark:hover:bg-brand-arctic/10 transition-colors"
+              className="flex items-center justify-between px-4 py-3 bg-brand-arctic dark:bg-brand-surface border border-brand-border rounded-sm text-sm font-medium text-brand-text hover:bg-brand-arctic/80 dark:hover:bg-brand-arctic/10 transition-colors"
             >
               <span>View all orders</span>
               <ExclamationTriangleIcon className="w-4 h-4 text-brand-muted" />
@@ -639,7 +639,7 @@ function StatCard({ label, value, icon, color, pulse }: {
   label: string; value: string; icon: React.ReactNode; color: string; pulse?: boolean
 }) {
   return (
-    <div className="rounded-xl p-4 border border-brand-border bg-brand-surface shadow-card">
+    <div className="rounded-sm p-4 border border-brand-border bg-brand-surface shadow-card">
       <div className="flex items-center justify-between mb-2">
         <span className="text-[10px] font-semibold uppercase tracking-wider text-brand-muted">{label}</span>
         <span className={color}>{icon}</span>

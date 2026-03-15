@@ -52,7 +52,7 @@ export function ProductCarousel({ images, productName, className }: ProductCarou
 
   if (images.length === 0) {
     return (
-      <div className={cn('aspect-square bg-brand-arctic border border-brand-border rounded-2xl flex items-center justify-center', className)}>
+      <div className={cn('aspect-square bg-brand-arctic border border-brand-border rounded-sm flex items-center justify-center', className)}>
         <div className="text-center text-brand-muted">
           <div className="text-4xl mb-2">🖨️</div>
           <p className="text-sm">No image</p>
@@ -66,7 +66,7 @@ export function ProductCarousel({ images, productName, className }: ProductCarou
       <div className={cn('select-none', className)}>
         {/* Main carousel */}
         <div className="relative group">
-          <div className="overflow-hidden rounded-2xl" ref={mainRef}>
+          <div className="overflow-hidden rounded-sm" ref={mainRef}>
             <div className="flex touch-pan-y">
               {images.map((image, i) => (
                 <div
@@ -84,7 +84,7 @@ export function ProductCarousel({ images, productName, className }: ProductCarou
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                   <button
-                    className="absolute top-3 right-3 p-2 bg-brand-surface/90 border border-brand-border rounded-lg opacity-0 group-hover:opacity-100 transition-opacity text-brand-muted hover:text-brand-blue shadow-sm"
+                    className="absolute top-3 right-3 p-2 bg-brand-surface/90 border border-brand-border rounded-sm opacity-0 group-hover:opacity-100 transition-opacity text-brand-muted hover:text-brand-blue shadow-sm"
                     onClick={(e) => { e.stopPropagation(); setLightboxOpen(true) }}
                   >
                     <EnterFullScreenIcon className="w-4 h-4" />
@@ -99,13 +99,13 @@ export function ProductCarousel({ images, productName, className }: ProductCarou
             <>
               <button
                 onClick={scrollPrev}
-                className="absolute left-3 top-1/2 -translate-y-1/2 p-2 bg-brand-surface/90 border border-brand-border rounded-xl text-brand-muted hover:text-brand-blue hover:border-brand-blue transition-all opacity-0 group-hover:opacity-100 shadow-sm"
+                className="absolute left-3 top-1/2 -translate-y-1/2 p-2 bg-brand-surface/90 border border-brand-border rounded-sm text-brand-muted hover:text-brand-blue hover:border-brand-blue transition-all opacity-0 group-hover:opacity-100 shadow-sm"
               >
                 <ChevronLeftIcon className="w-5 h-5" />
               </button>
               <button
                 onClick={scrollNext}
-                className="absolute right-3 top-1/2 -translate-y-1/2 p-2 bg-brand-surface/90 border border-brand-border rounded-xl text-brand-muted hover:text-brand-blue hover:border-brand-blue transition-all opacity-0 group-hover:opacity-100 shadow-sm"
+                className="absolute right-3 top-1/2 -translate-y-1/2 p-2 bg-brand-surface/90 border border-brand-border rounded-sm text-brand-muted hover:text-brand-blue hover:border-brand-blue transition-all opacity-0 group-hover:opacity-100 shadow-sm"
               >
                 <ChevronRightIcon className="w-5 h-5" />
               </button>
@@ -140,7 +140,7 @@ export function ProductCarousel({ images, productName, className }: ProductCarou
                   key={image.id}
                   onClick={() => onThumbClick(i)}
                   className={cn(
-                    'relative flex-[0_0_72px] aspect-square rounded-xl overflow-hidden border-2 transition-all',
+                    'relative flex-[0_0_72px] aspect-square rounded-sm overflow-hidden border-2 transition-all',
                     i === selectedIndex
                       ? 'border-brand-blue'
                       : 'border-brand-border opacity-60 hover:opacity-100 hover:border-brand-slate'

@@ -16,7 +16,7 @@ export function AdminSignOut() {
   return (
     <button
       onClick={handleSignOut}
-      className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-brand-muted hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950 dark:hover:text-red-400 transition-all"
+      className="w-full flex items-center gap-3 px-3 py-2.5 rounded-sm text-sm font-medium text-brand-muted hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950 dark:hover:text-red-400 transition-all"
     >
       <ExitIcon className="w-4 h-4" />
       Sign Out

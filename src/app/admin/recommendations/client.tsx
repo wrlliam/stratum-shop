@@ -62,7 +62,7 @@ export function RecommendationsClient({ recommendations: initialRecs }: Props) {
               key={tab.key ?? 'all'}
               onClick={() => setFilter(tab.key)}
               className={cn(
-                'px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors',
+                'px-3 py-1.5 rounded-sm text-xs font-semibold transition-colors',
                 filter === tab.key
                   ? 'bg-brand-blue text-white'
                   : 'bg-brand-arctic dark:bg-brand-surface text-brand-muted hover:text-brand-text'
@@ -85,7 +85,7 @@ export function RecommendationsClient({ recommendations: initialRecs }: Props) {
         ))}
 
         {filtered.length === 0 && (
-          <div className="text-center py-16 bg-brand-surface border border-brand-border rounded-2xl">
+          <div className="text-center py-16 bg-brand-surface border border-brand-border rounded-sm">
             <p className="text-brand-muted">
               {filter ? `No ${filter.replace('_', ' ')} requests.` : 'No print requests yet.'}
             </p>
@@ -145,10 +145,10 @@ function RecCard({
   }
 
   return (
-    <div className="bg-brand-surface border border-brand-border rounded-2xl shadow-card hover:shadow-card-hover transition-shadow">
+    <div className="bg-brand-surface border border-brand-border rounded-sm shadow-card hover:shadow-card-hover transition-shadow">
       <div className="p-6 flex gap-5">
         {rec.imageUrl && (
-          <div className="relative w-20 h-20 flex-shrink-0 rounded-xl overflow-hidden bg-brand-arctic border border-brand-border">
+          <div className="relative w-20 h-20 flex-shrink-0 rounded-sm overflow-hidden bg-brand-arctic border border-brand-border">
             <Image src={rec.imageUrl} alt={rec.name} fill className="object-cover" sizes="80px" />
           </div>
         )}
@@ -228,7 +228,7 @@ function RecCard({
           {canQuote && (
             <button
               onClick={onToggleQuote}
-              className="mt-3 px-3 py-1.5 text-xs font-semibold bg-brand-blue text-white rounded-lg hover:bg-brand-blue-dark transition-colors"
+              className="mt-3 px-3 py-1.5 text-xs font-semibold bg-brand-blue text-white rounded-sm hover:bg-brand-blue-dark transition-colors"
             >
               {isQuoteOpen ? 'Close Quote Panel' : 'Quote & Send Payment Link'}
             </button>
@@ -250,7 +250,7 @@ function RecCard({
                   type="number"
                   value={pricePence}
                   onChange={(e) => setPricePence(parseInt(e.target.value) || 0)}
-                  className="w-full px-3 py-2 text-sm border border-brand-border rounded-lg bg-brand-surface text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-blue/30"
+                  className="w-full px-3 py-2 text-sm border border-brand-border rounded-sm bg-brand-surface text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-blue/30"
                   min={1}
                 />
                 <span className="text-xs text-brand-muted whitespace-nowrap">
@@ -265,7 +265,7 @@ function RecCard({
               <select
                 value={deliveryMethodId}
                 onChange={(e) => setDeliveryMethodId(e.target.value)}
-                className="w-full px-3 py-2 text-sm border border-brand-border rounded-lg bg-brand-surface text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-blue/30"
+                className="w-full px-3 py-2 text-sm border border-brand-border rounded-sm bg-brand-surface text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-blue/30"
               >
                 {DELIVERY_OPTIONS.map((opt) => (
                   <option key={opt.id} value={opt.id}>
@@ -282,7 +282,7 @@ function RecCard({
                 value={adminNotes}
                 onChange={(e) => setAdminNotes(e.target.value)}
                 rows={1}
-                className="w-full px-3 py-2 text-sm border border-brand-border rounded-lg bg-brand-surface text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-blue/30 resize-none"
+                className="w-full px-3 py-2 text-sm border border-brand-border rounded-sm bg-brand-surface text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-blue/30 resize-none"
                 placeholder="Notes visible to customer..."
               />
             </div>
@@ -291,7 +291,7 @@ function RecCard({
             <button
               onClick={handleSendQuote}
               disabled={sending || pricePence <= 0}
-              className="px-4 py-2 text-sm font-semibold bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-4 py-2 text-sm font-semibold bg-green-600 text-white rounded-sm hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {sending ? 'Sending…' : 'Send Quote & Payment Link'}
             </button>

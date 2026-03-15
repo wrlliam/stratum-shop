@@ -44,7 +44,7 @@ export function OptionDropdown({
         type="button"
         onClick={() => setOpen((o) => !o)}
         className={cn(
-          'w-full flex items-center justify-between px-3.5 py-2.5 text-sm border rounded-xl bg-brand-surface text-brand-text transition-all',
+          'w-full flex items-center justify-between px-3.5 py-2.5 text-sm border rounded-sm bg-brand-surface text-brand-text transition-all',
           open
             ? 'border-brand-blue ring-2 ring-brand-blue/20'
             : 'border-brand-border hover:border-brand-slate'
@@ -68,7 +68,7 @@ export function OptionDropdown({
       </button>
 
       {open && (
-        <div className="absolute z-20 mt-1 w-full bg-brand-surface border border-brand-border rounded-xl shadow-card-lg overflow-hidden animate-fade-in">
+        <div className="absolute z-20 mt-1 w-full bg-brand-surface border border-brand-border rounded-sm shadow-card-lg overflow-hidden animate-fade-in">
           {group.choices.map((choice, ci) => (
             <button
               key={choice.id}
@@ -207,7 +207,7 @@ export function AddToCartButton({ product }: AddToCartButtonProps) {
                     [group.id]: !prev[group.id],
                   }))
                 }
-                className="w-full flex items-center justify-between px-3.5 py-2.5 text-sm border rounded-xl bg-brand-surface text-brand-text transition-all border-brand-border hover:border-brand-slate"
+                className="w-full flex items-center justify-between px-3.5 py-2.5 text-sm border rounded-sm bg-brand-surface text-brand-text transition-all border-brand-border hover:border-brand-slate"
               >
                 <span>
                   {group.choices[0].label}
@@ -245,7 +245,7 @@ export function AddToCartButton({ product }: AddToCartButtonProps) {
                       [group.id]: e.target.value,
                     }))
                   }
-                  className="w-full px-3.5 py-2.5 text-sm border border-brand-border rounded-xl bg-brand-surface text-brand-text placeholder:text-brand-muted focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all"
+                  className="w-full px-3.5 py-2.5 text-sm border border-brand-border rounded-sm bg-brand-surface text-brand-text placeholder:text-brand-muted focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all"
                 />
                 {group.choices[0].priceModifier > 0 && (
                   <p className="text-xs text-brand-muted mt-1">
@@ -263,7 +263,7 @@ export function AddToCartButton({ product }: AddToCartButtonProps) {
         <span className="text-xs font-semibold text-brand-muted uppercase tracking-wider">
           Quantity
         </span>
-        <div className="flex items-center border border-brand-border rounded-xl overflow-hidden bg-brand-surface">
+        <div className="flex items-center border border-brand-border rounded-sm overflow-hidden bg-brand-surface">
           <button
             onClick={() => setQuantity((q) => Math.max(1, q - 1))}
             className="p-2.5 text-brand-muted hover:text-brand-blue hover:bg-brand-arctic transition-colors"

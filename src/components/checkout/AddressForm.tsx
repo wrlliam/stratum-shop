@@ -126,7 +126,7 @@ export function AddressForm({ address, onChange, errors }: Props) {
           <input
             value="United Kingdom"
             disabled
-            className="w-full bg-brand-arctic border border-brand-border rounded-lg px-3 py-2.5 text-sm text-brand-muted cursor-not-allowed"
+            className="w-full bg-brand-arctic border border-brand-border rounded-sm px-3 py-2.5 text-sm text-brand-muted cursor-not-allowed"
           />
         </div>
       </div>

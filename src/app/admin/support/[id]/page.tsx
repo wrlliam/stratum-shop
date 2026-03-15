@@ -37,7 +37,7 @@ const STATUS_COLORS: Record<string, string> = {
 function MarkdownBody({ content }: { content: string }) {
   return (
     <div
-      className="text-sm text-brand-text leading-relaxed [&_strong]:font-semibold [&_em]:italic [&_code]:bg-brand-arctic [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded [&_code]:font-mono [&_code]:text-xs [&_a]:text-brand-blue [&_a]:underline [&_ul]:list-disc [&_ul]:pl-4 [&_ul]:my-1 [&_img]:max-w-full [&_img]:rounded-xl [&_img]:my-2"
+      className="text-sm text-brand-text leading-relaxed [&_strong]:font-semibold [&_em]:italic [&_code]:bg-brand-arctic [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded [&_code]:font-mono [&_code]:text-xs [&_a]:text-brand-blue [&_a]:underline [&_ul]:list-disc [&_ul]:pl-4 [&_ul]:my-1 [&_img]:max-w-full [&_img]:rounded-sm [&_img]:my-2"
       dangerouslySetInnerHTML={{ __html: markdownToHtml(content) }}
     />
   )
@@ -169,7 +169,7 @@ export default function SupportTicketPage({ params }: { params: Promise<{ id: st
           <select
             value={status}
             onChange={(e) => handleStatusChange(e.target.value)}
-            className="text-sm border border-brand-border rounded-lg px-2 py-1.5 focus:outline-none"
+            className="text-sm border border-brand-border rounded-sm px-2 py-1.5 focus:outline-none"
           >
             {STATUS_OPTS.map((s) => <option key={s} value={s}>{s.replace('_', ' ')}</option>)}
           </select>
@@ -177,7 +177,7 @@ export default function SupportTicketPage({ params }: { params: Promise<{ id: st
             <button
               onClick={handleQuickClose}
               disabled={closing}
-              className="px-3 py-1.5 text-xs font-semibold bg-red-50 text-red-600 border border-red-200 rounded-lg hover:bg-red-100 disabled:opacity-50 transition-colors"
+              className="px-3 py-1.5 text-xs font-semibold bg-red-50 text-red-600 border border-red-200 rounded-sm hover:bg-red-100 disabled:opacity-50 transition-colors"
             >
               {closing ? 'Closing…' : 'Close Ticket'}
             </button>
@@ -192,7 +192,7 @@ export default function SupportTicketPage({ params }: { params: Promise<{ id: st
           return (
             <div
               key={msg.id}
-              className={`rounded-2xl p-5 ${isStaff
+              className={`rounded-sm p-5 ${isStaff
                 ? 'bg-brand-blue-light border border-brand-blue/20 ml-8'
                 : 'bg-brand-surface border border-brand-border'
               }`}
@@ -215,7 +215,7 @@ export default function SupportTicketPage({ params }: { params: Promise<{ id: st
                       alt="Attachment"
                       width={400}
                       height={300}
-                      className="max-w-full rounded-xl border border-brand-border object-contain"
+                      className="max-w-full rounded-sm border border-brand-border object-contain"
                     />
                   </a>
                 </div>
@@ -227,19 +227,19 @@ export default function SupportTicketPage({ params }: { params: Promise<{ id: st
       </div>
 
       {/* Reply form */}
-      <form onSubmit={handleReply} className="bg-brand-surface border border-brand-border rounded-2xl p-5 shadow-card">
+      <form onSubmit={handleReply} className="bg-brand-surface border border-brand-border rounded-sm p-5 shadow-card">
         <h2 className="text-sm font-bold text-brand-text mb-3">Reply</h2>
         <textarea
           value={reply}
           onChange={(e) => setReply(e.target.value)}
           placeholder="Write your reply… (Markdown supported: **bold**, *italic*, `code`, [links](url))"
           rows={6}
-          className="w-full px-3 py-2.5 text-sm border border-brand-border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue resize-none mb-3"
+          className="w-full px-3 py-2.5 text-sm border border-brand-border rounded-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue resize-none mb-3"
         />
 
         {attachment && (
           <div className="relative inline-block mb-3">
-            <Image src={attachment} alt="Attachment" width={120} height={90} className="rounded-xl border border-brand-border object-cover" />
+            <Image src={attachment} alt="Attachment" width={120} height={90} className="rounded-sm border border-brand-border object-cover" />
             <button
               type="button"
               onClick={() => setAttachment(null)}
@@ -252,7 +252,7 @@ export default function SupportTicketPage({ params }: { params: Promise<{ id: st
 
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            <label className={`flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-xl border border-brand-border cursor-pointer transition-colors ${uploading ? 'text-brand-blue border-brand-blue' : 'text-brand-muted hover:text-brand-text hover:border-brand-slate'}`}>
+            <label className={`flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-sm border border-brand-border cursor-pointer transition-colors ${uploading ? 'text-brand-blue border-brand-blue' : 'text-brand-muted hover:text-brand-text hover:border-brand-slate'}`}>
               {uploading
                 ? <div className="animate-spin w-3.5 h-3.5 border-2 border-brand-blue border-t-transparent rounded-full" />
                 : <ImageIcon className="w-3.5 h-3.5" />
@@ -270,7 +270,7 @@ export default function SupportTicketPage({ params }: { params: Promise<{ id: st
               <select
                 value={status}
                 onChange={(e) => setStatus(e.target.value)}
-                className="text-sm border border-brand-border rounded-lg px-2 py-1 focus:outline-none"
+                className="text-sm border border-brand-border rounded-sm px-2 py-1 focus:outline-none"
               >
                 {STATUS_OPTS.map((s) => <option key={s} value={s}>{s.replace('_', ' ')}</option>)}
               </select>
@@ -279,7 +279,7 @@ export default function SupportTicketPage({ params }: { params: Promise<{ id: st
           <button
             type="submit"
             disabled={sending || uploading || (!reply.trim() && !attachment)}
-            className="px-5 py-2 text-sm font-semibold bg-brand-blue text-white rounded-xl hover:bg-brand-blue/90 disabled:opacity-50"
+            className="px-5 py-2 text-sm font-semibold bg-brand-blue text-white rounded-sm hover:bg-brand-blue/90 disabled:opacity-50"
           >
             {sending ? 'Sending…' : 'Send Reply'}
           </button>

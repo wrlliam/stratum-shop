@@ -13,7 +13,7 @@ export default function OrdersLoading() {
           {[...Array(3)].map((_, i) => (
             <div
               key={i}
-              className="rounded-lg border border-brand-border bg-brand-surface overflow-hidden"
+              className="rounded-sm border border-brand-border bg-brand-surface overflow-hidden"
               style={{ animationDelay: `${i * 80}ms` }}
             >
               {/* Order header */}
@@ -28,7 +28,7 @@ export default function OrdersLoading() {
               {/* Items */}
               <div className="p-5 flex items-center gap-4">
                 {[...Array(2)].map((_, j) => (
-                  <div key={j} className="skeleton h-14 w-14 rounded-lg flex-shrink-0" />
+                  <div key={j} className="skeleton h-14 w-14 rounded-sm flex-shrink-0" />
                 ))}
                 <div className="flex-1 space-y-2">
                   <div className="skeleton h-3 w-1/2" />

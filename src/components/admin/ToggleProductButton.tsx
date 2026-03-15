@@ -37,7 +37,7 @@ export function ToggleProductButton({ productId, active }: Props) {
     <button
       onClick={handleToggle}
       disabled={loading}
-      className={`p-1.5 rounded-lg transition-colors ${
+      className={`p-1.5 rounded-sm transition-colors ${
         isActive
           ? 'text-green-600 hover:text-brand-muted hover:bg-brand-arctic'
           : 'text-brand-muted hover:text-green-600 hover:bg-green-50'

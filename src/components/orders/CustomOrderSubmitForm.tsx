@@ -77,7 +77,7 @@ export function CustomOrderSubmitForm({ orderId, itemId, itemName, fields, exist
     return (
       <button
         onClick={() => setOpen(true)}
-        className={`mt-2 inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+        className={`mt-2 inline-flex items-center gap-2 px-3 py-1.5 rounded-sm text-xs font-semibold transition-colors ${
           submitted
             ? 'bg-green-50 text-green-700 hover:bg-green-100'
             : 'bg-brand-blue text-white hover:bg-brand-blue/90'
@@ -93,7 +93,7 @@ export function CustomOrderSubmitForm({ orderId, itemId, itemName, fields, exist
   }
 
   return (
-    <form onSubmit={handleSubmit} className="mt-3 border border-brand-border rounded-xl p-4 bg-brand-arctic space-y-4">
+    <form onSubmit={handleSubmit} className="mt-3 border border-brand-border rounded-sm p-4 bg-brand-arctic space-y-4">
       <div className="flex items-center justify-between">
         <p className="text-sm font-semibold text-brand-text">Customise: {itemName}</p>
         <button type="button" onClick={() => setOpen(false)} className="text-brand-muted hover:text-brand-text">
@@ -113,7 +113,7 @@ export function CustomOrderSubmitForm({ orderId, itemId, itemName, fields, exist
               placeholder={field.placeholder || ''}
               value={values[field.label] || ''}
               onChange={(e) => setValue(field.label, e.target.value)}
-              className="w-full px-3 py-2 text-sm border border-brand-border rounded-lg bg-brand-surface text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue"
+              className="w-full px-3 py-2 text-sm border border-brand-border rounded-sm bg-brand-surface text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue"
             />
           )}
 
@@ -123,7 +123,7 @@ export function CustomOrderSubmitForm({ orderId, itemId, itemName, fields, exist
               placeholder={field.placeholder || ''}
               value={values[field.label] || ''}
               onChange={(e) => setValue(field.label, e.target.value)}
-              className="w-full px-3 py-2 text-sm border border-brand-border rounded-lg bg-brand-surface text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue"
+              className="w-full px-3 py-2 text-sm border border-brand-border rounded-sm bg-brand-surface text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue"
             />
           )}
 
@@ -131,7 +131,7 @@ export function CustomOrderSubmitForm({ orderId, itemId, itemName, fields, exist
             <select
               value={values[field.label] || ''}
               onChange={(e) => setValue(field.label, e.target.value)}
-              className="w-full bg-brand-surface border border-brand-border rounded-lg px-3 py-2 text-sm text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue"
+              className="w-full bg-brand-surface border border-brand-border rounded-sm px-3 py-2 text-sm text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue"
             >
               <option value="">— Select —</option>
               {field.options?.map((opt) => (
@@ -144,7 +144,7 @@ export function CustomOrderSubmitForm({ orderId, itemId, itemName, fields, exist
             <div>
               {values[field.label] ? (
                 <div className="flex flex-col gap-2">
-                  <div className="w-full rounded-xl overflow-hidden border border-brand-border bg-brand-surface">
+                  <div className="w-full rounded-sm overflow-hidden border border-brand-border bg-brand-surface">
                     <img src={values[field.label]} alt={field.label} className="w-full h-auto object-contain" />
                   </div>
                   <button
@@ -156,7 +156,7 @@ export function CustomOrderSubmitForm({ orderId, itemId, itemName, fields, exist
                   </button>
                 </div>
               ) : (
-                <label className={`flex items-center justify-center gap-2 w-full py-3 border-2 border-dashed rounded-xl text-sm cursor-pointer transition-colors ${
+                <label className={`flex items-center justify-center gap-2 w-full py-3 border-2 border-dashed rounded-sm text-sm cursor-pointer transition-colors ${
                   uploading[field.label]
                     ? 'border-brand-blue/30 text-brand-blue'
                     : 'border-brand-border text-brand-muted hover:border-brand-slate hover:text-brand-text'
@@ -186,12 +186,12 @@ export function CustomOrderSubmitForm({ orderId, itemId, itemName, fields, exist
         <button
           type="submit"
           disabled={saving || Object.values(uploading).some(Boolean)}
-          className="flex-1 py-2 text-sm font-semibold bg-brand-blue text-white rounded-xl hover:bg-brand-blue/90 disabled:opacity-50 transition-colors"
+          className="flex-1 py-2 text-sm font-semibold bg-brand-blue text-white rounded-sm hover:bg-brand-blue/90 disabled:opacity-50 transition-colors"
         >
           {saving ? 'Saving…' : 'Submit customisation'}
         </button>
         <button type="button" onClick={() => setOpen(false)}
-          className="px-4 py-2 text-sm text-brand-muted hover:text-brand-text border border-brand-border rounded-xl hover:border-brand-slate transition-colors">
+          className="px-4 py-2 text-sm text-brand-muted hover:text-brand-text border border-brand-border rounded-sm hover:border-brand-slate transition-colors">
           Cancel
         </button>
       </div>

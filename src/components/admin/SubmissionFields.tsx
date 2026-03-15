@@ -34,7 +34,7 @@ export function SubmissionFields({ fields, submission }: Props) {
             <p className="text-[10px] font-semibold text-brand-muted uppercase tracking-wider mb-1">{f.label}</p>
             {f.type === 'image' ? (
               <div className="space-y-1.5">
-                <div className="rounded-lg overflow-hidden border border-brand-border bg-brand-arctic">
+                <div className="rounded-sm overflow-hidden border border-brand-border bg-brand-arctic">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={val} alt={f.label} className="w-full h-auto object-contain" />
                 </div>
@@ -43,7 +43,7 @@ export function SubmissionFields({ fields, submission }: Props) {
                   download
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold bg-brand-arctic border border-brand-border rounded-lg text-brand-text hover:bg-brand-surface hover:border-brand-slate transition-colors"
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold bg-brand-arctic border border-brand-border rounded-sm text-brand-text hover:bg-brand-surface hover:border-brand-slate transition-colors"
                 >
                   <DownloadIcon className="w-3 h-3" />
                   Download

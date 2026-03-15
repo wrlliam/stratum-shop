@@ -37,7 +37,7 @@ export function OrderProcessingGuide() {
     <div className="mb-4 flex justify-end">
       <button
         onClick={() => { localStorage.removeItem(STORAGE_KEY); setHidden(false) }}
-        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-brand-muted hover:text-brand-blue border border-brand-border hover:border-brand-blue/30 rounded-lg transition-colors"
+        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-brand-muted hover:text-brand-blue border border-brand-border hover:border-brand-blue/30 rounded-sm transition-colors"
         title="Show order processing workflow"
       >
         <svg width="14" height="14" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" className="opacity-70">
@@ -49,10 +49,10 @@ export function OrderProcessingGuide() {
   )
 
   return (
-    <div className="bg-brand-surface border border-brand-border rounded-2xl p-6 shadow-card mb-6 relative">
+    <div className="bg-brand-surface border border-brand-border rounded-sm p-6 shadow-card mb-6 relative">
       <button
         onClick={dismiss}
-        className="absolute top-4 right-4 p-1.5 rounded-lg text-brand-muted hover:text-brand-text hover:bg-brand-arctic transition-colors"
+        className="absolute top-4 right-4 p-1.5 rounded-sm text-brand-muted hover:text-brand-text hover:bg-brand-arctic transition-colors"
         title="Dismiss"
       >
         <Cross2Icon className="w-4 h-4" />

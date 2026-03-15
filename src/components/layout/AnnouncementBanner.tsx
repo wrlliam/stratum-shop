@@ -90,7 +90,7 @@ export function AnnouncementBanner() {
         {banner.dismissible && (
           <button
             onClick={dismiss}
-            className={`absolute right-3 top-1/2 -translate-y-1/2 p-1.5 rounded-lg transition-colors ${styles.dismiss}`}
+            className={`absolute right-3 top-1/2 -translate-y-1/2 p-1.5 rounded-sm transition-colors ${styles.dismiss}`}
             aria-label="Dismiss banner"
           >
             <Cross1Icon className="w-3.5 h-3.5" />

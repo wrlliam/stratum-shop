@@ -109,7 +109,7 @@ export function NextStepBar({ orderId, currentStatus, hasTrackingNumber }: Props
   const isTerminal = currentStatus === 'cancelled' || currentStatus === 'refunded'
 
   return (
-    <div className={`border rounded-xl px-5 py-3 flex items-center gap-4 flex-wrap mb-6 ${config.color}`}>
+    <div className={`border rounded-sm px-5 py-3 flex items-center gap-4 flex-wrap mb-6 ${config.color}`}>
       <div className="flex items-center gap-2 flex-1 min-w-0">
         {isComplete && (
           <svg className="w-5 h-5 text-green-600 dark:text-green-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -127,7 +127,7 @@ export function NextStepBar({ orderId, currentStatus, hasTrackingNumber }: Props
           placeholder="Tracking number (optional)"
           value={trackingInput}
           onChange={(e) => setTrackingInput(e.target.value)}
-          className="px-3 py-1.5 text-sm border border-brand-border rounded-lg bg-brand-surface focus:outline-none focus:ring-2 focus:ring-brand-blue/30 w-52"
+          className="px-3 py-1.5 text-sm border border-brand-border rounded-sm bg-brand-surface focus:outline-none focus:ring-2 focus:ring-brand-blue/30 w-52"
         />
       )}
 

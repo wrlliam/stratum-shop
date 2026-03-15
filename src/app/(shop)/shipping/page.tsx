@@ -34,7 +34,7 @@ export default function ShippingPage() {
             {DELIVERY_OPTIONS.map((option) => (
               <div
                 key={option.id}
-                className="flex items-center justify-between p-4 bg-brand-surface border border-brand-border rounded-xl"
+                className="flex items-center justify-between p-4 bg-brand-surface border border-brand-border rounded-sm"
               >
                 <div className="flex items-center gap-3">
                   <span className="text-xl">{option.icon}</span>

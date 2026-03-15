@@ -68,7 +68,7 @@ function ResetPasswordForm() {
           </Link>
         </div>
 
-        <div className="bg-brand-surface border border-brand-border rounded-2xl p-8 shadow-card-lg">
+        <div className="bg-brand-surface border border-brand-border rounded-sm p-8 shadow-card-lg">
           <h1 className="text-xl font-bold text-brand-text mb-2">Set new password</h1>
           <p className="text-sm text-brand-muted mb-6">
             Enter your new password below.
@@ -81,7 +81,7 @@ function ResetPasswordForm() {
               </p>
               <Link
                 href="/login"
-                className="inline-flex items-center px-4 py-2 bg-brand-blue text-white text-sm font-semibold rounded-xl hover:bg-brand-blue-dark transition-colors"
+                className="inline-flex items-center px-4 py-2 bg-brand-blue text-white text-sm font-semibold rounded-sm hover:bg-brand-blue-dark transition-colors"
               >
                 Sign in with new password
               </Link>

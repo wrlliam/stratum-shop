@@ -58,7 +58,7 @@ export function ConfirmProvider({ children }: { children: React.ReactNode }) {
 
             {/* Dialog */}
             <motion.div
-              className="relative bg-brand-surface rounded-2xl shadow-xl border border-brand-border w-full max-w-sm p-6"
+              className="relative bg-brand-surface rounded-sm shadow-xl border border-brand-border w-full max-w-sm p-6"
               initial={{ scale: 0.92, opacity: 0, y: 8 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.92, opacity: 0, y: 8 }}
@@ -72,13 +72,13 @@ export function ConfirmProvider({ children }: { children: React.ReactNode }) {
               <div className="flex gap-3 justify-end">
                 <button
                   onClick={() => handleClose(false)}
-                  className="px-4 py-2 text-sm font-semibold text-brand-muted border border-brand-border rounded-xl hover:bg-brand-arctic hover:text-brand-text transition-colors"
+                  className="px-4 py-2 text-sm font-semibold text-brand-muted border border-brand-border rounded-sm hover:bg-brand-arctic hover:text-brand-text transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={() => handleClose(true)}
-                  className={`px-4 py-2 text-sm font-semibold rounded-xl transition-colors ${
+                  className={`px-4 py-2 text-sm font-semibold rounded-sm transition-colors ${
                     state.danger
                       ? 'bg-red-500 text-white hover:bg-red-600'
                       : 'bg-brand-blue text-white hover:bg-brand-blue-dark'

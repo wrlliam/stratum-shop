@@ -168,7 +168,7 @@ export function BatchForm({ products, onCreated }: BatchFormProps) {
             {presets.map((preset) => (
               <div
                 key={preset.id}
-                className="flex items-center gap-2 p-2 rounded-xl border border-brand-border hover:border-brand-blue/40 transition-colors group"
+                className="flex items-center gap-2 p-2 rounded-sm border border-brand-border hover:border-brand-blue/40 transition-colors group"
               >
                 <button
                   onClick={() => quickCreateFromPreset(preset)}
@@ -245,14 +245,14 @@ export function BatchForm({ products, onCreated }: BatchFormProps) {
                 value={presetName}
                 onChange={(e) => setPresetName(e.target.value)}
                 placeholder="Preset name..."
-                className="px-2 py-1 text-xs border border-brand-border rounded-lg bg-brand-surface text-brand-text w-28 focus:outline-none focus:ring-1 focus:ring-brand-blue"
+                className="px-2 py-1 text-xs border border-brand-border rounded-sm bg-brand-surface text-brand-text w-28 focus:outline-none focus:ring-1 focus:ring-brand-blue"
                 onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleSavePreset())}
                 autoFocus
               />
               <button
                 type="button"
                 onClick={handleSavePreset}
-                className="p-1.5 rounded-lg bg-brand-blue text-white hover:bg-brand-blue/90 transition-colors"
+                className="p-1.5 rounded-sm bg-brand-blue text-white hover:bg-brand-blue/90 transition-colors"
               >
                 <BookmarkFilledIcon className="w-3 h-3" />
               </button>

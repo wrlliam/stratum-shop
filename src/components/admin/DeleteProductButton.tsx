@@ -29,7 +29,7 @@ export function DeleteProductButton({ productId }: { productId: string }) {
   return (
     <button
       onClick={handleDelete}
-      className={`p-1.5 rounded-lg transition-colors ${
+      className={`p-1.5 rounded-sm transition-colors ${
         confirming
           ? 'text-red-600 bg-red-50 hover:bg-red-100'
           : 'text-brand-muted hover:text-red-600 hover:bg-red-50'

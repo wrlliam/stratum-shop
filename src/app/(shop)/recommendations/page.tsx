@@ -368,7 +368,7 @@ export default function RecommendationsPage() {
                   return (
                     <label
                       key={obj.id}
-                      className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${
+                      className={`flex items-center gap-3 p-3 rounded-sm border cursor-pointer transition-colors ${
                         isSelected
                           ? 'border-brand-blue/40 bg-brand-blue/5'
                           : 'border-brand-border bg-brand-surface hover:bg-brand-arctic'
@@ -415,15 +415,15 @@ export default function RecommendationsPage() {
               {/* Model dimensions */}
               {!isMultiObject && (
                 <div className="grid grid-cols-3 gap-3 mb-4">
-                  <div className="text-center p-2 bg-brand-surface rounded-lg border border-brand-border">
+                  <div className="text-center p-2 bg-brand-surface rounded-sm border border-brand-border">
                     <p className="text-[10px] text-brand-muted uppercase tracking-wider">Width</p>
                     <p className="text-sm font-semibold text-brand-text">{quote.boundingBox.x.toFixed(1)}mm</p>
                   </div>
-                  <div className="text-center p-2 bg-brand-surface rounded-lg border border-brand-border">
+                  <div className="text-center p-2 bg-brand-surface rounded-sm border border-brand-border">
                     <p className="text-[10px] text-brand-muted uppercase tracking-wider">Depth</p>
                     <p className="text-sm font-semibold text-brand-text">{quote.boundingBox.y.toFixed(1)}mm</p>
                   </div>
-                  <div className="text-center p-2 bg-brand-surface rounded-lg border border-brand-border">
+                  <div className="text-center p-2 bg-brand-surface rounded-sm border border-brand-border">
                     <p className="text-[10px] text-brand-muted uppercase tracking-wider">Height</p>
                     <p className="text-sm font-semibold text-brand-text">{quote.boundingBox.z.toFixed(1)}mm</p>
                   </div>

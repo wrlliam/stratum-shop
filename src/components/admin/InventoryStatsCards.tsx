@@ -21,7 +21,7 @@ export function InventoryStatsCards({ topByStock }: Props) {
   }))
 
   return (
-    <div className="bg-brand-surface border border-brand-border rounded-2xl p-5 shadow-card mb-8">
+    <div className="bg-brand-surface border border-brand-border rounded-sm p-5 shadow-card mb-8">
       <h2 className="text-sm font-bold text-brand-text mb-4">Top Products by Stock</h2>
       <ResponsiveContainer width="100%" height={220}>
         <BarChart data={data} layout="vertical" margin={{ left: 8, right: 16, top: 0, bottom: 0 }}>

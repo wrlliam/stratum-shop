@@ -226,7 +226,7 @@ export default function CheckoutPage() {
               <div className="space-y-3 mb-5">
                 {cart.items.map((item) => (
                   <div key={item.id} className="flex items-center gap-3">
-                    <div className="relative w-12 h-12 rounded-lg overflow-hidden bg-brand-arctic shrink-0 border border-brand-border">
+                    <div className="relative w-12 h-12 rounded-sm overflow-hidden bg-brand-arctic shrink-0 border border-brand-border">
                       {item.imageUrl ? (
                         <Image
                           src={item.imageUrl}

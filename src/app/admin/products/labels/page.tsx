@@ -84,7 +84,7 @@ export default function ProductLabelsPage() {
         <div className="flex items-center gap-4 mb-8">
           <Link
             href="/admin/products"
-            className="p-2 rounded-xl text-brand-muted hover:text-brand-text hover:bg-brand-arctic transition-colors"
+            className="p-2 rounded-sm text-brand-muted hover:text-brand-text hover:bg-brand-arctic transition-colors"
           >
             <ArrowLeftIcon className="w-5 h-5" />
           </Link>
@@ -92,21 +92,21 @@ export default function ProductLabelsPage() {
           <button
             onClick={() => window.print()}
             disabled={totalLabels === 0}
-            className="ml-auto px-4 py-2 text-sm font-medium bg-brand-blue text-white rounded-lg hover:bg-brand-blue/90 transition-colors disabled:opacity-50"
+            className="ml-auto px-4 py-2 text-sm font-medium bg-brand-blue text-white rounded-sm hover:bg-brand-blue/90 transition-colors disabled:opacity-50"
           >
             Print {totalLabels > 0 ? `(${totalLabels} label${totalLabels !== 1 ? 's' : ''})` : ''}
           </button>
         </div>
 
         {/* QR Type toggle */}
-        <div className="bg-brand-surface border border-brand-border rounded-2xl p-6 shadow-card mb-6">
+        <div className="bg-brand-surface border border-brand-border rounded-sm p-6 shadow-card mb-6">
           <h2 className="text-sm font-bold text-brand-text mb-3">QR Code Type</h2>
           <div className="flex gap-2">
             {(['public', 'inventory'] as const).map((type) => (
               <button
                 key={type}
                 onClick={() => setQrType(type)}
-                className={`px-4 py-2 text-sm font-medium rounded-xl border transition-colors ${
+                className={`px-4 py-2 text-sm font-medium rounded-sm border transition-colors ${
                   qrType === type
                     ? 'border-brand-blue bg-brand-blue-light text-brand-blue'
                     : 'border-brand-border text-brand-muted hover:bg-brand-arctic'
@@ -124,7 +124,7 @@ export default function ProductLabelsPage() {
         </div>
 
         {/* Product selector with quantity inputs */}
-        <div className="bg-brand-surface border border-brand-border rounded-2xl p-6 shadow-card mb-8">
+        <div className="bg-brand-surface border border-brand-border rounded-sm p-6 shadow-card mb-8">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-sm font-bold text-brand-text">Select Products &amp; Quantities</h2>
             <button
@@ -141,7 +141,7 @@ export default function ProductLabelsPage() {
               return (
                 <div
                   key={product.id}
-                  className={`flex items-center gap-3 p-3 rounded-xl border transition-colors ${
+                  className={`flex items-center gap-3 p-3 rounded-sm border transition-colors ${
                     isSelected
                       ? 'border-brand-blue bg-brand-blue/5'
                       : 'border-brand-border hover:bg-brand-arctic'
@@ -165,7 +165,7 @@ export default function ProductLabelsPage() {
                         max={99}
                         value={qty}
                         onChange={(e) => setQty(product.id, parseInt(e.target.value) || 1)}
-                        className="w-16 px-2 py-1 text-sm border border-brand-border rounded-lg text-center focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue"
+                        className="w-16 px-2 py-1 text-sm border border-brand-border rounded-sm text-center focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue"
                       />
                     </div>
                   )}
@@ -187,7 +187,7 @@ export default function ProductLabelsPage() {
           {labelList.map((item) => (
             <div
               key={item.key}
-              className="border border-brand-border print:border-gray-400 rounded-xl p-4 text-center space-y-2 break-inside-avoid"
+              className="border border-brand-border print:border-gray-400 rounded-sm p-4 text-center space-y-2 break-inside-avoid"
             >
               <QRCodeDisplay
                 value={getQRValue(item)}

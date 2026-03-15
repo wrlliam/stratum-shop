@@ -217,7 +217,7 @@ export default function ScanPage() {
       <div className="flex items-center gap-4 mb-8">
         <Link
           href="/admin/inventory"
-          className="p-2 rounded-xl text-brand-muted hover:text-brand-text hover:bg-brand-arctic transition-colors"
+          className="p-2 rounded-sm text-brand-muted hover:text-brand-text hover:bg-brand-arctic transition-colors"
         >
           <ArrowLeftIcon className="w-5 h-5" />
         </Link>
@@ -227,13 +227,13 @@ export default function ScanPage() {
       {/* Scanner modes */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         {/* Camera */}
-        <div className="bg-brand-surface border border-brand-border rounded-2xl p-6 shadow-card">
+        <div className="bg-brand-surface border border-brand-border rounded-sm p-6 shadow-card">
           <h2 className="text-sm font-bold text-brand-text mb-4">Camera Scanner</h2>
           <QRScanner onScan={handleScan} />
         </div>
 
         {/* Text input (USB scanner / paste) */}
-        <div className="bg-brand-surface border border-brand-border rounded-2xl p-6 shadow-card">
+        <div className="bg-brand-surface border border-brand-border rounded-sm p-6 shadow-card">
           <h2 className="text-sm font-bold text-brand-text mb-4">USB Scanner / Paste</h2>
           <p className="text-xs text-brand-muted mb-3">
             Focus this field and scan with a USB barcode scanner, or paste a QR URL.
@@ -244,7 +244,7 @@ export default function ScanPage() {
             placeholder="Scan or paste URL here..."
             onKeyDown={handleTextInput}
             onPaste={handlePaste}
-            className="w-full px-3 py-2.5 text-sm border border-brand-border rounded-lg bg-brand-surface focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue"
+            className="w-full px-3 py-2.5 text-sm border border-brand-border rounded-sm bg-brand-surface focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue"
             autoFocus
           />
         </div>
@@ -252,7 +252,7 @@ export default function ScanPage() {
 
       {/* Loading */}
       {loading && (
-        <div className="bg-brand-surface border border-brand-border rounded-2xl p-6 shadow-card text-center">
+        <div className="bg-brand-surface border border-brand-border rounded-sm p-6 shadow-card text-center">
           <div className="animate-spin w-6 h-6 border-2 border-brand-blue border-t-transparent rounded-full mx-auto" />
           <p className="text-sm text-brand-muted mt-2">Loading...</p>
         </div>
@@ -260,7 +260,7 @@ export default function ScanPage() {
 
       {/* Product result */}
       {product && !loading && (
-        <div className="bg-brand-surface border border-brand-border rounded-2xl p-6 shadow-card">
+        <div className="bg-brand-surface border border-brand-border rounded-sm p-6 shadow-card">
           <h2 className="text-sm font-bold text-brand-text mb-4">Product Found</h2>
           <StockAdjustForm
             productId={product.id}
@@ -273,7 +273,7 @@ export default function ScanPage() {
 
       {/* Order result */}
       {order && !loading && (
-        <div className="bg-brand-surface border border-brand-border rounded-2xl p-6 shadow-card space-y-3">
+        <div className="bg-brand-surface border border-brand-border rounded-sm p-6 shadow-card space-y-3">
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-bold text-brand-text">Order Found</h2>
             <Link
@@ -322,7 +322,7 @@ export default function ScanPage() {
 
       {/* Batch result */}
       {batch && !loading && (
-        <div className="bg-brand-surface border border-brand-border rounded-2xl p-6 shadow-card space-y-3">
+        <div className="bg-brand-surface border border-brand-border rounded-sm p-6 shadow-card space-y-3">
           <h2 className="text-sm font-bold text-brand-text">Batch Found</h2>
           <div className="space-y-1 text-sm">
             <p><span className="text-brand-muted">Product:</span> <span className="font-medium text-brand-text">{batch.product.name}</span></p>

@@ -27,14 +27,14 @@ export default async function AdminBundlesPage() {
         </div>
         <Link
           href="/admin/bundles/new"
-          className="flex items-center gap-2 px-4 py-2.5 bg-brand-blue text-white font-semibold rounded-xl text-sm hover:bg-brand-blue-dark transition-colors shadow-blue-sm"
+          className="flex items-center gap-2 px-4 py-2.5 bg-brand-blue text-white font-semibold rounded-sm text-sm hover:bg-brand-blue-dark transition-colors shadow-blue-sm"
         >
           <PlusIcon className="w-4 h-4" />
           New Bundle
         </Link>
       </div>
 
-      <div className="bg-brand-surface border border-brand-border rounded-2xl overflow-hidden shadow-card">
+      <div className="bg-brand-surface border border-brand-border rounded-sm overflow-hidden shadow-card">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
@@ -96,7 +96,7 @@ export default async function AdminBundlesPage() {
                       <div className="flex items-center gap-1">
                         <Link
                           href={`/admin/bundles/${bundle.id}`}
-                          className="p-1.5 text-brand-muted hover:text-brand-blue hover:bg-brand-arctic rounded-lg transition-colors"
+                          className="p-1.5 text-brand-muted hover:text-brand-blue hover:bg-brand-arctic rounded-sm transition-colors"
                         >
                           <Pencil1Icon className="w-3.5 h-3.5" />
                         </Link>

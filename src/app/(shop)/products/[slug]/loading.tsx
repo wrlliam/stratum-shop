@@ -14,10 +14,10 @@ export default function ProductDetailLoading() {
         <div className="lg:grid lg:grid-cols-2 lg:gap-16">
           {/* Image carousel skeleton */}
           <div className="space-y-3 mb-10 lg:mb-0">
-            <div className="skeleton rounded-lg aspect-square w-full" />
+            <div className="skeleton rounded-sm aspect-square w-full" />
             <div className="flex gap-2">
               {[...Array(4)].map((_, i) => (
-                <div key={i} className="skeleton rounded-lg w-20 h-20 flex-shrink-0" />
+                <div key={i} className="skeleton rounded-sm w-20 h-20 flex-shrink-0" />
               ))}
             </div>
           </div>
@@ -44,18 +44,18 @@ export default function ProductDetailLoading() {
               <div className="skeleton h-3 w-20" />
               <div className="flex gap-2">
                 {[...Array(4)].map((_, i) => (
-                  <div key={i} className="skeleton h-9 w-20 rounded-lg" />
+                  <div key={i} className="skeleton h-9 w-20 rounded-sm" />
                 ))}
               </div>
             </div>
 
             {/* Add to cart button */}
-            <div className="skeleton h-13 w-full rounded-lg" />
+            <div className="skeleton h-13 w-full rounded-sm" />
 
             {/* Spec cards */}
             <div className="grid grid-cols-3 gap-3 pt-2">
               {[...Array(3)].map((_, i) => (
-                <div key={i} className="rounded-lg border border-brand-border p-3 space-y-2">
+                <div key={i} className="rounded-sm border border-brand-border p-3 space-y-2">
                   <div className="skeleton h-3 w-3/4 mx-auto" />
                   <div className="skeleton h-4 w-1/2 mx-auto" />
                 </div>

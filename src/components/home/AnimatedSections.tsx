@@ -163,7 +163,7 @@ export function ProcessSection() {
               {i < steps.length - 1 && (
                 <div className="hidden lg:block absolute top-5 left-full w-full h-px border-t border-dashed border-brand-blue/20 -translate-x-4" />
               )}
-              <div className="text-3xl font-display text-brand-blue/30 font-mono mb-3 leading-none">
+              <div className="text-3xl text-brand-blue/30 font-display mb-3 leading-none">
                 {step.number}
               </div>
               <h3 className="text-base font-bold text-brand-text mb-2">{step.title}</h3>
@@ -219,7 +219,7 @@ export function MaterialsSection() {
         >
           <div className="flex items-center gap-4 mb-6">
             <div
-              className="w-12 h-12 rounded-lg shadow-inner bg-brand-blue"
+              className="w-12 h-12 rounded-sm shadow-inner bg-brand-blue"
             />
             <div>
               <h3 className="text-xl font-bold text-brand-text">PLA Filament</h3>

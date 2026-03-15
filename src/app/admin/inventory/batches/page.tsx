@@ -78,7 +78,7 @@ export default function BatchesPage() {
       <div className="flex items-center gap-4 mb-8">
         <Link
           href="/admin/inventory"
-          className="p-2 rounded-xl text-brand-muted hover:text-brand-text hover:bg-brand-arctic transition-colors"
+          className="p-2 rounded-sm text-brand-muted hover:text-brand-text hover:bg-brand-arctic transition-colors"
         >
           <ArrowLeftIcon className="w-5 h-5" />
         </Link>
@@ -87,13 +87,13 @@ export default function BatchesPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Create form */}
-        <div className="bg-brand-surface border border-brand-border rounded-2xl p-6 shadow-card">
+        <div className="bg-brand-surface border border-brand-border rounded-sm p-6 shadow-card">
           <h2 className="text-sm font-bold text-brand-text mb-4">New Batch</h2>
           <BatchForm products={products} onCreated={fetchData} />
         </div>
 
         {/* Batch list */}
-        <div className="lg:col-span-2 bg-brand-surface border border-brand-border rounded-2xl shadow-card">
+        <div className="lg:col-span-2 bg-brand-surface border border-brand-border rounded-sm shadow-card">
           <div className="p-4 border-b border-brand-border">
             <h2 className="text-sm font-bold text-brand-text">All Batches</h2>
           </div>

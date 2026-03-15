@@ -27,7 +27,7 @@ export function CustomOrderForm({ fields, onChange }: CustomOrderFormProps) {
   if (!fields || fields.length === 0) return null
 
   return (
-    <div className="space-y-4 border border-brand-border rounded-xl p-4 bg-brand-arctic">
+    <div className="space-y-4 border border-brand-border rounded-sm p-4 bg-brand-arctic">
       <p className="text-xs font-semibold text-brand-text uppercase tracking-wider">
         Custom Order Details
       </p>
@@ -44,7 +44,7 @@ export function CustomOrderForm({ fields, onChange }: CustomOrderFormProps) {
               value={values[field.label] ?? ''}
               onChange={(e) => set(field.label, e.target.value)}
               rows={3}
-              className="w-full px-3 py-2 text-sm border border-brand-border rounded-lg bg-brand-surface focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue resize-none"
+              className="w-full px-3 py-2 text-sm border border-brand-border rounded-sm bg-brand-surface focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue resize-none"
             />
           )}
 
@@ -54,7 +54,7 @@ export function CustomOrderForm({ fields, onChange }: CustomOrderFormProps) {
               placeholder={field.placeholder}
               value={values[field.label] ?? ''}
               onChange={(e) => set(field.label, e.target.value)}
-              className="w-full px-3 py-2 text-sm border border-brand-border rounded-lg bg-brand-surface focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue"
+              className="w-full px-3 py-2 text-sm border border-brand-border rounded-sm bg-brand-surface focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue"
             />
           )}
 
@@ -62,7 +62,7 @@ export function CustomOrderForm({ fields, onChange }: CustomOrderFormProps) {
             <select
               value={values[field.label] ?? ''}
               onChange={(e) => set(field.label, e.target.value)}
-              className="w-full px-3 py-2 text-sm border border-brand-border rounded-lg bg-brand-surface focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue"
+              className="w-full px-3 py-2 text-sm border border-brand-border rounded-sm bg-brand-surface focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue"
             >
               <option value="">Select an option...</option>
               {field.options.map((opt) => (
@@ -78,14 +78,14 @@ export function CustomOrderForm({ fields, onChange }: CustomOrderFormProps) {
                 placeholder="Paste image URL or upload to an image host..."
                 value={values[field.label] ?? ''}
                 onChange={(e) => set(field.label, e.target.value)}
-                className="w-full px-3 py-2 text-sm border border-brand-border rounded-lg bg-brand-surface focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue"
+                className="w-full px-3 py-2 text-sm border border-brand-border rounded-sm bg-brand-surface focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue"
               />
               {values[field.label] && (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={values[field.label]}
                   alt="Preview"
-                  className="h-24 w-24 object-cover rounded-lg border border-brand-border"
+                  className="h-24 w-24 object-cover rounded-sm border border-brand-border"
                 />
               )}
             </div>

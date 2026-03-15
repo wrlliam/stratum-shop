@@ -57,13 +57,13 @@ export default function MassEmailPage() {
       </div>
 
       {result && (
-        <div className="bg-green-50 border border-green-200 rounded-2xl p-4 mb-6 text-sm text-green-700">
+        <div className="bg-green-50 border border-green-200 rounded-sm p-4 mb-6 text-sm text-green-700">
           Successfully sent to <strong>{result.sent}</strong> recipients.
         </div>
       )}
 
       <form onSubmit={handleSubmit} className="space-y-5">
-        <div className="bg-brand-surface border border-brand-border rounded-2xl p-6 shadow-card space-y-4">
+        <div className="bg-brand-surface border border-brand-border rounded-sm p-6 shadow-card space-y-4">
           <h2 className="text-sm font-bold text-brand-text">Recipients</h2>
           <div className="space-y-2">
             {RECIPIENT_OPTS.map((opt) => (
@@ -82,7 +82,7 @@ export default function MassEmailPage() {
           </div>
         </div>
 
-        <div className="bg-brand-surface border border-brand-border rounded-2xl p-6 shadow-card space-y-4">
+        <div className="bg-brand-surface border border-brand-border rounded-sm p-6 shadow-card space-y-4">
           <h2 className="text-sm font-bold text-brand-text">Content</h2>
           <div>
             <label className="block text-xs font-medium text-brand-muted mb-1.5">Subject *</label>
@@ -91,7 +91,7 @@ export default function MassEmailPage() {
               value={form.subject}
               onChange={(e) => setForm((p) => ({ ...p, subject: e.target.value }))}
               placeholder="New products this week — Stratum"
-              className="w-full px-3 py-2.5 text-sm border border-brand-border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue"
+              className="w-full px-3 py-2.5 text-sm border border-brand-border rounded-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue"
               required
             />
           </div>
@@ -102,7 +102,7 @@ export default function MassEmailPage() {
               onChange={(e) => setForm((p) => ({ ...p, body: e.target.value }))}
               placeholder="Write your email content here…"
               rows={12}
-              className="w-full px-3 py-2.5 text-sm border border-brand-border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue resize-none"
+              className="w-full px-3 py-2.5 text-sm border border-brand-border rounded-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue resize-none"
               required
             />
             <p className="text-xs text-brand-muted mt-1">Plain text. An unsubscribe link will be automatically added.</p>
@@ -112,7 +112,7 @@ export default function MassEmailPage() {
         <button
           type="submit"
           disabled={sending}
-          className="w-full py-3 text-sm font-semibold bg-brand-blue text-white rounded-xl hover:bg-brand-blue/90 disabled:opacity-50 transition-colors"
+          className="w-full py-3 text-sm font-semibold bg-brand-blue text-white rounded-sm hover:bg-brand-blue/90 disabled:opacity-50 transition-colors"
         >
           {sending ? 'Sending…' : 'Send Email Campaign'}
         </button>

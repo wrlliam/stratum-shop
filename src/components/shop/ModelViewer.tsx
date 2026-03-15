@@ -17,7 +17,7 @@ interface ModelViewerProps {
 export function ModelViewer({ url, height = 400 }: ModelViewerProps) {
   return (
     <div
-      className="w-full rounded-2xl overflow-hidden border border-brand-border bg-brand-arctic"
+      className="w-full rounded-sm overflow-hidden border border-brand-border bg-brand-arctic"
       style={{ height }}
     >
       <Canvas camera={{ position: [0, 0, 5], fov: 45 }} shadows>

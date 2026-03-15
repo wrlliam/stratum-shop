@@ -21,13 +21,13 @@ export default function RecommendationSuccessPage() {
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Link
             href="/orders"
-            className="inline-flex items-center justify-center px-6 py-3 bg-brand-blue text-white font-semibold rounded-xl hover:bg-brand-blue-dark transition-colors"
+            className="inline-flex items-center justify-center px-6 py-3 bg-brand-blue text-white font-semibold rounded-sm hover:bg-brand-blue-dark transition-colors"
           >
             View Your Orders
           </Link>
           <Link
             href="/"
-            className="inline-flex items-center justify-center px-6 py-3 bg-brand-arctic dark:bg-brand-surface text-brand-text font-semibold rounded-xl border border-brand-border hover:bg-brand-arctic/80 transition-colors"
+            className="inline-flex items-center justify-center px-6 py-3 bg-brand-arctic dark:bg-brand-surface text-brand-text font-semibold rounded-sm border border-brand-border hover:bg-brand-arctic/80 transition-colors"
           >
             Back to Shop
           </Link>
