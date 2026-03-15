@@ -28,9 +28,12 @@ const config: Config = {
       fontFamily: {
         sans: ['var(--font-dm-sans)', 'DM Sans', 'system-ui', 'sans-serif'],
         mono: ['var(--font-dm-mono)', 'DM Mono', 'monospace'],
+        display: ['var(--font-display)', 'Cal Sans', 'DM Sans', 'system-ui', 'sans-serif'],
       },
       fontSize: {
         '2xs': ['0.625rem', { lineHeight: '1rem' }],
+        'display': ['5.5rem', { lineHeight: '0.92', letterSpacing: '-0.02em' }],
+        'display-sm': ['3.5rem', { lineHeight: '0.95', letterSpacing: '-0.01em' }],
       },
       boxShadow: {
         'card': '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)',

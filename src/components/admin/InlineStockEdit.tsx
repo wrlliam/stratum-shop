@@ -54,7 +54,7 @@ export function InlineStockEdit({ productId, stock }: { productId: string; stock
           if (e.key === 'Enter') commit()
           if (e.key === 'Escape') { setValue(String(displayStock)); setEditing(false) }
         }}
-        className="w-16 px-2 py-1 text-sm border border-brand-blue rounded-lg bg-brand-surface text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-blue/20"
+        className="w-16 px-2 py-1 text-sm border border-brand-blue rounded-sm bg-brand-surface text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-blue/20"
         autoFocus
       />
     )

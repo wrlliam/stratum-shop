@@ -39,7 +39,7 @@ export default async function CheckoutSuccessPage({ searchParams }: Props) {
           </div>
         </div>
 
-        <h1 className="text-3xl font-bold text-brand-text mb-3">Order Confirmed!</h1>
+        <h1 className="text-3xl font-display text-brand-text mb-3">Order Confirmed!</h1>
 
         {orderNumber && (
           <p className="text-brand-blue font-mono text-sm mb-2">#{orderNumber}</p>
@@ -58,7 +58,7 @@ export default async function CheckoutSuccessPage({ searchParams }: Props) {
         )}
 
         {/* What happens next */}
-        <div className="text-left bg-brand-surface border border-brand-border rounded-2xl p-6 mb-8 shadow-card">
+        <div className="text-left bg-brand-surface border border-brand-border rounded-sm p-6 mb-8 shadow-card">
           <h2 className="text-sm font-bold text-brand-text mb-4 flex items-center gap-2">
             <CubeIcon className="w-4 h-4 text-brand-blue" />
             What happens next?
@@ -84,13 +84,13 @@ export default async function CheckoutSuccessPage({ searchParams }: Props) {
         <div className="flex gap-3">
           <Link
             href="/products"
-            className="flex-1 flex items-center justify-center whitespace-nowrap px-5 py-3 bg-brand-blue text-white font-semibold rounded-xl hover:bg-brand-blue-dark transition-colors shadow-blue-sm text-sm"
+            className="flex-1 flex items-center justify-center whitespace-nowrap px-5 py-3 bg-brand-blue text-white font-semibold rounded-sm hover:bg-brand-blue-dark transition-colors shadow-blue-sm text-sm"
           >
             Continue Shopping →
           </Link>
           <Link
             href="/orders"
-            className="flex-1 flex items-center justify-center whitespace-nowrap px-5 py-3 border border-brand-border text-brand-text font-medium rounded-xl hover:border-brand-blue hover:text-brand-blue transition-colors text-sm"
+            className="flex-1 flex items-center justify-center whitespace-nowrap px-5 py-3 border border-brand-border text-brand-text font-medium rounded-sm hover:border-brand-blue hover:text-brand-blue transition-colors text-sm"
           >
             View My Orders
           </Link>

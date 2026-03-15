@@ -49,7 +49,7 @@ export default function CustomersPage() {
     <div className="p-8">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-xl font-bold text-brand-text">Customers</h1>
+          <h1 className="text-xl font-display text-brand-text">Customers</h1>
           <p className="text-sm text-brand-muted mt-0.5">{total} total</p>
         </div>
       </div>
@@ -60,11 +60,11 @@ export default function CustomersPage() {
           placeholder="Search by name or email…"
           value={search}
           onChange={(e) => { setSearch(e.target.value); setOffset(0) }}
-          className="w-full max-w-sm px-3 py-2 text-sm border border-brand-border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue"
+          className="w-full max-w-sm px-3 py-2 text-sm border border-brand-border rounded-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue"
         />
       </div>
 
-      <div className="bg-brand-surface border border-brand-border rounded-2xl shadow-card overflow-hidden">
+      <div className="bg-brand-surface border border-brand-border rounded-sm shadow-card overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
@@ -124,14 +124,14 @@ export default function CustomersPage() {
               <button
                 onClick={() => setOffset((o) => Math.max(0, o - limit))}
                 disabled={offset === 0}
-                className="px-3 py-1.5 border border-brand-border rounded-lg disabled:opacity-40 hover:bg-brand-arctic"
+                className="px-3 py-1.5 border border-brand-border rounded-sm disabled:opacity-40 hover:bg-brand-arctic"
               >
                 Previous
               </button>
               <button
                 onClick={() => setOffset((o) => o + limit)}
                 disabled={offset + limit >= total}
-                className="px-3 py-1.5 border border-brand-border rounded-lg disabled:opacity-40 hover:bg-brand-arctic"
+                className="px-3 py-1.5 border border-brand-border rounded-sm disabled:opacity-40 hover:bg-brand-arctic"
               >
                 Next
               </button>

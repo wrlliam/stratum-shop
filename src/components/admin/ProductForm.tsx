@@ -59,9 +59,9 @@ function Toggle({ on, onClick }: { on: boolean; onClick: () => void }) {
   )
 }
 
-const sel = 'w-full bg-brand-surface border border-brand-border rounded-lg px-3 py-2.5 text-sm text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue'
-const selSm = 'bg-brand-surface border border-brand-border rounded-lg px-2.5 py-2 text-sm text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue'
-const fieldInput = `flex-1 px-3 py-2 text-sm border border-brand-border rounded-lg bg-brand-surface text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue`
+const sel = 'w-full bg-brand-surface border border-brand-border rounded-sm px-3 py-2.5 text-sm text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue'
+const selSm = 'bg-brand-surface border border-brand-border rounded-sm px-2.5 py-2 text-sm text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue'
+const fieldInput = `flex-1 px-3 py-2 text-sm border border-brand-border rounded-sm bg-brand-surface text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue`
 
 function FieldLabel({ children }: { children: React.ReactNode }) {
   return (
@@ -425,7 +425,7 @@ export function ProductForm({ product }: ProductFormProps) {
                   <label className="text-xs font-semibold text-brand-text uppercase tracking-wider">
                     Full Description (Markdown)
                   </label>
-                  <div className="flex items-center gap-1 bg-brand-arctic rounded-lg p-0.5">
+                  <div className="flex items-center gap-1 bg-brand-arctic rounded-sm p-0.5">
                     <button
                       type="button"
                       onClick={() => setDescriptionMode('edit')}
@@ -455,7 +455,7 @@ export function ProductForm({ product }: ProductFormProps) {
                       rows={12}
                       value={form.description}
                       onChange={(e) => set('description', e.target.value)}
-                      className="w-full px-3 py-2.5 text-sm border border-brand-border rounded-lg bg-brand-surface text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue font-mono resize-y min-h-[200px]"
+                      className="w-full px-3 py-2.5 text-sm border border-brand-border rounded-sm bg-brand-surface text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue font-mono resize-y min-h-[200px]"
                     />
                     <div className="flex flex-wrap gap-3 mt-1.5">
                       {[
@@ -481,7 +481,7 @@ export function ProductForm({ product }: ProductFormProps) {
                     </div>
                   </>
                 ) : (
-                  <div className="min-h-[200px] px-4 py-3 border border-brand-border rounded-lg bg-brand-arctic/50">
+                  <div className="min-h-[200px] px-4 py-3 border border-brand-border rounded-sm bg-brand-arctic/50">
                     {form.description ? (
                       <div className="prose prose-sm max-w-none text-brand-muted leading-relaxed
                         prose-headings:text-brand-text prose-strong:text-brand-text
@@ -556,10 +556,10 @@ export function ProductForm({ product }: ProductFormProps) {
             <SectionHeading>Images</SectionHeading>
             <div className="grid grid-cols-3 sm:grid-cols-5 lg:grid-cols-6 gap-3 mb-2">
               {images.map((img, i) => (
-                <div key={i} className="relative aspect-square rounded-xl overflow-hidden bg-brand-arctic group">
+                <div key={i} className="relative aspect-square rounded-sm overflow-hidden bg-brand-arctic group">
                   <Image src={img.url} alt={img.alt} fill className="object-cover" sizes="120px" />
                   <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                    <button type="button" onClick={() => removeImage(i)} className="p-1.5 bg-red-500/90 rounded-lg text-white">
+                    <button type="button" onClick={() => removeImage(i)} className="p-1.5 bg-red-500/90 rounded-sm text-white">
                       <Cross1Icon className="w-3.5 h-3.5" />
                     </button>
                   </div>
@@ -569,7 +569,7 @@ export function ProductForm({ product }: ProductFormProps) {
                 </div>
               ))}
               <button type="button" onClick={() => fileInputRef.current?.click()} disabled={uploading}
-                className="aspect-square rounded-xl border-2 border-dashed border-brand-border hover:border-brand-slate flex flex-col items-center justify-center gap-1 text-brand-muted hover:text-brand-text transition-colors">
+                className="aspect-square rounded-sm border-2 border-dashed border-brand-border hover:border-brand-slate flex flex-col items-center justify-center gap-1 text-brand-muted hover:text-brand-text transition-colors">
                 {uploading
                   ? <div className="animate-spin w-5 h-5 border-2 border-brand-blue border-t-transparent rounded-full" />
                   : <><UploadIcon className="w-5 h-5" /><span className="text-[10px]">Add</span></>}
@@ -587,7 +587,7 @@ export function ProductForm({ product }: ProductFormProps) {
                 <div className="space-y-2">
                   {images.map((img, i) => (
                     <div key={i} className="flex items-center gap-3">
-                      <div className="relative w-10 h-10 rounded-lg overflow-hidden bg-brand-arctic shrink-0">
+                      <div className="relative w-10 h-10 rounded-sm overflow-hidden bg-brand-arctic shrink-0">
                         <Image src={img.url} alt="" fill className="object-cover" sizes="40px" />
                       </div>
                       <input
@@ -606,7 +606,7 @@ export function ProductForm({ product }: ProductFormProps) {
               <div className="pt-4 border-t border-brand-border">
                 <FieldLabel>3D Model File (.glb / .gltf)</FieldLabel>
                 {form.modelUrl ? (
-                  <div className="flex items-center gap-2 p-3 bg-brand-arctic rounded-xl">
+                  <div className="flex items-center gap-2 p-3 bg-brand-arctic rounded-sm">
                     <span className="flex-1 text-xs font-mono text-brand-text truncate">{form.modelUrl.split('/').pop()}</span>
                     <button type="button" onClick={() => set('modelUrl', '')} className="text-red-400 hover:text-red-500">
                       <Cross1Icon className="w-3.5 h-3.5" />
@@ -614,7 +614,7 @@ export function ProductForm({ product }: ProductFormProps) {
                   </div>
                 ) : (
                   <button type="button" onClick={() => modelFileRef.current?.click()} disabled={modelUploading}
-                    className="w-full py-3 border-2 border-dashed border-brand-border rounded-xl text-sm text-brand-muted hover:border-brand-slate hover:text-brand-text transition-colors flex items-center justify-center gap-2">
+                    className="w-full py-3 border-2 border-dashed border-brand-border rounded-sm text-sm text-brand-muted hover:border-brand-slate hover:text-brand-text transition-colors flex items-center justify-center gap-2">
                     {modelUploading
                       ? <div className="animate-spin w-4 h-4 border-2 border-brand-blue border-t-transparent rounded-full" />
                       : <><UploadIcon className="w-4 h-4" />Upload 3D model</>}
@@ -643,7 +643,7 @@ export function ProductForm({ product }: ProductFormProps) {
                   hint="Your actual cost for profit tracking" />
               </div>
               {profitMargin !== null && (
-                <div className="flex items-center gap-3 p-3 bg-brand-arctic rounded-xl">
+                <div className="flex items-center gap-3 p-3 bg-brand-arctic rounded-sm">
                   <span className="text-xs text-brand-muted">Profit margin:</span>
                   <span className={`text-sm font-bold ${profitMargin >= 30 ? 'text-green-600' : profitMargin >= 10 ? 'text-amber-600' : 'text-red-500'}`}>
                     {profitMargin}%
@@ -673,13 +673,13 @@ export function ProductForm({ product }: ProductFormProps) {
                       className={`flex-1 ${selSm}`} />
                   </div>
                   {salePrice > 0 && (
-                    <div className="p-3 bg-brand-arctic rounded-xl flex items-center justify-between">
+                    <div className="p-3 bg-brand-arctic rounded-sm flex items-center justify-between">
                       <div>
                         <p className="text-[10px] text-brand-muted uppercase tracking-wider">Sale price</p>
                         <p className="font-bold text-brand-text text-sm">£{Math.max(0, salePrice).toFixed(2)}</p>
                       </div>
                       <button type="button" onClick={applySale}
-                        className="text-xs font-semibold text-white bg-brand-blue px-3 py-1.5 rounded-lg hover:bg-brand-blue/90">
+                        className="text-xs font-semibold text-white bg-brand-blue px-3 py-1.5 rounded-sm hover:bg-brand-blue/90">
                         Apply
                       </button>
                     </div>
@@ -742,12 +742,12 @@ export function ProductForm({ product }: ProductFormProps) {
                         onChange={(e) => setC('profit', e.target.value)} className={sel} />
                     </div>
                   </div>
-                  <div className="p-3 bg-brand-arctic rounded-xl">
+                  <div className="p-3 bg-brand-arctic rounded-sm">
                     <p className="text-[10px] text-brand-muted uppercase tracking-wider mb-1">Suggested price (ex. VAT)</p>
                     <p className="text-lg font-bold text-brand-text font-mono">{formatPrice(recommendedPrice)}</p>
                   </div>
                   <button type="button" onClick={() => set('price', String(recommendedPrice / 100))}
-                    className="w-full py-2 text-sm font-semibold bg-brand-blue text-white rounded-xl hover:bg-brand-blue/90 transition-colors">
+                    className="w-full py-2 text-sm font-semibold bg-brand-blue text-white rounded-sm hover:bg-brand-blue/90 transition-colors">
                     Apply to price
                   </button>
                 </div>
@@ -811,13 +811,13 @@ export function ProductForm({ product }: ProductFormProps) {
                   <div className="relative flex-1">
                     <input type="number" min="0" placeholder="2" value={form.printTimeHours}
                       onChange={(e) => set('printTimeHours', e.target.value)}
-                      className="w-full px-3 py-2.5 pr-8 text-sm border border-brand-border rounded-lg bg-brand-surface text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue" />
+                      className="w-full px-3 py-2.5 pr-8 text-sm border border-brand-border rounded-sm bg-brand-surface text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue" />
                     <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-brand-muted pointer-events-none">h</span>
                   </div>
                   <div className="relative flex-1">
                     <input type="number" min="0" max="59" placeholder="30" value={form.printTimeMinutes}
                       onChange={(e) => set('printTimeMinutes', e.target.value)}
-                      className="w-full px-3 py-2.5 pr-8 text-sm border border-brand-border rounded-lg bg-brand-surface text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue" />
+                      className="w-full px-3 py-2.5 pr-8 text-sm border border-brand-border rounded-sm bg-brand-surface text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue" />
                     <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-brand-muted pointer-events-none">m</span>
                   </div>
                 </div>
@@ -920,7 +920,7 @@ export function ProductForm({ product }: ProductFormProps) {
                 <div>
                   <FieldLabel>{form.productType === 'digital' ? 'Digital File' : 'Download File'}</FieldLabel>
                   {digitalFilePath ? (
-                    <div className="flex items-center gap-2 p-3 bg-brand-arctic rounded-xl">
+                    <div className="flex items-center gap-2 p-3 bg-brand-arctic rounded-sm">
                       <span className="flex-1 text-xs font-mono text-brand-text truncate">{digitalFilePath.split('/').pop()}</span>
                       <button type="button" onClick={() => setDigitalFilePath('')} className="text-red-400 hover:text-red-500">
                         <Cross1Icon className="w-3.5 h-3.5" />
@@ -928,7 +928,7 @@ export function ProductForm({ product }: ProductFormProps) {
                     </div>
                   ) : (
                     <button type="button" onClick={() => digitalFileRef.current?.click()} disabled={digitalUploading}
-                      className="w-full py-3 border-2 border-dashed border-brand-border rounded-xl text-sm text-brand-muted hover:border-brand-slate hover:text-brand-text transition-colors flex items-center justify-center gap-2">
+                      className="w-full py-3 border-2 border-dashed border-brand-border rounded-sm text-sm text-brand-muted hover:border-brand-slate hover:text-brand-text transition-colors flex items-center justify-center gap-2">
                       {digitalUploading
                         ? <div className="animate-spin w-4 h-4 border-2 border-brand-blue border-t-transparent rounded-full" />
                         : <><UploadIcon className="w-4 h-4" />Upload file</>}
@@ -955,7 +955,7 @@ export function ProductForm({ product }: ProductFormProps) {
                 <p className="text-xs text-brand-muted mb-3">Define what customers submit when claiming this order after purchase.</p>
                 <div className="space-y-3">
                   {customFields.map((field, i) => (
-                    <div key={i} className="border border-brand-border rounded-xl p-3 bg-brand-arctic space-y-2">
+                    <div key={i} className="border border-brand-border rounded-sm p-3 bg-brand-arctic space-y-2">
                       <div className="flex items-center gap-2">
                         <select value={field.type}
                           onChange={(e) => updateCustomField(i, 'type', e.target.value as CustomFieldForm['type'])}
@@ -1024,7 +1024,7 @@ export function ProductForm({ product }: ProductFormProps) {
               </div>
 
               {/* SEO Preview */}
-              <div className="p-4 bg-brand-arctic rounded-xl border border-brand-border">
+              <div className="p-4 bg-brand-arctic rounded-sm border border-brand-border">
                 <p className="text-[10px] text-brand-muted uppercase tracking-wider mb-2">Search Preview</p>
                 <p className="text-blue-700 text-base font-medium leading-snug truncate">
                   {form.seoTitle || form.name || 'Product Name'}
@@ -1083,7 +1083,7 @@ export function ProductForm({ product }: ProductFormProps) {
             )}
             <div className="space-y-4">
               {optionGroups.map((group, gi) => (
-                <div key={gi} className="border border-brand-border rounded-xl p-4 space-y-3 bg-brand-arctic">
+                <div key={gi} className="border border-brand-border rounded-sm p-4 space-y-3 bg-brand-arctic">
                   <div className="flex items-center gap-2">
                     <Input placeholder="Group name (e.g. Color)" value={group.name}
                       onChange={(e) => setOptionGroups((prev) => prev.map((g, i) => i === gi ? { ...g, name: e.target.value } : g))} />
@@ -1100,7 +1100,7 @@ export function ProductForm({ product }: ProductFormProps) {
                       <option value="text">Text</option>
                     </select>
                     <button type="button" onClick={() => setOptionGroups((prev) => prev.filter((_, i) => i !== gi))}
-                      className="p-2 text-red-500 hover:bg-red-50 rounded-lg flex-shrink-0">
+                      className="p-2 text-red-500 hover:bg-red-50 rounded-sm flex-shrink-0">
                       <Cross1Icon className="w-3.5 h-3.5" />
                     </button>
                   </div>
@@ -1186,25 +1186,25 @@ export function ProductForm({ product }: ProductFormProps) {
             <div className="border-t border-brand-border pt-5 space-y-4">
               <SectionHeading>Product Summary</SectionHeading>
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="p-3 bg-brand-arctic rounded-xl text-center">
+                <div className="p-3 bg-brand-arctic rounded-sm text-center">
                   <p className="text-[10px] text-brand-muted uppercase tracking-wider">Price</p>
                   <p className="text-lg font-bold text-brand-text">{form.price ? `£${Number(form.price).toFixed(2)}` : '—'}</p>
                 </div>
-                <div className="p-3 bg-brand-arctic rounded-xl text-center">
+                <div className="p-3 bg-brand-arctic rounded-sm text-center">
                   <p className="text-[10px] text-brand-muted uppercase tracking-wider">Stock</p>
                   <p className="text-lg font-bold text-brand-text">{form.stock || '0'}</p>
                 </div>
-                <div className="p-3 bg-brand-arctic rounded-xl text-center">
+                <div className="p-3 bg-brand-arctic rounded-sm text-center">
                   <p className="text-[10px] text-brand-muted uppercase tracking-wider">Images</p>
                   <p className="text-lg font-bold text-brand-text">{images.length}</p>
                 </div>
-                <div className="p-3 bg-brand-arctic rounded-xl text-center">
+                <div className="p-3 bg-brand-arctic rounded-sm text-center">
                   <p className="text-[10px] text-brand-muted uppercase tracking-wider">Options</p>
                   <p className="text-lg font-bold text-brand-text">{optionGroups.length}</p>
                 </div>
               </div>
               {profitMargin !== null && (
-                <div className="p-3 bg-brand-arctic rounded-xl flex items-center justify-between">
+                <div className="p-3 bg-brand-arctic rounded-sm flex items-center justify-between">
                   <span className="text-xs text-brand-muted">Profit margin</span>
                   <span className={`font-bold ${profitMargin >= 30 ? 'text-green-600' : profitMargin >= 10 ? 'text-amber-600' : 'text-red-500'}`}>
                     {profitMargin}% (£{(sellPrice - costPrice).toFixed(2)}/unit)

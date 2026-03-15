@@ -151,7 +151,7 @@ export default async function ProductPage({ params }: Props) {
               </div>
             )}
 
-            <h1 className="text-3xl sm:text-4xl font-bold text-brand-text leading-tight mb-3">
+            <h1 className="text-3xl sm:text-4xl font-display text-brand-text leading-tight mb-3">
               {product.name}
             </h1>
 
@@ -202,7 +202,7 @@ export default async function ProductPage({ params }: Props) {
 
             {/* Custom order notice */}
             {(product as { productType?: string }).productType === 'custom_order' && (
-              <div className="mt-3 flex items-start gap-2.5 p-3.5 bg-brand-arctic border border-brand-border rounded-xl">
+              <div className="mt-3 flex items-start gap-2.5 p-3.5 bg-brand-arctic border border-brand-border rounded-sm">
                 <CubeIcon className="w-4 h-4 text-brand-blue shrink-0 mt-0.5" />
                 <p className="text-xs text-brand-muted leading-relaxed">
                   This is a <span className="font-semibold text-brand-text">custom order</span>. After purchasing, visit{' '}
@@ -215,7 +215,7 @@ export default async function ProductPage({ params }: Props) {
             {/* Specs */}
             <div className="mt-8 grid grid-cols-2 gap-3">
               {product.material && (
-                <div className="flex items-center gap-2.5 p-3 bg-brand-surface border border-brand-border rounded-xl">
+                <div className="flex items-center gap-2.5 p-3 bg-brand-surface border border-brand-border rounded-sm">
                   <StackIcon className="w-4 h-4 text-brand-blue shrink-0" />
                   <div>
                     <p className="text-[10px] text-brand-muted uppercase tracking-wider">Material</p>
@@ -224,7 +224,7 @@ export default async function ProductPage({ params }: Props) {
                 </div>
               )}
               {product.color && (
-                <div className="flex items-center gap-2.5 p-3 bg-brand-surface border border-brand-border rounded-xl">
+                <div className="flex items-center gap-2.5 p-3 bg-brand-surface border border-brand-border rounded-sm">
                   <div
                     className="w-4 h-4 rounded-full border border-brand-border shrink-0"
                     style={{ backgroundColor: product.color }}
@@ -236,7 +236,7 @@ export default async function ProductPage({ params }: Props) {
                 </div>
               )}
               {product.printTime && (
-                <div className="flex items-center gap-2.5 p-3 bg-brand-surface border border-brand-border rounded-xl">
+                <div className="flex items-center gap-2.5 p-3 bg-brand-surface border border-brand-border rounded-sm">
                   <LightningBoltIcon className="w-4 h-4 text-brand-blue shrink-0" />
                   <div>
                     <p className="text-[10px] text-brand-muted uppercase tracking-wider">Print Time</p>
@@ -249,7 +249,7 @@ export default async function ProductPage({ params }: Props) {
                 </div>
               )}
               {product.weight && (
-                <div className="flex items-center gap-2.5 p-3 bg-brand-surface border border-brand-border rounded-xl">
+                <div className="flex items-center gap-2.5 p-3 bg-brand-surface border border-brand-border rounded-sm">
                   <CubeIcon className="w-4 h-4 text-brand-blue shrink-0" />
                   <div>
                     <p className="text-[10px] text-brand-muted uppercase tracking-wider">Weight</p>
@@ -260,7 +260,7 @@ export default async function ProductPage({ params }: Props) {
             </div>
 
             {/* Guarantees */}
-            <div className="mt-6 flex items-center gap-3 p-4 bg-brand-surface border border-brand-border rounded-xl">
+            <div className="mt-6 flex items-center gap-3 p-4 bg-brand-surface border border-brand-border rounded-sm">
               <LockClosedIcon className="w-4 h-4 text-brand-blue shrink-0" />
               <p className="text-xs text-brand-muted leading-relaxed">
                 Printed to order with quality filament. If you&apos;re not happy,{' '}
@@ -281,7 +281,7 @@ export default async function ProductPage({ params }: Props) {
         {/* Related */}
         {related.length > 0 && (
           <div className="mt-24">
-            <h2 className="text-2xl font-bold text-brand-text mb-8">You might also like</h2>
+            <h2 className="text-2xl font-display text-brand-text mb-8">You might also like</h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
               {related.map((p) => (
                 <ProductCard key={p.id} product={p} />

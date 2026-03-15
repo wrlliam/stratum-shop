@@ -46,7 +46,7 @@ export function PrintLabelButton({ orderNumber, deliveryMethod, address, meta }:
       {showPicker && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setShowPicker(false)} />
-          <div className="absolute right-0 top-full mt-2 z-50 bg-brand-surface border border-brand-border rounded-2xl shadow-xl p-4 w-72">
+          <div className="absolute right-0 top-full mt-2 z-50 bg-brand-surface border border-brand-border rounded-sm shadow-xl p-4 w-72">
             <p className="text-xs font-semibold text-brand-text uppercase tracking-wider mb-3">
               Label Style
             </p>
@@ -61,7 +61,7 @@ export function PrintLabelButton({ orderNumber, deliveryMethod, address, meta }:
                   key={opt.id}
                   type="button"
                   onClick={() => setSelectedStyle(opt.id)}
-                  className={`p-3 rounded-xl border-2 text-left transition-colors ${
+                  className={`p-3 rounded-sm border-2 text-left transition-colors ${
                     selectedStyle === opt.id
                       ? 'border-brand-blue bg-brand-blue/5'
                       : 'border-brand-border hover:border-brand-slate'

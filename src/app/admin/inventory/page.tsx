@@ -27,23 +27,23 @@ export default async function InventoryDashboardPage() {
   return (
     <div className="p-8">
       <div className="flex items-center justify-between mb-8">
-        <h1 className="text-xl font-bold text-brand-text">Inventory</h1>
+        <h1 className="text-xl font-display text-brand-text">Inventory</h1>
         <div className="flex gap-2">
           <Link
             href="/admin/inventory/scan"
-            className="px-4 py-2 text-sm font-medium bg-brand-blue text-white rounded-lg hover:bg-brand-blue/90 transition-colors"
+            className="px-4 py-2 text-sm font-medium bg-brand-blue text-white rounded-sm hover:bg-brand-blue/90 transition-colors"
           >
             Scan QR
           </Link>
           <Link
             href="/admin/inventory/batches"
-            className="px-4 py-2 text-sm font-medium border border-brand-border text-brand-text rounded-lg hover:bg-brand-arctic transition-colors"
+            className="px-4 py-2 text-sm font-medium border border-brand-border text-brand-text rounded-sm hover:bg-brand-arctic transition-colors"
           >
             Batches
           </Link>
           <Link
             href="/admin/inventory/labels"
-            className="px-4 py-2 text-sm font-medium border border-brand-border text-brand-text rounded-lg hover:bg-brand-arctic transition-colors"
+            className="px-4 py-2 text-sm font-medium border border-brand-border text-brand-text rounded-sm hover:bg-brand-arctic transition-colors"
           >
             Print Labels
           </Link>
@@ -52,15 +52,15 @@ export default async function InventoryDashboardPage() {
 
       {/* Stat Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-        <div className="bg-brand-surface border border-brand-border rounded-2xl p-5 shadow-card">
+        <div className="bg-brand-surface border border-brand-border rounded-sm p-5 shadow-card">
           <p className="text-xs font-semibold text-brand-muted uppercase tracking-widest mb-1">Total SKUs</p>
           <p className="text-3xl font-bold text-brand-text">{totalSKUs}</p>
         </div>
-        <div className="bg-brand-surface border border-brand-border rounded-2xl p-5 shadow-card">
+        <div className="bg-brand-surface border border-brand-border rounded-sm p-5 shadow-card">
           <p className="text-xs font-semibold text-brand-muted uppercase tracking-widest mb-1">Units in Stock</p>
           <p className="text-3xl font-bold text-brand-text">{totalUnits}</p>
         </div>
-        <div className="bg-brand-surface border border-brand-border rounded-2xl p-5 shadow-card">
+        <div className="bg-brand-surface border border-brand-border rounded-sm p-5 shadow-card">
           <p className="text-xs font-semibold text-brand-muted uppercase tracking-widest mb-1">Inventory Value</p>
           <p className="text-3xl font-bold text-brand-text">{formatPrice(estimatedValue)}</p>
         </div>
@@ -70,7 +70,7 @@ export default async function InventoryDashboardPage() {
       <InventoryStatsCards topByStock={topByStock} />
 
       {/* Product Stock Table */}
-      <div className="bg-brand-surface border border-brand-border rounded-2xl shadow-card mb-8">
+      <div className="bg-brand-surface border border-brand-border rounded-sm shadow-card mb-8">
         <div className="p-4 border-b border-brand-border">
           <h2 className="text-sm font-bold text-brand-text">Product Stock</h2>
         </div>
@@ -112,7 +112,7 @@ export default async function InventoryDashboardPage() {
       </div>
 
       {/* Recent Inventory Log */}
-      <div className="bg-brand-surface border border-brand-border rounded-2xl shadow-card">
+      <div className="bg-brand-surface border border-brand-border rounded-sm shadow-card">
         <div className="p-4 border-b border-brand-border">
           <h2 className="text-sm font-bold text-brand-text">Recent Activity</h2>
         </div>

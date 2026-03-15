@@ -265,7 +265,7 @@ export default function FilamentsPage() {
     <div className="p-8 min-h-full">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-brand-text">Filament Inventory</h1>
+          <h1 className="text-2xl font-display text-brand-text">Filament Inventory</h1>
           <p className="text-sm text-brand-muted mt-1">
             {filaments.length} spools · Stock value: {formatPrice(Math.round(totalValue))}
           </p>
@@ -283,11 +283,11 @@ export default function FilamentsPage() {
 
       {/* Templates dropdown */}
       {showTemplates && templates.length > 0 && (
-        <div className="bg-brand-surface border border-brand-border rounded-2xl p-4 shadow-card mb-6">
+        <div className="bg-brand-surface border border-brand-border rounded-sm p-4 shadow-card mb-6">
           <h3 className="text-xs font-bold text-brand-text uppercase tracking-wider mb-3">Saved Templates</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
             {templates.map((t) => (
-              <div key={t.id} className="flex items-center gap-2 p-3 rounded-xl border border-brand-border hover:border-brand-blue/40 transition-colors group">
+              <div key={t.id} className="flex items-center gap-2 p-3 rounded-sm border border-brand-border hover:border-brand-blue/40 transition-colors group">
                 <button
                   onClick={() => loadTemplate(t)}
                   className="flex-1 text-left min-w-0"
@@ -311,7 +311,7 @@ export default function FilamentsPage() {
       )}
 
       {showForm && (
-        <div className="bg-brand-surface border border-brand-border rounded-2xl p-6 shadow-card mb-6">
+        <div className="bg-brand-surface border border-brand-border rounded-sm p-6 shadow-card mb-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-sm font-bold text-brand-text">
               {editId ? 'Edit' : quickMode ? 'Quick Add Multiple Colors' : 'Add'} Filament
@@ -320,7 +320,7 @@ export default function FilamentsPage() {
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setQuickMode(!quickMode)}
-                  className={`text-xs px-3 py-1.5 rounded-lg font-medium transition-colors ${
+                  className={`text-xs px-3 py-1.5 rounded-sm font-medium transition-colors ${
                     quickMode
                       ? 'bg-brand-blue text-white'
                       : 'bg-brand-arctic text-brand-muted hover:text-brand-text'
@@ -331,7 +331,7 @@ export default function FilamentsPage() {
                 {!showSaveTemplate ? (
                   <button
                     onClick={() => setShowSaveTemplate(true)}
-                    className="text-xs px-3 py-1.5 rounded-lg font-medium bg-brand-arctic text-brand-muted hover:text-brand-text transition-colors flex items-center gap-1"
+                    className="text-xs px-3 py-1.5 rounded-sm font-medium bg-brand-arctic text-brand-muted hover:text-brand-text transition-colors flex items-center gap-1"
                   >
                     <BookmarkIcon className="w-3.5 h-3.5" />
                     Save Template
@@ -342,19 +342,19 @@ export default function FilamentsPage() {
                       value={templateName}
                       onChange={(e) => setTemplateName(e.target.value)}
                       placeholder="Template name..."
-                      className="px-2 py-1 text-xs border border-brand-border rounded-lg bg-brand-surface text-brand-text w-36 focus:outline-none focus:ring-1 focus:ring-brand-blue"
+                      className="px-2 py-1 text-xs border border-brand-border rounded-sm bg-brand-surface text-brand-text w-36 focus:outline-none focus:ring-1 focus:ring-brand-blue"
                       onKeyDown={(e) => e.key === 'Enter' && handleSaveTemplate()}
                       autoFocus
                     />
                     <button
                       onClick={handleSaveTemplate}
-                      className="p-1.5 rounded-lg bg-brand-blue text-white hover:bg-brand-blue/90 transition-colors"
+                      className="p-1.5 rounded-sm bg-brand-blue text-white hover:bg-brand-blue/90 transition-colors"
                     >
                       <BookmarkFilledIcon className="w-3.5 h-3.5" />
                     </button>
                     <button
                       onClick={() => { setShowSaveTemplate(false); setTemplateName('') }}
-                      className="p-1.5 rounded-lg text-brand-muted hover:text-brand-text transition-colors"
+                      className="p-1.5 rounded-sm text-brand-muted hover:text-brand-text transition-colors"
                     >
                       <Cross2Icon className="w-3.5 h-3.5" />
                     </button>
@@ -401,13 +401,13 @@ export default function FilamentsPage() {
                         type="color"
                         value={c.colorHex}
                         onChange={(e) => setQuickColor(i, 'colorHex', e.target.value)}
-                        className="w-9 h-9 rounded-lg border border-brand-border cursor-pointer p-0.5 shrink-0"
+                        className="w-9 h-9 rounded-sm border border-brand-border cursor-pointer p-0.5 shrink-0"
                       />
                       <input
                         placeholder={`Color name ${i + 1}...`}
                         value={c.color}
                         onChange={(e) => setQuickColor(i, 'color', e.target.value)}
-                        className="flex-1 px-3 py-2 text-sm border border-brand-border rounded-lg bg-brand-surface text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-blue focus:border-transparent"
+                        className="flex-1 px-3 py-2 text-sm border border-brand-border rounded-sm bg-brand-surface text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-blue focus:border-transparent"
                       />
                       {quickColors.length > 1 && (
                         <button
@@ -433,7 +433,7 @@ export default function FilamentsPage() {
                   <label className="block text-xs font-semibold text-brand-text uppercase tracking-wider mb-1.5">Color Swatch</label>
                   <div className="flex items-center gap-2">
                     <input type="color" value={form.colorHex ?? '#ffffff'} onChange={(e) => set('colorHex', e.target.value)}
-                      className="w-10 h-10 rounded-lg border border-brand-border cursor-pointer p-0.5" />
+                      className="w-10 h-10 rounded-sm border border-brand-border cursor-pointer p-0.5" />
                     <span className="text-xs text-brand-muted font-mono">{form.colorHex}</span>
                   </div>
                 </div>
@@ -454,7 +454,7 @@ export default function FilamentsPage() {
       {loading ? (
         <div className="flex justify-center py-16"><div className="animate-spin w-6 h-6 border-2 border-brand-blue border-t-transparent rounded-full" /></div>
       ) : (
-        <div className="bg-brand-surface border border-brand-border rounded-2xl overflow-hidden shadow-card">
+        <div className="bg-brand-surface border border-brand-border rounded-sm overflow-hidden shadow-card">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
@@ -499,7 +499,7 @@ export default function FilamentsPage() {
                         <Button variant="ghost" size="sm" onClick={() => openEdit(f)}>Edit</Button>
                         <button
                           onClick={() => duplicateFilament(f)}
-                          className="p-1.5 text-brand-muted hover:text-brand-blue transition-colors rounded-lg hover:bg-brand-arctic"
+                          className="p-1.5 text-brand-muted hover:text-brand-blue transition-colors rounded-sm hover:bg-brand-arctic"
                           title="Duplicate (same brand/material, new color)"
                         >
                           <CopyIcon className="w-3.5 h-3.5" />

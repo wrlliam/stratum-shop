@@ -19,7 +19,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         <input
           ref={ref}
           className={cn(
-            'w-full bg-brand-surface border rounded-lg px-3 py-2.5 text-sm text-brand-text placeholder:text-brand-slate',
+            'w-full bg-brand-surface border rounded-sm px-3 py-2.5 text-sm text-brand-text placeholder:text-brand-slate',
             'focus:outline-none focus:ring-2 focus:ring-brand-blue focus:border-transparent',
             'transition-colors duration-200',
             error
@@ -56,7 +56,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
         <textarea
           ref={ref}
           className={cn(
-            'w-full bg-brand-surface border rounded-lg px-3 py-2.5 text-sm text-brand-text placeholder:text-brand-slate resize-y min-h-[100px]',
+            'w-full bg-brand-surface border rounded-sm px-3 py-2.5 text-sm text-brand-text placeholder:text-brand-slate resize-y min-h-[100px]',
             'focus:outline-none focus:ring-2 focus:ring-brand-blue focus:border-transparent',
             'transition-colors duration-200',
             error

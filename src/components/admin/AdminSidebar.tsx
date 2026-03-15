@@ -96,7 +96,7 @@ function NavLink({ item }: { item: NavItem }) {
     <Link
       href={item.href}
       className={cn(
-        'flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150',
+        'flex items-center gap-2.5 px-3 py-2 rounded-sm text-sm font-medium transition-all duration-150',
         isActive
           ? 'bg-brand-blue/10 text-brand-blue'
           : 'text-brand-muted hover:text-brand-text hover:bg-brand-arctic'
@@ -121,7 +121,7 @@ function CollapsedNavLink({ item }: { item: NavItem }) {
       href={item.href}
       title={item.label}
       className={cn(
-        'flex items-center justify-center p-2 rounded-lg transition-all duration-150',
+        'flex items-center justify-center p-2 rounded-sm transition-all duration-150',
         isActive
           ? 'bg-brand-blue/10 text-brand-blue'
           : 'text-brand-muted hover:text-brand-text hover:bg-brand-arctic'
@@ -234,14 +234,14 @@ export function AdminSidebar() {
           <>
             <Link
               href="/"
-              className="flex items-center justify-center p-2 rounded-lg text-brand-muted hover:text-brand-text hover:bg-brand-arctic transition-all"
+              className="flex items-center justify-center p-2 rounded-sm text-brand-muted hover:text-brand-text hover:bg-brand-arctic transition-all"
               title="View Shop"
             >
               <ExternalLinkIcon className="w-4 h-4" />
             </Link>
             <button
               onClick={toggle}
-              className="w-full flex items-center justify-center p-2 rounded-lg text-brand-muted hover:text-brand-text hover:bg-brand-arctic transition-all"
+              className="w-full flex items-center justify-center p-2 rounded-sm text-brand-muted hover:text-brand-text hover:bg-brand-arctic transition-all"
               title="Expand sidebar"
             >
               <ChevronDownIcon className="w-4 h-4 -rotate-90" />
@@ -251,7 +251,7 @@ export function AdminSidebar() {
           <>
             <Link
               href="/"
-              className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-brand-muted hover:text-brand-text hover:bg-brand-arctic transition-all"
+              className="flex items-center gap-2.5 px-3 py-2 rounded-sm text-sm font-medium text-brand-muted hover:text-brand-text hover:bg-brand-arctic transition-all"
             >
               <ExternalLinkIcon className="w-4 h-4 flex-shrink-0" />
               View Shop
@@ -259,7 +259,7 @@ export function AdminSidebar() {
             <AdminSignOut />
             <button
               onClick={toggle}
-              className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-brand-muted hover:text-brand-text hover:bg-brand-arctic transition-all"
+              className="w-full flex items-center gap-2.5 px-3 py-2 rounded-sm text-sm font-medium text-brand-muted hover:text-brand-text hover:bg-brand-arctic transition-all"
             >
               <ChevronDownIcon className="w-4 h-4 flex-shrink-0 rotate-90" />
               Collapse

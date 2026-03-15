@@ -39,7 +39,7 @@ export default function AuditPage() {
   return (
     <div className="p-8">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-xl font-bold text-brand-text">Audit Log</h1>
+        <h1 className="text-xl font-display text-brand-text">Audit Log</h1>
       </div>
 
       <div className="flex gap-3 mb-4">
@@ -48,18 +48,18 @@ export default function AuditPage() {
           placeholder="Search action, entity…"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="px-3 py-2 text-sm border border-brand-border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-blue/20 w-64"
+          className="px-3 py-2 text-sm border border-brand-border rounded-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/20 w-64"
         />
         <input
           type="search"
           placeholder="Filter entity type…"
           value={entityType}
           onChange={(e) => setEntityType(e.target.value)}
-          className="px-3 py-2 text-sm border border-brand-border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-blue/20 w-48"
+          className="px-3 py-2 text-sm border border-brand-border rounded-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/20 w-48"
         />
       </div>
 
-      <div className="bg-brand-surface border border-brand-border rounded-2xl shadow-card overflow-hidden">
+      <div className="bg-brand-surface border border-brand-border rounded-sm shadow-card overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>

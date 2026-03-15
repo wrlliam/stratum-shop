@@ -59,7 +59,7 @@ export function CartDrawer() {
           <button
             onClick={closeCart}
             aria-label="Close cart"
-            className="p-2 rounded-lg text-brand-muted hover:text-brand-text hover:bg-brand-arctic transition-colors"
+            className="p-2 rounded-sm text-brand-muted hover:text-brand-text hover:bg-brand-arctic transition-colors"
           >
             <Cross1Icon className="w-4 h-4" />
           </button>
@@ -69,7 +69,7 @@ export function CartDrawer() {
         <div className="flex-1 overflow-y-auto p-5 space-y-3">
           {cart.items.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center py-16">
-              <div className="w-20 h-20 rounded-2xl bg-brand-arctic flex items-center justify-center mb-4">
+              <div className="w-20 h-20 rounded-sm bg-brand-arctic flex items-center justify-center mb-4">
                 <BackpackIcon className="w-8 h-8 text-brand-slate" />
               </div>
               <h3 className="font-semibold text-brand-text mb-2">Your cart is empty</h3>
@@ -85,10 +85,10 @@ export function CartDrawer() {
             cart.items.map((item) => (
               <div
                 key={item.id}
-                className="flex gap-3 p-3 rounded-lg bg-brand-arctic border border-brand-border"
+                className="flex gap-3 p-3 rounded-sm bg-brand-arctic border border-brand-border"
               >
                 {/* Image */}
-                <div className="relative w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden bg-brand-surface border border-brand-border">
+                <div className="relative w-16 h-16 flex-shrink-0 rounded-sm overflow-hidden bg-brand-surface border border-brand-border">
                   {item.imageUrl ? (
                     <Image
                       src={item.imageUrl}
@@ -124,7 +124,7 @@ export function CartDrawer() {
                     <button
                       onClick={() => updateQuantity(item.id, item.quantity - 1)}
                       aria-label="Decrease quantity"
-                      className="w-6 h-6 rounded-md bg-brand-surface border border-brand-border flex items-center justify-center text-brand-muted hover:text-brand-blue hover:border-brand-blue transition-colors"
+                      className="w-6 h-6 rounded-sm bg-brand-surface border border-brand-border flex items-center justify-center text-brand-muted hover:text-brand-blue hover:border-brand-blue transition-colors"
                     >
                       <MinusIcon className="w-2.5 h-2.5" />
                     </button>
@@ -134,7 +134,7 @@ export function CartDrawer() {
                     <button
                       onClick={() => updateQuantity(item.id, item.quantity + 1)}
                       aria-label="Increase quantity"
-                      className="w-6 h-6 rounded-md bg-brand-surface border border-brand-border flex items-center justify-center text-brand-muted hover:text-brand-blue hover:border-brand-blue transition-colors"
+                      className="w-6 h-6 rounded-sm bg-brand-surface border border-brand-border flex items-center justify-center text-brand-muted hover:text-brand-blue hover:border-brand-blue transition-colors"
                     >
                       <PlusIcon className="w-2.5 h-2.5" />
                     </button>

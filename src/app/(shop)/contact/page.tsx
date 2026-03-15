@@ -93,10 +93,10 @@ export default function ContactPage() {
   return (
     <div className="min-h-screen pt-24 pb-16">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-        <p className="text-xs font-semibold text-brand-blue uppercase tracking-widest mb-2">
+        <p className="text-[10px] font-mono text-brand-blue uppercase tracking-[0.2em] mb-2">
           Get in Touch
         </p>
-        <h1 className="text-3xl font-bold text-brand-text mb-8">Contact Us</h1>
+        <h1 className="text-3xl font-display text-brand-text mb-8">Contact Us</h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-10">
           {/* Info */}
@@ -106,7 +106,7 @@ export default function ContactPage() {
               We&apos;d love to hear from you.
             </p>
 
-            <div className="p-4 bg-brand-surface border border-brand-border rounded-xl">
+            <div className="p-4 bg-brand-surface border border-brand-border rounded-sm">
               <div className="flex items-center gap-2 mb-2">
                 <EnvelopeClosedIcon className="w-4 h-4 text-brand-blue" />
                 <p className="text-sm font-semibold text-brand-text">Email</p>
@@ -114,14 +114,14 @@ export default function ContactPage() {
               <p className="text-sm text-brand-muted">hello@stratum3d.co.uk</p>
             </div>
 
-            <div className="p-4 bg-brand-surface border border-brand-border rounded-xl">
+            <div className="p-4 bg-brand-surface border border-brand-border rounded-sm">
               <p className="text-sm font-semibold text-brand-text mb-1">Response Time</p>
               <p className="text-xs text-brand-muted">
                 We aim to reply within 24 hours on business days.
               </p>
             </div>
 
-            <div className="p-4 bg-brand-surface border border-brand-border rounded-xl">
+            <div className="p-4 bg-brand-surface border border-brand-border rounded-sm">
               <p className="text-sm font-semibold text-brand-text mb-1">Custom Prints</p>
               <p className="text-xs text-brand-muted">
                 Requesting a custom print? Attach your model file (.STL, .3MF, .OBJ, .STEP) to get a faster quote.
@@ -132,7 +132,7 @@ export default function ContactPage() {
           {/* Form */}
           <div className="lg:col-span-3">
             {sent ? (
-              <div className="text-center py-12 bg-brand-surface border border-brand-border rounded-2xl">
+              <div className="text-center py-12 bg-brand-surface border border-brand-border rounded-sm">
                 <div className="text-4xl mb-4">✉️</div>
                 <h3 className="text-lg font-semibold text-brand-text mb-2">Message Sent</h3>
                 <p className="text-sm text-brand-muted">
@@ -140,7 +140,7 @@ export default function ContactPage() {
                 </p>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} className="bg-brand-surface border border-brand-border rounded-2xl p-6 space-y-4 shadow-card">
+              <form onSubmit={handleSubmit} className="bg-brand-surface border border-brand-border rounded-sm p-6 space-y-4 shadow-card">
                 <Input
                   label="Name *"
                   placeholder="Your name"
@@ -175,7 +175,7 @@ export default function ContactPage() {
                     <span className="ml-1.5 text-xs font-normal text-brand-muted">(optional)</span>
                   </label>
                   {modelFile ? (
-                    <div className="flex items-center gap-3 px-3 py-2.5 bg-brand-arctic border border-brand-border rounded-xl">
+                    <div className="flex items-center gap-3 px-3 py-2.5 bg-brand-arctic border border-brand-border rounded-sm">
                       <span className="text-sm text-brand-text flex-1 truncate">{modelFile.name}</span>
                       <span className="text-xs text-brand-muted shrink-0">
                         {(modelFile.size / 1024 / 1024).toFixed(1)} MB
@@ -192,7 +192,7 @@ export default function ContactPage() {
                     <button
                       type="button"
                       onClick={() => fileInputRef.current?.click()}
-                      className="w-full flex items-center gap-2 px-3 py-2.5 border border-dashed border-brand-border rounded-xl text-sm text-brand-muted hover:text-brand-text hover:border-brand-slate transition-colors"
+                      className="w-full flex items-center gap-2 px-3 py-2.5 border border-dashed border-brand-border rounded-sm text-sm text-brand-muted hover:text-brand-text hover:border-brand-slate transition-colors"
                     >
                       <UploadIcon className="w-4 h-4 shrink-0" />
                       <span>Upload .STL, .3MF, .OBJ, .STEP or .ZIP</span>

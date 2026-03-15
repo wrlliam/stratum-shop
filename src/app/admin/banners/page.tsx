@@ -136,14 +136,14 @@ export default function BannersPage() {
     <div className="p-8">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-brand-text">Announcement Banners</h1>
+          <h1 className="text-2xl font-display text-brand-text">Announcement Banners</h1>
           <p className="text-brand-muted text-sm mt-1">
             Banners appear at the top of every shop page. Only the most recently created active banner is shown.
           </p>
         </div>
         <button
           onClick={openCreate}
-          className="px-4 py-2 text-sm font-semibold bg-brand-blue text-white rounded-xl hover:bg-brand-blue/90 transition-colors"
+          className="px-4 py-2 text-sm font-semibold bg-brand-blue text-white rounded-sm hover:bg-brand-blue/90 transition-colors"
         >
           + New Banner
         </button>
@@ -151,7 +151,7 @@ export default function BannersPage() {
 
       {/* Create / Edit form */}
       {showForm && (
-        <div className="bg-brand-surface border border-brand-border rounded-2xl p-6 shadow-card mb-6">
+        <div className="bg-brand-surface border border-brand-border rounded-sm p-6 shadow-card mb-6">
           <div className="flex items-center justify-between mb-5">
             <h2 className="text-sm font-bold text-brand-text">
               {editingId ? 'Edit Banner' : 'New Banner'}
@@ -170,7 +170,7 @@ export default function BannersPage() {
                 value={form.message}
                 onChange={(e) => set('message', e.target.value)}
                 placeholder="🎉 Summer sale — 20% off everything this weekend!"
-                className="w-full px-3 py-2.5 text-sm border border-brand-border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue"
+                className="w-full px-3 py-2.5 text-sm border border-brand-border rounded-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue"
                 required
               />
             </div>
@@ -192,7 +192,7 @@ export default function BannersPage() {
                   value={form.link}
                   onChange={(e) => set('link', e.target.value)}
                   placeholder="https://..."
-                  className="w-full px-3 py-2.5 text-sm border border-brand-border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue"
+                  className="w-full px-3 py-2.5 text-sm border border-brand-border rounded-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue"
                 />
               </div>
 
@@ -204,7 +204,7 @@ export default function BannersPage() {
                   value={form.linkText}
                   onChange={(e) => set('linkText', e.target.value)}
                   placeholder="Shop now"
-                  className="w-full px-3 py-2.5 text-sm border border-brand-border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue"
+                  className="w-full px-3 py-2.5 text-sm border border-brand-border rounded-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue"
                 />
               </div>
             </div>
@@ -219,7 +219,7 @@ export default function BannersPage() {
                   type="datetime-local"
                   value={form.expiresAt}
                   onChange={(e) => set('expiresAt', e.target.value)}
-                  className="w-full px-3 py-2.5 text-sm border border-brand-border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue"
+                  className="w-full px-3 py-2.5 text-sm border border-brand-border rounded-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue"
                 />
               </div>
               <div>
@@ -273,7 +273,7 @@ export default function BannersPage() {
               <button
                 type="submit"
                 disabled={saving}
-                className="px-5 py-2 text-sm font-semibold bg-brand-blue text-white rounded-xl hover:bg-brand-blue/90 transition-colors disabled:opacity-50"
+                className="px-5 py-2 text-sm font-semibold bg-brand-blue text-white rounded-sm hover:bg-brand-blue/90 transition-colors disabled:opacity-50"
               >
                 {saving ? 'Saving…' : editingId ? 'Save Changes' : 'Create Banner'}
               </button>
@@ -299,7 +299,7 @@ export default function BannersPage() {
             return (
               <div
                 key={banner.id}
-                className={`bg-brand-surface border rounded-2xl p-5 shadow-card flex items-start gap-4 ${
+                className={`bg-brand-surface border rounded-sm p-5 shadow-card flex items-start gap-4 ${
                   !banner.active || expired ? 'opacity-60' : ''
                 } border-brand-border`}
               >
@@ -342,7 +342,7 @@ export default function BannersPage() {
                   <button
                     onClick={() => toggleActive(banner)}
                     title={banner.active ? 'Deactivate' : 'Activate'}
-                    className={`p-2 rounded-lg transition-colors ${
+                    className={`p-2 rounded-sm transition-colors ${
                       banner.active
                         ? 'text-green-600 bg-green-50 hover:bg-green-100'
                         : 'text-brand-muted hover:bg-brand-arctic'
@@ -352,13 +352,13 @@ export default function BannersPage() {
                   </button>
                   <button
                     onClick={() => openEdit(banner)}
-                    className="p-2 text-brand-muted hover:text-brand-text hover:bg-brand-arctic rounded-lg transition-colors"
+                    className="p-2 text-brand-muted hover:text-brand-text hover:bg-brand-arctic rounded-sm transition-colors"
                   >
                     <Pencil1Icon className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => deleteBanner(banner.id)}
-                    className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                    className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-sm transition-colors"
                   >
                     <TrashIcon className="w-4 h-4" />
                   </button>

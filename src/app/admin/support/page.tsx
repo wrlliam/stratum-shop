@@ -48,15 +48,15 @@ export default function SupportPage() {
       <RealtimeAdmin onTicketEvent={fetch_} />
 
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-xl font-bold text-brand-text">Support Tickets</h1>
+        <h1 className="text-xl font-display text-brand-text">Support Tickets</h1>
       </div>
 
-      <div className="flex gap-1 mb-4 bg-brand-arctic p-1 rounded-xl w-fit">
+      <div className="flex gap-1 mb-4 bg-brand-arctic p-1 rounded-sm w-fit">
         {STATUS_OPTS.map((s) => (
           <button
             key={s}
             onClick={() => setStatusFilter(s)}
-            className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors capitalize ${
+            className={`px-4 py-1.5 rounded-sm text-sm font-medium transition-colors capitalize ${
               statusFilter === s ? 'bg-brand-surface text-brand-blue shadow-card' : 'text-brand-muted hover:text-brand-text'
             }`}
           >
@@ -65,7 +65,7 @@ export default function SupportPage() {
         ))}
       </div>
 
-      <div className="bg-brand-surface border border-brand-border rounded-2xl shadow-card overflow-hidden">
+      <div className="bg-brand-surface border border-brand-border rounded-sm shadow-card overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>

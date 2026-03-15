@@ -25,7 +25,7 @@ export function ResendConfirmationButton({ orderId }: { orderId: string }) {
       type="button"
       onClick={handleResend}
       disabled={loading}
-      className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-brand-muted hover:text-brand-text hover:bg-brand-arctic border border-brand-border rounded-xl transition-colors disabled:opacity-50"
+      className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-brand-muted hover:text-brand-text hover:bg-brand-arctic border border-brand-border rounded-sm transition-colors disabled:opacity-50"
     >
       <EnvelopeClosedIcon className="w-4 h-4" />
       {loading ? 'Sending…' : 'Resend email'}

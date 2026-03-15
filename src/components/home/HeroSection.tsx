@@ -52,14 +52,13 @@ export function HeroSection() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
             >
-              <div className="w-2 h-2 rounded-full bg-brand-blue animate-pulse" />
-              <span className="text-xs font-semibold text-brand-text tracking-wide">
+              <span className="font-mono uppercase tracking-[0.15em] text-[10px] text-brand-text">
                 Made to order in the UK
               </span>
             </motion.div>
 
             <motion.h1
-              className="text-[3.5rem] sm:text-[4.5rem] lg:text-[5.5rem] font-bold text-brand-text leading-[0.95] tracking-tight mb-8"
+              className="text-[3.5rem] sm:text-[4.5rem] lg:text-[5.5rem] font-display font-semibold text-brand-text leading-[0.95] tracking-tight mb-8"
               initial={{ opacity: 0, y: 20, filter: 'blur(8px)' }}
               animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
               transition={{ duration: 0.6, delay: 0.2 }}
@@ -90,14 +89,14 @@ export function HeroSection() {
             >
               <Link
                 href="/products"
-                className="group inline-flex items-center gap-3 px-8 py-4 bg-brand-blue text-white font-semibold rounded-lg text-base hover:bg-brand-blue-dark transition-all duration-200 shadow-blue-sm"
+                className="group inline-flex items-center gap-3 px-8 py-4 bg-brand-blue text-white font-semibold rounded-sm text-base hover:bg-brand-blue-dark transition-all duration-200"
               >
                 Browse Prints
                 <span className="transition-transform duration-200 group-hover:translate-x-1">→</span>
               </Link>
               <Link
                 href="/recommendations"
-                className="inline-flex items-center gap-2 px-8 py-4 text-brand-muted font-semibold rounded-lg text-base border border-brand-border hover:border-brand-blue hover:text-brand-blue transition-all duration-200"
+                className="inline-flex items-center gap-2 px-8 py-4 text-brand-muted font-semibold rounded-sm text-base border border-brand-border hover:border-brand-blue hover:text-brand-blue transition-all duration-200"
               >
                 Request a Custom Print
               </Link>
@@ -251,7 +250,7 @@ export function HeroSection() {
 
               {/* Floating labels */}
               <motion.div
-                className="absolute top-6 left-6 bg-brand-surface/80 backdrop-blur-sm border border-brand-border rounded-lg px-3 py-1.5"
+                className="absolute top-6 left-6 bg-brand-surface/80 backdrop-blur-sm border border-brand-border rounded-sm px-3 py-1.5"
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.4, delay: 1.8 }}
@@ -260,7 +259,7 @@ export function HeroSection() {
               </motion.div>
 
               <motion.div
-                className="absolute bottom-6 right-6 bg-brand-surface/80 backdrop-blur-sm border border-brand-border rounded-lg px-3 py-1.5"
+                className="absolute bottom-6 right-6 bg-brand-surface/80 backdrop-blur-sm border border-brand-border rounded-sm px-3 py-1.5"
                 initial={{ opacity: 0, x: 10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.4, delay: 2.0 }}

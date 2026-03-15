@@ -44,7 +44,7 @@ export default async function AdminOrdersPage({ searchParams }: Props) {
     <div className="p-8 min-h-full">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-brand-text">Orders</h1>
+          <h1 className="text-2xl font-display text-brand-text">Orders</h1>
           <p className="text-brand-muted text-sm mt-1">{total} {statusFilter ? `${statusFilter} orders` : 'total'}</p>
         </div>
       </div>
@@ -55,7 +55,7 @@ export default async function AdminOrdersPage({ searchParams }: Props) {
           {paidCount > 0 && (
             <Link
               href="/admin/orders?status=paid"
-              className="flex items-center gap-3 px-4 py-3 bg-amber-50 dark:bg-amber-950/30 border-l-4 border-amber-400 rounded-r-xl hover:bg-amber-100 dark:hover:bg-amber-950/50 transition-colors"
+              className="flex items-center gap-3 px-4 py-3 bg-amber-50 dark:bg-amber-950/30 border-l-4 border-amber-400 rounded-r-sm hover:bg-amber-100 dark:hover:bg-amber-950/50 transition-colors"
             >
               <span className="text-sm font-semibold text-amber-700 dark:text-amber-300">{paidCount} paid</span>
               <span className="text-xs text-amber-600 dark:text-amber-400">— ready to process</span>
@@ -64,7 +64,7 @@ export default async function AdminOrdersPage({ searchParams }: Props) {
           {preparedCount > 0 && (
             <Link
               href="/admin/orders?status=prepared"
-              className="flex items-center gap-3 px-4 py-3 bg-blue-50 dark:bg-blue-950/30 border-l-4 border-blue-400 rounded-r-xl hover:bg-blue-100 dark:hover:bg-blue-950/50 transition-colors"
+              className="flex items-center gap-3 px-4 py-3 bg-blue-50 dark:bg-blue-950/30 border-l-4 border-blue-400 rounded-r-sm hover:bg-blue-100 dark:hover:bg-blue-950/50 transition-colors"
             >
               <span className="text-sm font-semibold text-blue-700 dark:text-blue-300">{preparedCount} prepared</span>
               <span className="text-xs text-blue-600 dark:text-blue-400">— ready to ship</span>
@@ -102,7 +102,7 @@ export default async function AdminOrdersPage({ searchParams }: Props) {
         ))}
       </div>
 
-      <div className="bg-brand-surface border border-brand-border rounded-2xl overflow-hidden shadow-card">
+      <div className="bg-brand-surface border border-brand-border rounded-sm overflow-hidden shadow-card">
         <BulkOrdersTable orders={allOrders} />
       </div>
 

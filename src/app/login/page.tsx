@@ -95,14 +95,14 @@ function LoginForm() {
         </div>
 
         {/* Card */}
-        <div className="bg-brand-surface border border-brand-border rounded-2xl p-8 shadow-card-lg">
+        <div className="bg-brand-surface border border-brand-border rounded-sm p-8 shadow-card-lg">
           {/* Toggle */}
-          <div className="flex bg-brand-arctic rounded-xl p-1 mb-6">
+          <div className="flex bg-brand-arctic rounded-sm p-1 mb-6">
             {(['login', 'register'] as const).map((m) => (
               <button
                 key={m}
                 onClick={() => { setMode(m); setErrors({}) }}
-                className={`flex-1 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                className={`flex-1 py-2 rounded-sm text-sm font-semibold transition-all duration-200 ${
                   mode === m
                     ? 'bg-brand-surface text-brand-blue shadow-card'
                     : 'text-brand-muted hover:text-brand-text'

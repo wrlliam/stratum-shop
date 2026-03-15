@@ -127,7 +127,7 @@ export default function AdminDashboard() {
 
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-brand-text">Dashboard</h1>
+        <h1 className="text-2xl font-display text-brand-text">Dashboard</h1>
         {userName && (
           <p className="text-brand-muted text-sm mt-1">Welcome back, {userName}</p>
         )}
@@ -140,7 +140,7 @@ export default function AdminDashboard() {
       {stats && (
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
           {/* Today's revenue */}
-          <div className="bg-gradient-to-br from-brand-blue/10 to-brand-blue/5 border border-brand-blue/20 rounded-xl p-4">
+          <div className="bg-gradient-to-br from-brand-blue/10 to-brand-blue/5 border border-brand-blue/20 rounded-sm p-4">
             <p className="text-[11px] font-semibold text-brand-muted uppercase tracking-wider mb-1">Today</p>
             <p className="text-xl font-bold text-brand-blue">{formatPrice(stats.todayRevenue)}</p>
             {todayChange !== 0 && (
@@ -153,14 +153,14 @@ export default function AdminDashboard() {
           </div>
 
           {/* Pending orders */}
-          <div className="bg-amber-50 dark:bg-amber-950/40 border border-amber-200/60 dark:border-amber-700/40 rounded-xl p-4">
+          <div className="bg-amber-50 dark:bg-amber-950/40 border border-amber-200/60 dark:border-amber-700/40 rounded-sm p-4">
             <p className="text-[11px] font-semibold text-amber-600/70 dark:text-amber-400/70 uppercase tracking-wider mb-1">Pending</p>
             <p className="text-xl font-bold text-amber-700 dark:text-amber-300">{stats.pendingOrders}</p>
             <p className="text-xs text-amber-600/70 dark:text-amber-400/70 mt-1">orders to process</p>
           </div>
 
           {/* Open tickets */}
-          <div className={`${stats.openTickets > 0 ? 'bg-red-50 dark:bg-red-950/40 border-red-200/60 dark:border-red-700/40' : 'bg-green-50 dark:bg-green-950/40 border-green-200/60 dark:border-green-700/40'} border rounded-xl p-4`}>
+          <div className={`${stats.openTickets > 0 ? 'bg-red-50 dark:bg-red-950/40 border-red-200/60 dark:border-red-700/40' : 'bg-green-50 dark:bg-green-950/40 border-green-200/60 dark:border-green-700/40'} border rounded-sm p-4`}>
             <p className={`text-[11px] font-semibold uppercase tracking-wider mb-1 ${stats.openTickets > 0 ? 'text-red-500/70 dark:text-red-400/70' : 'text-green-600/70 dark:text-green-400/70'}`}>
               Support
             </p>
@@ -173,7 +173,7 @@ export default function AdminDashboard() {
           </div>
 
           {/* Low stock */}
-          <div className={`${stats.lowStockCount > 0 ? 'bg-orange-50 dark:bg-orange-950/40 border-orange-200/60 dark:border-orange-700/40' : 'bg-brand-arctic border-brand-border'} border rounded-xl p-4`}>
+          <div className={`${stats.lowStockCount > 0 ? 'bg-orange-50 dark:bg-orange-950/40 border-orange-200/60 dark:border-orange-700/40' : 'bg-brand-arctic border-brand-border'} border rounded-sm p-4`}>
             <p className={`text-[11px] font-semibold uppercase tracking-wider mb-1 ${stats.lowStockCount > 0 ? 'text-orange-500/70 dark:text-orange-400/70' : 'text-brand-muted'}`}>
               Low Stock
             </p>
@@ -192,13 +192,13 @@ export default function AdminDashboard() {
         {statCards.map((card) => (
           <div
             key={card.label}
-            className="bg-brand-surface border border-brand-border rounded-2xl p-5 shadow-card"
+            className="bg-brand-surface border border-brand-border rounded-sm p-5 shadow-card"
           >
             <div className="flex items-center justify-between mb-4">
               <span className="text-xs font-medium text-brand-muted uppercase tracking-wider">
                 {card.label}
               </span>
-              <div className={`w-8 h-8 rounded-lg ${card.bg} flex items-center justify-center`}>
+              <div className={`w-8 h-8 rounded-sm ${card.bg} flex items-center justify-center`}>
                 {card.icon}
               </div>
             </div>
@@ -233,7 +233,7 @@ export default function AdminDashboard() {
           </div>
 
           {/* Recent Orders */}
-          <div className="bg-brand-surface border border-brand-border rounded-2xl p-6 shadow-card">
+          <div className="bg-brand-surface border border-brand-border rounded-sm p-6 shadow-card">
             <h3 className="text-sm font-semibold text-brand-text mb-4">Recent Orders</h3>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">

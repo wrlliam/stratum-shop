@@ -58,11 +58,11 @@ export default function AccountPage() {
   return (
     <div className="min-h-screen pt-24 pb-16 bg-brand-bg">
       <div className="max-w-2xl mx-auto px-4 sm:px-6">
-        <h1 className="text-2xl font-bold text-brand-text mb-8">Account Settings</h1>
+        <h1 className="text-2xl font-display text-brand-text mb-8">Account Settings</h1>
 
         <div className="space-y-6">
           {/* Profile */}
-          <div className="bg-brand-surface border border-brand-border rounded-2xl p-6 shadow-card">
+          <div className="bg-brand-surface border border-brand-border rounded-sm p-6 shadow-card">
             <div className="flex items-center gap-3 mb-6">
               <div className="w-12 h-12 rounded-full bg-brand-blue-light border border-brand-blue/30 flex items-center justify-center">
                 <PersonIcon className="w-5 h-5 text-brand-blue" />
@@ -95,7 +95,7 @@ export default function AccountPage() {
           </div>
 
           {/* Email Preferences */}
-          <div className="bg-brand-surface border border-brand-border rounded-2xl p-6 shadow-card">
+          <div className="bg-brand-surface border border-brand-border rounded-sm p-6 shadow-card">
             <h2 className="text-sm font-bold text-brand-text mb-4">Email Preferences</h2>
             <div className="flex items-center justify-between">
               <div>
@@ -134,7 +134,7 @@ export default function AccountPage() {
           </div>
 
           {/* Quick links */}
-          <div className="bg-brand-surface border border-brand-border rounded-2xl overflow-hidden shadow-card">
+          <div className="bg-brand-surface border border-brand-border rounded-sm overflow-hidden shadow-card">
             <Link
               href="/orders"
               className="flex items-center gap-3 px-6 py-4 hover:bg-brand-arctic transition-colors"

@@ -14,10 +14,10 @@ export default function CartPage() {
     return (
       <div className="min-h-screen pt-24 pb-16 flex items-center justify-center">
         <div className="text-center max-w-md mx-auto px-4">
-          <div className="w-24 h-24 rounded-3xl bg-brand-arctic flex items-center justify-center mx-auto mb-6 border border-brand-border">
+          <div className="w-24 h-24 rounded-sm bg-brand-arctic flex items-center justify-center mx-auto mb-6 border border-brand-border">
             <BackpackIcon className="w-10 h-10 text-brand-slate" />
           </div>
-          <h1 className="text-2xl font-bold text-brand-text mb-3">Your cart is empty</h1>
+          <h1 className="text-2xl font-display text-brand-text mb-3">Your cart is empty</h1>
           <p className="text-brand-muted mb-8">
             Looks like you haven&apos;t added anything yet. Browse our collection to get started.
           </p>
@@ -36,7 +36,7 @@ export default function CartPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-2xl font-bold text-brand-text">Your Cart</h1>
+            <h1 className="text-2xl font-display text-brand-text">Your Cart</h1>
             <p className="text-brand-muted mt-1">
               {cart.itemCount} item{cart.itemCount !== 1 ? 's' : ''}
             </p>
@@ -55,9 +55,9 @@ export default function CartPage() {
             {cart.items.map((item) => (
               <div
                 key={item.id}
-                className="flex gap-4 p-4 bg-brand-surface border border-brand-border rounded-2xl shadow-card"
+                className="flex gap-4 p-4 bg-brand-surface border border-brand-border rounded-sm shadow-card"
               >
-                <div className="relative w-20 h-20 flex-shrink-0 rounded-xl overflow-hidden bg-brand-arctic border border-brand-border">
+                <div className="relative w-20 h-20 flex-shrink-0 rounded-sm overflow-hidden bg-brand-arctic border border-brand-border">
                   {item.imageUrl ? (
                     <Image
                       src={item.imageUrl}
@@ -103,7 +103,7 @@ export default function CartPage() {
                   </div>
 
                   <div className="flex items-center justify-between mt-3">
-                    <div className="flex items-center border border-brand-border rounded-lg overflow-hidden bg-brand-arctic">
+                    <div className="flex items-center border border-brand-border rounded-sm overflow-hidden bg-brand-arctic">
                       <button
                         onClick={() => updateQuantity(item.id, item.quantity - 1)}
                         aria-label="Decrease quantity"
@@ -133,7 +133,7 @@ export default function CartPage() {
 
           {/* Order summary */}
           <div className="lg:col-span-1">
-            <div className="sticky top-24 bg-brand-surface border border-brand-border rounded-2xl p-6 shadow-card">
+            <div className="sticky top-24 bg-brand-surface border border-brand-border rounded-sm p-6 shadow-card">
               <h2 className="text-lg font-bold text-brand-text mb-6">Order Summary</h2>
 
               <div className="space-y-3 mb-6">

@@ -38,7 +38,7 @@ export function BundleCard({ bundle }: BundleCardProps) {
 
   return (
     <Link href={`/bundles/${bundle.slug}`} className="group block">
-      <div className="overflow-hidden rounded-2xl bg-brand-surface border border-brand-border transition-all duration-300 hover:shadow-card-hover hover:border-brand-blue/30">
+      <div className="overflow-hidden rounded-sm bg-brand-surface border border-brand-border transition-all duration-300 hover:shadow-card-hover hover:border-brand-blue/30">
         {/* Image */}
         <div className="relative aspect-[4/3] overflow-hidden bg-brand-arctic">
           {coverImage ? (
@@ -58,7 +58,7 @@ export function BundleCard({ bundle }: BundleCardProps) {
             {bundle.bundleProducts.slice(0, 3).map((bp, i) => (
               <div
                 key={bp.id}
-                className="w-10 h-10 rounded-lg overflow-hidden border-2 border-brand-surface bg-brand-arctic shadow-card"
+                className="w-10 h-10 rounded-sm overflow-hidden border-2 border-brand-surface bg-brand-arctic shadow-card"
                 style={{ zIndex: 3 - i }}
               >
                 {bp.product.images[0] ? (
@@ -75,7 +75,7 @@ export function BundleCard({ bundle }: BundleCardProps) {
               </div>
             ))}
             {bundle.bundleProducts.length > 3 && (
-              <div className="w-10 h-10 rounded-lg bg-brand-surface border-2 border-brand-surface shadow-card flex items-center justify-center text-xs font-bold text-brand-text">
+              <div className="w-10 h-10 rounded-sm bg-brand-surface border-2 border-brand-surface shadow-card flex items-center justify-center text-xs font-bold text-brand-text">
                 +{bundle.bundleProducts.length - 3}
               </div>
             )}
@@ -90,7 +90,7 @@ export function BundleCard({ bundle }: BundleCardProps) {
           <div className="absolute inset-x-3 bottom-14 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300">
             <button
               onClick={handleAddToCart}
-              className="w-full flex items-center justify-center gap-2 py-2.5 bg-brand-blue text-white text-sm font-bold rounded-xl hover:bg-brand-blue-dark transition-colors shadow-blue-sm"
+              className="w-full flex items-center justify-center gap-2 py-2.5 bg-brand-blue text-white text-sm font-bold rounded-sm hover:bg-brand-blue-dark transition-colors shadow-blue-sm"
             >
               <PlusIcon className="w-4 h-4" />
               Add Bundle to Cart

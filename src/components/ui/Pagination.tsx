@@ -31,7 +31,7 @@ export function Pagination({ currentPage, totalPages, basePath, searchParams = {
       {currentPage > 1 ? (
         <Link
           href={buildHref(currentPage - 1)}
-          className="p-2 rounded-lg text-brand-muted hover:text-brand-text hover:bg-brand-arctic transition-colors"
+          className="p-2 rounded-sm text-brand-muted hover:text-brand-text hover:bg-brand-arctic transition-colors"
         >
           <ChevronLeftIcon className="w-4 h-4" />
         </Link>
@@ -45,7 +45,7 @@ export function Pagination({ currentPage, totalPages, basePath, searchParams = {
         <>
           <Link
             href={buildHref(1)}
-            className="px-3 py-1.5 rounded-lg text-xs font-medium text-brand-muted hover:text-brand-text hover:bg-brand-arctic transition-colors"
+            className="px-3 py-1.5 rounded-sm text-xs font-medium text-brand-muted hover:text-brand-text hover:bg-brand-arctic transition-colors"
           >
             1
           </Link>
@@ -58,7 +58,7 @@ export function Pagination({ currentPage, totalPages, basePath, searchParams = {
           key={page}
           href={buildHref(page)}
           className={cn(
-            'px-3 py-1.5 rounded-lg text-xs font-medium transition-colors',
+            'px-3 py-1.5 rounded-sm text-xs font-medium transition-colors',
             page === currentPage
               ? 'bg-brand-blue text-white'
               : 'text-brand-muted hover:text-brand-text hover:bg-brand-arctic'
@@ -75,7 +75,7 @@ export function Pagination({ currentPage, totalPages, basePath, searchParams = {
           )}
           <Link
             href={buildHref(totalPages)}
-            className="px-3 py-1.5 rounded-lg text-xs font-medium text-brand-muted hover:text-brand-text hover:bg-brand-arctic transition-colors"
+            className="px-3 py-1.5 rounded-sm text-xs font-medium text-brand-muted hover:text-brand-text hover:bg-brand-arctic transition-colors"
           >
             {totalPages}
           </Link>
@@ -85,7 +85,7 @@ export function Pagination({ currentPage, totalPages, basePath, searchParams = {
       {currentPage < totalPages ? (
         <Link
           href={buildHref(currentPage + 1)}
-          className="p-2 rounded-lg text-brand-muted hover:text-brand-text hover:bg-brand-arctic transition-colors"
+          className="p-2 rounded-sm text-brand-muted hover:text-brand-text hover:bg-brand-arctic transition-colors"
         >
           <ChevronRightIcon className="w-4 h-4" />
         </Link>

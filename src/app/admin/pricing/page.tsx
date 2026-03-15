@@ -121,7 +121,7 @@ function InputField({
           step={step ?? 1}
           min={min ?? 0}
           max={max}
-          className={`w-full px-3 py-2.5 text-sm bg-brand-surface border border-brand-border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all ${prefix ? "pl-7" : ""} ${suffix ? "pr-12" : ""}`}
+          className={`w-full px-3 py-2.5 text-sm bg-brand-surface border border-brand-border rounded-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all ${prefix ? "pl-7" : ""} ${suffix ? "pr-12" : ""}`}
         />
         {suffix && (
           <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-brand-muted">
@@ -344,7 +344,7 @@ export default function AdminPricingPage() {
   return (
     <div className="p-8">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-brand-text">
+        <h1 className="text-2xl font-display text-brand-text">
           Pricing Calculator
         </h1>
         <p className="text-brand-muted text-sm mt-1">
@@ -357,7 +357,7 @@ export default function AdminPricingPage() {
         {/* Inputs */}
         <div className="lg:col-span-2 space-y-6">
           {/* Print Time */}
-          <div className="bg-brand-surface border border-brand-border rounded-2xl p-5 shadow-card">
+          <div className="bg-brand-surface border border-brand-border rounded-sm p-5 shadow-card">
             <h2 className="text-sm font-semibold text-brand-text mb-4">
               Print Details
             </h2>
@@ -386,7 +386,7 @@ export default function AdminPricingPage() {
           </div>
 
           {/* Material Costs */}
-          <div className="bg-brand-surface border border-brand-border rounded-2xl p-5 shadow-card">
+          <div className="bg-brand-surface border border-brand-border rounded-sm p-5 shadow-card">
             <h2 className="text-sm font-semibold text-brand-text mb-4">
               Material &amp; Energy Costs
             </h2>
@@ -419,7 +419,7 @@ export default function AdminPricingPage() {
           </div>
 
           {/* Labour & Margins */}
-          <div className="bg-brand-surface border border-brand-border rounded-2xl p-5 shadow-card">
+          <div className="bg-brand-surface border border-brand-border rounded-sm p-5 shadow-card">
             <h2 className="text-sm font-semibold text-brand-text mb-4">
               Labour &amp; Margins
             </h2>
@@ -476,7 +476,7 @@ export default function AdminPricingPage() {
 
         {/* Results */}
         <div className="space-y-4">
-          <div className="bg-brand-surface border border-brand-border rounded-2xl p-5 shadow-card sticky top-8">
+          <div className="bg-brand-surface border border-brand-border rounded-sm p-5 shadow-card sticky top-8">
             <h2 className="text-sm font-semibold text-brand-text mb-4">
               Cost Breakdown
             </h2>
@@ -509,7 +509,7 @@ export default function AdminPricingPage() {
               />
             </div>
 
-            <div className="mt-4 p-3 bg-brand-arctic rounded-xl">
+            <div className="mt-4 p-3 bg-brand-arctic rounded-sm">
               <p className="text-xs text-brand-muted">
                 Use the suggested price as a starting point. Adjust based on
                 market demand, complexity, and perceived value.
@@ -518,7 +518,7 @@ export default function AdminPricingPage() {
 
             <button
               onClick={exportInvoice}
-              className="mt-4 w-full px-4 py-2.5 text-sm font-semibold bg-brand-blue text-white rounded-xl hover:bg-brand-blue-dark transition-colors"
+              className="mt-4 w-full px-4 py-2.5 text-sm font-semibold bg-brand-blue text-white rounded-sm hover:bg-brand-blue-dark transition-colors"
             >
               Export as Invoice
             </button>

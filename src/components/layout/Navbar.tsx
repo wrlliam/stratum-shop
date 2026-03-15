@@ -162,9 +162,9 @@ export function Navbar() {
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  'px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200',
+                  'px-4 py-2 rounded-sm text-sm font-medium transition-all duration-200',
                   pathname === link.href || pathname.startsWith(link.href + '/')
-                    ? 'text-brand-blue bg-brand-blue-light font-semibold'
+                    ? 'text-brand-blue border-b-2 border-brand-blue font-semibold'
                     : 'text-brand-muted hover:text-brand-text hover:bg-brand-arctic'
                 )}
               >
@@ -185,7 +185,7 @@ export function Navbar() {
                     placeholder="Search prints..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-40 sm:w-56 px-3 py-2 text-sm bg-brand-surface border border-brand-border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all"
+                    className="w-40 sm:w-56 px-3 py-2 text-sm bg-brand-surface border border-brand-border rounded-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all"
                   />
                   <button
                     type="button"
@@ -199,7 +199,7 @@ export function Navbar() {
                 <button
                   onClick={() => setSearchOpen(true)}
                   aria-label="Search"
-                  className="p-2.5 rounded-xl text-brand-muted hover:text-brand-blue hover:bg-brand-arctic transition-all duration-200"
+                  className="p-2.5 rounded-sm text-brand-muted hover:text-brand-blue hover:bg-brand-arctic transition-all duration-200"
                 >
                   <MagnifyingGlassIcon className="w-5 h-5" />
                 </button>
@@ -207,7 +207,7 @@ export function Navbar() {
 
               {/* Search results dropdown */}
               {searchOpen && searchQuery.trim() && (
-                <div className="absolute right-0 top-full mt-1 w-72 sm:w-80 bg-brand-surface border border-brand-border rounded-xl shadow-card-lg overflow-hidden z-50 animate-fade-in">
+                <div className="absolute right-0 top-full mt-1 w-72 sm:w-80 bg-brand-surface border border-brand-border rounded-sm shadow-card-lg overflow-hidden z-50 animate-fade-in">
                   {searchLoading ? (
                     <div className="px-4 py-6 text-center">
                       <div className="animate-spin w-5 h-5 border-2 border-brand-blue border-t-transparent rounded-full mx-auto" />
@@ -231,7 +231,7 @@ export function Navbar() {
                               alt={product.name}
                               width={36}
                               height={36}
-                              className="rounded-lg object-cover w-9 h-9"
+                              className="rounded-sm object-cover w-9 h-9"
                             />
                           )}
                           <div className="flex-1 min-w-0">
@@ -260,7 +260,7 @@ export function Navbar() {
             <button
               onClick={toggleCart}
               aria-label="Open cart"
-              className="relative p-2.5 rounded-xl text-brand-muted hover:text-brand-blue hover:bg-brand-arctic transition-all duration-200"
+              className="relative p-2.5 rounded-sm text-brand-muted hover:text-brand-blue hover:bg-brand-arctic transition-all duration-200"
             >
               <BackpackIcon className="w-5 h-5" />
               {cart.itemCount > 0 && (
@@ -275,7 +275,7 @@ export function Navbar() {
               <div className="relative hidden md:block">
                 <button
                   onClick={() => setUserMenuOpen((o) => !o)}
-                  className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium text-brand-text hover:bg-brand-arctic transition-all duration-200"
+                  className="flex items-center gap-2 px-3 py-2 rounded-sm text-sm font-medium text-brand-text hover:bg-brand-arctic transition-all duration-200"
                 >
                   <div className="w-7 h-7 rounded-full bg-brand-blue-light border border-brand-blue/30 flex items-center justify-center text-xs font-bold text-brand-blue">
                     {session.user.name?.charAt(0).toUpperCase() || <PersonIcon />}
@@ -290,7 +290,7 @@ export function Navbar() {
                 </button>
 
                 {userMenuOpen && (
-                  <div className="absolute right-0 mt-1 w-48 bg-brand-surface border border-brand-border rounded-xl shadow-card-lg overflow-hidden animate-fade-in">
+                  <div className="absolute right-0 mt-1 w-48 bg-brand-surface border border-brand-border rounded-sm shadow-card-lg overflow-hidden animate-fade-in">
                     <Link
                       href="/account"
                       className="flex items-center gap-2.5 px-4 py-3 text-sm text-brand-text hover:text-brand-blue hover:bg-brand-arctic transition-colors"
@@ -342,7 +342,7 @@ export function Navbar() {
             ) : (
               <Link
                 href="/login"
-                className="hidden md:flex items-center px-4 py-2 rounded-xl text-sm font-medium border border-brand-border text-brand-text hover:text-brand-blue hover:border-brand-blue hover:bg-brand-arctic transition-all duration-200"
+                className="hidden md:flex items-center px-4 py-2 rounded-sm text-sm font-medium border border-brand-border text-brand-text hover:text-brand-blue hover:border-brand-blue hover:bg-brand-arctic transition-all duration-200"
               >
                 Sign in
               </Link>
@@ -352,7 +352,7 @@ export function Navbar() {
             <button
               onClick={() => setMenuOpen((o) => !o)}
               aria-label="Toggle menu"
-              className="md:hidden p-2.5 rounded-xl text-brand-muted hover:text-brand-text hover:bg-brand-arctic transition-all"
+              className="md:hidden p-2.5 rounded-sm text-brand-muted hover:text-brand-text hover:bg-brand-arctic transition-all"
             >
               {menuOpen ? <Cross1Icon className="w-4 h-4" /> : <HamburgerMenuIcon className="w-4 h-4" />}
             </button>
@@ -381,7 +381,7 @@ export function Navbar() {
                   <Link
                     href={link.href}
                     className={cn(
-                      'flex items-center px-4 py-3 rounded-xl text-sm font-medium transition-all',
+                      'flex items-center px-4 py-3 rounded-sm text-sm font-medium transition-all',
                       pathname === link.href
                         ? 'text-brand-blue bg-brand-blue-light font-semibold'
                         : 'text-brand-text hover:text-brand-blue hover:bg-brand-arctic'
@@ -397,21 +397,21 @@ export function Navbar() {
                   <>
                     <Link
                       href="/account"
-                      className="flex items-center gap-2 px-4 py-3 rounded-xl text-sm text-brand-text hover:text-brand-blue hover:bg-brand-arctic transition-all"
+                      className="flex items-center gap-2 px-4 py-3 rounded-sm text-sm text-brand-text hover:text-brand-blue hover:bg-brand-arctic transition-all"
                     >
                       <PersonIcon className="w-4 h-4" />
                       Account
                     </Link>
                     <Link
                       href="/orders"
-                      className="flex items-center gap-2 px-4 py-3 rounded-xl text-sm text-brand-text hover:text-brand-blue hover:bg-brand-arctic transition-all"
+                      className="flex items-center gap-2 px-4 py-3 rounded-sm text-sm text-brand-text hover:text-brand-blue hover:bg-brand-arctic transition-all"
                     >
                       <BackpackIcon className="w-4 h-4" />
                       My Orders
                     </Link>
                     <Link
                       href="/support"
-                      className="flex items-center gap-2 px-4 py-3 rounded-xl text-sm text-brand-text hover:text-brand-blue hover:bg-brand-arctic transition-all"
+                      className="flex items-center gap-2 px-4 py-3 rounded-sm text-sm text-brand-text hover:text-brand-blue hover:bg-brand-arctic transition-all"
                     >
                       <svg width="16" height="16" viewBox="0 0 15 15" fill="none" className="w-4 h-4"><path d="M7.5 1a6.5 6.5 0 1 0 0 13A6.5 6.5 0 0 0 7.5 1zM0 7.5a7.5 7.5 0 1 1 15 0 7.5 7.5 0 0 1-15 0zm7.5-3a1 1 0 0 0-1 1H5a2.5 2.5 0 0 1 5 0c0 .84-.65 1.47-1.15 1.87-.25.21-.45.39-.58.55-.12.15-.27.37-.27.63H7c0-.47.18-.77.37-1.01.2-.25.46-.47.7-.66C8.5 6.48 9 6.06 9 5.5a1 1 0 0 0-1-1zm-.75 6a.75.75 0 1 1 1.5 0 .75.75 0 0 1-1.5 0z" fill="currentColor" fillRule="evenodd" clipRule="evenodd"/></svg>
                       Support
@@ -419,7 +419,7 @@ export function Navbar() {
                     {(session.user as { role?: string }).role === 'admin' && (
                       <Link
                         href="/admin"
-                        className="flex items-center gap-2 px-4 py-3 rounded-xl text-sm text-brand-text hover:text-brand-blue hover:bg-brand-arctic transition-all"
+                        className="flex items-center gap-2 px-4 py-3 rounded-sm text-sm text-brand-text hover:text-brand-blue hover:bg-brand-arctic transition-all"
                       >
                         <DashboardIcon className="w-4 h-4" />
                         Admin
@@ -427,7 +427,7 @@ export function Navbar() {
                     )}
                     <button
                       onClick={() => signOut()}
-                      className="w-full flex items-center gap-2 px-4 py-3 rounded-xl text-sm text-brand-muted hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950 dark:hover:text-red-400 transition-all"
+                      className="w-full flex items-center gap-2 px-4 py-3 rounded-sm text-sm text-brand-muted hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950 dark:hover:text-red-400 transition-all"
                     >
                       <ExitIcon className="w-4 h-4" />
                       Sign out
@@ -436,7 +436,7 @@ export function Navbar() {
                 ) : (
                   <Link
                     href="/login"
-                    className="flex items-center px-4 py-3 rounded-xl text-sm font-medium text-brand-text hover:text-brand-blue hover:bg-brand-arctic transition-all"
+                    className="flex items-center px-4 py-3 rounded-sm text-sm font-medium text-brand-text hover:text-brand-blue hover:bg-brand-arctic transition-all"
                   >
                     Sign in
                   </Link>

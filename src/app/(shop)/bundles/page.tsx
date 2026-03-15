@@ -34,10 +34,10 @@ export default async function BundlesPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-10">
-          <p className="text-xs font-semibold text-brand-blue uppercase tracking-widest mb-2">
+          <p className="text-[10px] font-mono text-brand-blue uppercase tracking-[0.2em] mb-2">
             Save more
           </p>
-          <h1 className="text-4xl font-bold text-brand-text">Bundle Deals</h1>
+          <h1 className="text-4xl font-display text-brand-text">Bundle Deals</h1>
           <p className="text-brand-muted mt-3 max-w-xl">
             Get more for less. Our bundles group complementary prints together
             at a discounted price — perfect if you know what you need.
@@ -46,7 +46,7 @@ export default async function BundlesPage() {
 
         {allBundles.length === 0 ? (
           <div className="text-center py-24">
-            <div className="w-16 h-16 rounded-2xl bg-brand-arctic border border-brand-border flex items-center justify-center mx-auto mb-4">
+            <div className="w-16 h-16 rounded-sm bg-brand-arctic border border-brand-border flex items-center justify-center mx-auto mb-4">
               <CubeIcon className="w-7 h-7 text-brand-muted" />
             </div>
             <h3 className="text-lg font-semibold text-brand-text mb-2">

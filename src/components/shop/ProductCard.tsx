@@ -35,7 +35,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
 
   return (
     <Link href={`/products/${product.slug}`} className={cn('group block h-full', className)}>
-      <div className="h-full flex flex-col overflow-hidden rounded-lg bg-brand-surface border border-brand-border transition-all duration-300 hover:shadow-blue hover:border-brand-blue/50">
+      <div className="h-full flex flex-col overflow-hidden rounded-sm bg-brand-surface border border-brand-border transition-all duration-300 hover:shadow-blue hover:border-brand-blue/50">
         {/* Image */}
         <div className="relative aspect-square overflow-hidden bg-brand-arctic">
           {primaryImage ? (
@@ -79,7 +79,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
           {/* Out of stock overlay */}
           {product.stock === 0 && (
             <div className="absolute inset-0 bg-brand-bg/70 flex items-center justify-center">
-              <span className="text-sm font-bold text-red-400 uppercase tracking-wider bg-brand-surface/90 px-4 py-2 rounded-lg">
+              <span className="text-sm font-bold text-red-400 uppercase tracking-wider bg-brand-surface/90 px-4 py-2 rounded-sm">
                 Out of Stock
               </span>
             </div>
@@ -90,7 +90,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
             <div className="absolute inset-x-3 bottom-3 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
               <button
                 onClick={handleAddToCart}
-                className="w-full flex items-center justify-center gap-2 py-2.5 bg-brand-blue text-white text-xs font-bold rounded-xl hover:bg-brand-blue-dark transition-colors shadow-blue-sm"
+                className="w-full flex items-center justify-center gap-2 py-2.5 bg-brand-blue text-white text-xs font-bold rounded-sm hover:bg-brand-blue-dark transition-colors shadow-blue-sm"
               >
                 <PlusIcon className="w-3.5 h-3.5" />
                 Add to Cart
@@ -129,7 +129,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
 
           <div className="flex items-center justify-between mt-auto pt-2">
             <div className="flex items-baseline gap-2">
-              <span className="text-base font-bold text-brand-blue">
+              <span className="text-base font-bold text-brand-blue font-mono">
                 {formatPrice(product.price)}
               </span>
               {saleActive && product.compareAtPrice && (

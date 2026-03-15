@@ -120,13 +120,13 @@ export default function CheckoutPage() {
   return (
     <div className="min-h-screen pt-24 pb-16 bg-brand-bg">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h1 className="text-2xl font-bold text-brand-text mb-8">Checkout</h1>
+        <h1 className="text-2xl font-display text-brand-text mb-8">Checkout</h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
           {/* Left */}
           <div className="lg:col-span-3 space-y-5">
             {/* Email */}
-            <div className="bg-brand-surface border border-brand-border rounded-2xl p-6 shadow-card">
+            <div className="bg-brand-surface border border-brand-border rounded-sm p-6 shadow-card">
               <h2 className="text-base font-bold text-brand-text mb-4">Contact</h2>
               <Input
                 label="Email address"
@@ -140,7 +140,7 @@ export default function CheckoutPage() {
             </div>
 
             {/* Delivery Address */}
-            <div className="bg-brand-surface border border-brand-border rounded-2xl p-6 shadow-card">
+            <div className="bg-brand-surface border border-brand-border rounded-sm p-6 shadow-card">
               <h2 className="text-base font-bold text-brand-text mb-4">Delivery Address</h2>
               <AddressForm
                 address={address}
@@ -150,7 +150,7 @@ export default function CheckoutPage() {
             </div>
 
             {/* Delivery options */}
-            <div className="bg-brand-surface border border-brand-border rounded-2xl p-6 shadow-card">
+            <div className="bg-brand-surface border border-brand-border rounded-sm p-6 shadow-card">
               <h2 className="text-base font-bold text-brand-text mb-2">Delivery</h2>
               <p className="text-xs text-brand-muted mb-5">
                 All deliveries via Royal Mail.
@@ -164,7 +164,7 @@ export default function CheckoutPage() {
                       key={option.id}
                       onClick={() => setSelectedDelivery(option.id)}
                       className={cn(
-                        'w-full flex items-center gap-4 p-4 rounded-xl border-2 text-left transition-all duration-200',
+                        'w-full flex items-center gap-4 p-4 rounded-sm border-2 text-left transition-all duration-200',
                         isSelected
                           ? 'border-brand-blue bg-brand-blue-light'
                           : 'border-brand-border hover:border-brand-slate bg-brand-surface'
@@ -206,7 +206,7 @@ export default function CheckoutPage() {
             </div>
 
             {/* Security note */}
-            <div className="flex items-start gap-3 p-4 bg-brand-surface border border-brand-border rounded-xl shadow-card">
+            <div className="flex items-start gap-3 p-4 bg-brand-surface border border-brand-border rounded-sm shadow-card">
               <LockClosedIcon className="w-4 h-4 text-brand-blue shrink-0 mt-0.5" />
               <div>
                 <p className="text-sm font-medium text-brand-text">Secure payment via Stripe</p>
@@ -220,7 +220,7 @@ export default function CheckoutPage() {
 
           {/* Right: Order summary */}
           <div className="lg:col-span-2">
-            <div className="sticky top-24 bg-brand-surface border border-brand-border rounded-2xl p-6 shadow-card">
+            <div className="sticky top-24 bg-brand-surface border border-brand-border rounded-sm p-6 shadow-card">
               <h2 className="text-base font-bold text-brand-text mb-5">Order Summary</h2>
 
               <div className="space-y-3 mb-5">

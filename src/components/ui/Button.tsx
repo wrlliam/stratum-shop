@@ -23,11 +23,11 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     ref
   ) => {
     const base =
-      'inline-flex items-center justify-center font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed focus-ring rounded-lg'
+      'inline-flex items-center justify-center font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed focus-ring rounded-sm'
 
     const variants = {
       primary:
-        'bg-brand-blue text-white hover:bg-brand-blue-dark shadow-blue-sm hover:shadow-blue active:scale-[0.98]',
+        'bg-brand-blue text-white hover:bg-brand-blue-dark hover:shadow-blue active:scale-[0.98]',
       secondary:
         'bg-brand-surface text-brand-text hover:bg-brand-arctic border border-brand-border',
       ghost:

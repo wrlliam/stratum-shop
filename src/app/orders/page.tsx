@@ -57,7 +57,7 @@ export default async function OrdersPage() {
         <Link href="/" className="text-sm text-brand-muted hover:text-brand-blue transition-colors mb-4 inline-block">
           ← Back to shop
         </Link>
-        <h1 className="text-2xl font-bold text-brand-text">My Orders</h1>
+        <h1 className="text-2xl font-display text-brand-text">My Orders</h1>
         <p className="text-brand-muted text-sm mt-1">
           {userOrders.length === 0
             ? 'You haven\'t placed any orders yet.'
@@ -66,7 +66,7 @@ export default async function OrdersPage() {
       </div>
 
       {userOrders.length === 0 ? (
-        <div className="text-center py-20 bg-brand-surface rounded-2xl border border-brand-border">
+        <div className="text-center py-20 bg-brand-surface rounded-sm border border-brand-border">
           <div className="text-5xl mb-4">🛍️</div>
           <h3 className="font-semibold text-brand-text mb-2">No orders yet</h3>
           <p className="text-brand-muted text-sm mb-6">
@@ -74,7 +74,7 @@ export default async function OrdersPage() {
           </p>
           <Link
             href="/products"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-brand-blue text-white font-semibold rounded-xl hover:bg-brand-blue-dark transition-colors shadow-blue-sm"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-brand-blue text-white font-semibold rounded-sm hover:bg-brand-blue-dark transition-colors shadow-blue-sm"
           >
             Shop Now →
           </Link>
@@ -84,7 +84,7 @@ export default async function OrdersPage() {
           {userOrders.map((order) => (
             <div
               key={order.id}
-              className="bg-brand-surface border border-brand-border rounded-2xl p-6 hover:shadow-card-hover transition-shadow"
+              className="bg-brand-surface border border-brand-border rounded-sm p-6 hover:shadow-card-hover transition-shadow"
             >
               <div className="flex flex-wrap items-start justify-between gap-4 mb-4">
                 <div>
@@ -189,7 +189,7 @@ export default async function OrdersPage() {
 
                 {/* Tracking */}
                 {order.trackingNumber && (
-                  <div className="mt-3 p-3 bg-brand-blue-light rounded-lg">
+                  <div className="mt-3 p-3 bg-brand-blue-light rounded-sm">
                     <p className="text-xs font-semibold text-brand-blue">
                       Tracking: <span className="font-mono">{order.trackingNumber}</span>
                     </p>

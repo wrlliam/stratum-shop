@@ -11,8 +11,9 @@ export function Footer() {
 
   return (
     <footer className="relative overflow-hidden bg-brand-surface border-t border-brand-border mt-20">
-      <div className="absolute inset-0 grid-line-bg opacity-30 pointer-events-none" />
-      <div className="brand-stripe" />
+      {/* Diamond markers */}
+      <div className="diamond-marker -top-1 left-8" />
+      <div className="diamond-marker -top-1 right-8" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
@@ -30,7 +31,7 @@ export function Footer() {
 
           {/* Shop */}
           <div>
-            <h4 className="text-xs font-semibold text-brand-blue uppercase tracking-widest mb-4">
+            <h4 className="text-[10px] font-mono text-brand-muted uppercase tracking-[0.15em] mb-4">
               Shop
             </h4>
             <ul className="space-y-3">
@@ -54,7 +55,7 @@ export function Footer() {
 
           {/* Info */}
           <div>
-            <h4 className="text-xs font-semibold text-brand-blue uppercase tracking-widest mb-4">
+            <h4 className="text-[10px] font-mono text-brand-muted uppercase tracking-[0.15em] mb-4">
               Info
             </h4>
             <ul className="space-y-3">
@@ -86,7 +87,7 @@ export function Footer() {
             <Link href="/privacy" className="text-xs text-brand-muted hover:text-brand-blue transition-colors">Privacy</Link>
             <div className="flex items-center gap-2">
               <span className="text-xs text-brand-muted">Payments secured by</span>
-              <span className="text-xs font-semibold text-brand-text bg-brand-arctic border border-brand-border px-2 py-0.5 rounded">
+              <span className="text-xs font-semibold text-brand-text bg-brand-arctic border border-brand-border px-2 py-0.5 rounded-sm">
                 Stripe
               </span>
             </div>

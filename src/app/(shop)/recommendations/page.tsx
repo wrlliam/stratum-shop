@@ -247,19 +247,19 @@ export default function RecommendationsPage() {
       <div className="max-w-2xl mx-auto px-4 sm:px-6">
         {/* Header */}
         <div className="text-center mb-10">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-brand-blue-light border border-brand-blue/20 mb-5">
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-sm bg-brand-blue-light border border-brand-blue/20 mb-5">
             <LightningBoltIcon className="w-6 h-6 text-brand-blue" />
           </div>
-          <p className="text-xs font-semibold text-brand-blue uppercase tracking-widest mb-2">
+          <p className="text-[10px] font-mono text-brand-blue uppercase tracking-[0.2em] mb-2">
             Custom Prints
           </p>
-          <h1 className="text-4xl font-bold text-brand-text mb-4">Request a Print</h1>
+          <h1 className="text-4xl font-display text-brand-text mb-4">Request a Print</h1>
           <p className="text-brand-muted leading-relaxed max-w-lg mx-auto">
             Upload your STL or 3MF file and get an instant rough quote, or describe what you&apos;d like printed.
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="bg-brand-surface border border-brand-border rounded-2xl p-8 space-y-5 shadow-card">
+        <form onSubmit={handleSubmit} className="bg-brand-surface border border-brand-border rounded-sm p-8 space-y-5 shadow-card">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Input
               label="Your Name"
@@ -293,10 +293,10 @@ export default function RecommendationsPage() {
               Upload 3D Model (STL / 3MF)
             </label>
             {modelFileName ? (
-              <div className="border border-brand-border rounded-xl p-4 bg-brand-arctic/50">
+              <div className="border border-brand-border rounded-sm p-4 bg-brand-arctic/50">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-brand-blue-light flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-sm bg-brand-blue-light flex items-center justify-center">
                       <CubeIcon className="w-5 h-5 text-brand-blue" />
                     </div>
                     <div>
@@ -328,7 +328,7 @@ export default function RecommendationsPage() {
               </div>
             ) : (
               <label
-                className="relative flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-brand-border hover:border-brand-blue/40 rounded-xl cursor-pointer transition-all duration-200 bg-brand-arctic/50 hover:bg-brand-arctic"
+                className="relative flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-brand-border hover:border-brand-blue/40 rounded-sm cursor-pointer transition-all duration-200 bg-brand-arctic/50 hover:bg-brand-arctic"
               >
                 <CubeIcon className="w-6 h-6 text-brand-muted mb-2" />
                 <p className="text-sm text-brand-muted">
@@ -348,7 +348,7 @@ export default function RecommendationsPage() {
 
           {/* Multi-object plate selection */}
           {isMultiObject && modelInfo && (
-            <div className="border border-brand-border rounded-xl p-4 bg-brand-arctic/30">
+            <div className="border border-brand-border rounded-sm p-4 bg-brand-arctic/30">
               <div className="flex items-center justify-between mb-3">
                 <h3 className="text-xs font-bold text-brand-text uppercase tracking-wider">
                   Select Parts to Print
@@ -405,7 +405,7 @@ export default function RecommendationsPage() {
 
           {/* Instant Quote */}
           {quote && (
-            <div className="border border-brand-blue/30 bg-brand-blue/5 rounded-xl p-5">
+            <div className="border border-brand-blue/30 bg-brand-blue/5 rounded-sm p-5">
               <h3 className="text-sm font-bold text-brand-text mb-3 flex items-center gap-2">
                 <LightningBoltIcon className="w-4 h-4 text-brand-blue" />
                 Rough Estimate
@@ -495,7 +495,7 @@ export default function RecommendationsPage() {
               Upload Reference Image (optional)
             </label>
             <label
-              className={`relative flex flex-col items-center justify-center w-full h-28 border-2 border-dashed rounded-xl cursor-pointer transition-all duration-200 ${
+              className={`relative flex flex-col items-center justify-center w-full h-28 border-2 border-dashed rounded-sm cursor-pointer transition-all duration-200 ${
                 previewUrl
                   ? 'border-brand-blue/50 bg-brand-arctic'
                   : 'border-brand-border hover:border-brand-slate bg-brand-arctic/50 hover:bg-brand-arctic'
@@ -507,7 +507,7 @@ export default function RecommendationsPage() {
                   <img
                     src={previewUrl}
                     alt="Preview"
-                    className="w-16 h-16 rounded-xl object-cover"
+                    className="w-16 h-16 rounded-sm object-cover"
                   />
                   <div>
                     <p className="text-sm font-medium text-brand-text">Image uploaded</p>

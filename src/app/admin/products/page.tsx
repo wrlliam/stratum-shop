@@ -67,19 +67,19 @@ export default async function AdminProductsPage({ searchParams }: Props) {
     <div className="p-8">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-brand-text">Products</h1>
+          <h1 className="text-2xl font-display text-brand-text">Products</h1>
           <p className="text-brand-muted text-sm mt-1">{total} {q || status ? 'matching' : 'total'}</p>
         </div>
         <div className="flex items-center gap-3">
           <Link
             href="/admin/products/labels"
-            className="flex items-center gap-2 px-4 py-2.5 border border-brand-border text-brand-text font-semibold rounded-xl text-sm hover:bg-brand-arctic transition-colors"
+            className="flex items-center gap-2 px-4 py-2.5 border border-brand-border text-brand-text font-semibold rounded-sm text-sm hover:bg-brand-arctic transition-colors"
           >
             Print QR Labels
           </Link>
           <Link
             href="/admin/products/new"
-            className="flex items-center gap-2 px-4 py-2.5 bg-brand-blue text-white font-semibold rounded-xl text-sm hover:bg-brand-blue-dark transition-colors shadow-blue-sm"
+            className="flex items-center gap-2 px-4 py-2.5 bg-brand-blue text-white font-semibold rounded-sm text-sm hover:bg-brand-blue-dark transition-colors shadow-blue-sm"
           >
             <PlusIcon className="w-4 h-4" />
             New Product
@@ -95,7 +95,7 @@ export default async function AdminProductsPage({ searchParams }: Props) {
             name="q"
             defaultValue={q}
             placeholder="Search by name, SKU, slug…"
-            className="w-full pl-9 pr-4 py-2.5 text-sm border border-brand-border rounded-xl bg-brand-surface text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue"
+            className="w-full pl-9 pr-4 py-2.5 text-sm border border-brand-border rounded-sm bg-brand-surface text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue"
           />
         </div>
         <div className="flex items-center gap-1.5">
@@ -103,7 +103,7 @@ export default async function AdminProductsPage({ searchParams }: Props) {
             <Link
               key={f.value}
               href={`/admin/products?${new URLSearchParams({ ...(q ? { q } : {}), ...(f.value ? { status: f.value } : {}) }).toString()}`}
-              className={`px-3 py-2 text-xs font-semibold rounded-lg transition-colors ${
+              className={`px-3 py-2 text-xs font-semibold rounded-sm transition-colors ${
                 status === f.value
                   ? 'bg-brand-blue text-white'
                   : 'bg-brand-surface border border-brand-border text-brand-muted hover:text-brand-text hover:bg-brand-arctic'
@@ -115,7 +115,7 @@ export default async function AdminProductsPage({ searchParams }: Props) {
         </div>
         <button
           type="submit"
-          className="px-4 py-2.5 text-sm font-semibold bg-brand-arctic border border-brand-border text-brand-text rounded-xl hover:bg-brand-border transition-colors"
+          className="px-4 py-2.5 text-sm font-semibold bg-brand-arctic border border-brand-border text-brand-text rounded-sm hover:bg-brand-border transition-colors"
         >
           Search
         </button>
@@ -129,7 +129,7 @@ export default async function AdminProductsPage({ searchParams }: Props) {
         )}
       </form>
 
-      <div className="bg-brand-surface border border-brand-border rounded-2xl overflow-hidden shadow-card">
+      <div className="bg-brand-surface border border-brand-border rounded-sm overflow-hidden shadow-card">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
@@ -149,7 +149,7 @@ export default async function AdminProductsPage({ searchParams }: Props) {
                 <tr key={product.id} className="hover:bg-brand-arctic transition-colors">
                   <td className="px-4 py-4">
                     <div className="flex items-center gap-3">
-                      <div className="relative w-10 h-10 rounded-lg overflow-hidden bg-brand-arctic shrink-0 border border-brand-border">
+                      <div className="relative w-10 h-10 rounded-sm overflow-hidden bg-brand-arctic shrink-0 border border-brand-border">
                         {product.images[0] ? (
                           <Image
                             src={product.images[0].url}
@@ -219,7 +219,7 @@ export default async function AdminProductsPage({ searchParams }: Props) {
                     <div className="flex items-center gap-1">
                       <Link
                         href={`/admin/products/${product.id}`}
-                        className="p-1.5 text-brand-muted hover:text-brand-blue hover:bg-brand-arctic rounded-lg transition-colors"
+                        className="p-1.5 text-brand-muted hover:text-brand-blue hover:bg-brand-arctic rounded-sm transition-colors"
                         title="Edit"
                       >
                         <Pencil1Icon className="w-3.5 h-3.5" />

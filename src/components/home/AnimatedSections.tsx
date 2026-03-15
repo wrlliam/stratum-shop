@@ -59,8 +59,8 @@ export function FeaturedProducts({
           transition={{ duration: 0.5 }}
         >
           <div>
-            <p className="text-xs font-semibold text-brand-blue uppercase tracking-widest mb-2">Collection</p>
-            <h2 className="text-3xl font-bold text-brand-text">
+            <p className="text-[10px] font-mono text-brand-blue uppercase tracking-[0.2em] mb-2">Collection</p>
+            <h2 className="text-3xl sm:text-4xl font-display text-brand-text">
               {featuredProducts.length > 0 ? 'Featured Prints' : 'Latest Prints'}
             </h2>
           </div>
@@ -141,10 +141,10 @@ export function ProcessSection() {
           viewport={{ once: true, margin: '-50px' }}
           transition={{ duration: 0.5 }}
         >
-          <p className="text-xs font-semibold text-brand-blue uppercase tracking-widest mb-2">
+          <p className="text-[10px] font-mono text-brand-blue uppercase tracking-[0.2em] mb-2">
             How it works
           </p>
-          <h2 className="text-3xl font-bold text-brand-text mb-3">From file to front door</h2>
+          <h2 className="text-3xl sm:text-4xl font-display text-brand-text mb-3">From file to front door</h2>
           <p className="text-brand-muted text-sm leading-relaxed">
             Every order is printed fresh. No warehoused stock, no mass production — just
             careful, on-demand manufacturing.
@@ -163,7 +163,7 @@ export function ProcessSection() {
               {i < steps.length - 1 && (
                 <div className="hidden lg:block absolute top-5 left-full w-full h-px border-t border-dashed border-brand-blue/20 -translate-x-4" />
               )}
-              <div className="text-3xl font-bold text-brand-blue/30 font-mono mb-3 leading-none">
+              <div className="text-3xl font-display text-brand-blue/30 font-mono mb-3 leading-none">
                 {step.number}
               </div>
               <h3 className="text-base font-bold text-brand-text mb-2">{step.title}</h3>
@@ -197,10 +197,10 @@ export function MaterialsSection() {
           viewport={{ once: true, margin: '-50px' }}
           transition={{ duration: 0.5 }}
         >
-          <p className="text-xs font-semibold text-brand-blue uppercase tracking-widest mb-2">
+          <p className="text-[10px] font-mono text-brand-blue uppercase tracking-[0.2em] mb-2">
             Material
           </p>
-          <h2 className="text-3xl font-bold text-brand-text mb-3">
+          <h2 className="text-3xl sm:text-4xl font-display text-brand-text mb-3">
             Printed with PLA
           </h2>
           <p className="text-brand-muted text-sm leading-relaxed">
@@ -211,7 +211,7 @@ export function MaterialsSection() {
         </motion.div>
 
         <motion.div
-          className="bg-brand-surface border border-brand-border rounded-2xl p-8 hover:border-brand-blue/30 hover:shadow-card-hover transition-all duration-300"
+          className="bg-brand-surface border border-brand-border rounded-sm p-8 hover:border-brand-blue/30 hover:shadow-card-hover transition-all duration-300"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-30px' }}
@@ -255,8 +255,8 @@ export function BundleSection({ activeBundles }: { activeBundles: BundleWithProd
           transition={{ duration: 0.5 }}
         >
           <div>
-            <p className="text-xs font-semibold text-brand-blue uppercase tracking-widest mb-2">Save More</p>
-            <h2 className="text-3xl font-bold text-brand-text">Bundle Deals</h2>
+            <p className="text-[10px] font-mono text-brand-blue uppercase tracking-[0.2em] mb-2">Save More</p>
+            <h2 className="text-3xl sm:text-4xl font-display text-brand-text">Bundle Deals</h2>
             <p className="text-brand-muted mt-2 text-sm">Get multiple prints at a discounted price</p>
           </div>
           <Link
@@ -305,10 +305,10 @@ export function ShippingSection() {
             viewport={{ once: true, margin: '-50px' }}
             transition={{ duration: 0.5 }}
           >
-            <p className="text-xs font-semibold text-brand-blue uppercase tracking-widest mb-2">
+            <p className="text-[10px] font-mono text-brand-blue uppercase tracking-[0.2em] mb-2">
               Delivery
             </p>
-            <h2 className="text-3xl font-bold text-brand-text mb-3">UK shipping via Royal Mail</h2>
+            <h2 className="text-3xl sm:text-4xl font-display text-brand-text mb-3">UK shipping via Royal Mail</h2>
             <p className="text-brand-muted text-sm leading-relaxed mb-6">
               All orders are carefully packed and shipped from the UK. Choose the speed
               that suits you at checkout.
@@ -330,7 +330,7 @@ export function ShippingSection() {
           </motion.div>
 
           <ScrollReveal3D
-            className="bg-brand-arctic border border-brand-border rounded-lg overflow-hidden"
+            className="bg-brand-arctic border border-brand-border rounded-sm overflow-hidden"
             delay={0.15}
             rotateX={10}
           >
@@ -405,10 +405,10 @@ export function FAQSection() {
             viewport={{ once: true, margin: '-50px' }}
             transition={{ duration: 0.5 }}
           >
-            <p className="text-xs font-semibold text-brand-blue uppercase tracking-widest mb-2">
+            <p className="text-[10px] font-mono text-brand-blue uppercase tracking-[0.2em] mb-2">
               FAQ
             </p>
-            <h2 className="text-3xl font-bold text-brand-text mb-3">Common questions</h2>
+            <h2 className="text-3xl sm:text-4xl font-display text-brand-text mb-3">Common questions</h2>
             <p className="text-brand-muted text-sm leading-relaxed">
               Can&apos;t find what you&apos;re looking for? Drop us a message and we&apos;ll get back to you.
             </p>
@@ -448,7 +448,7 @@ export function CTASection() {
     <section className="py-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <ScrollReveal3D
-          className="relative overflow-hidden rounded-2xl bg-[#080c12] border border-brand-blue/20 p-12 sm:p-16"
+          className="relative overflow-hidden rounded-sm bg-[#080c12] border border-brand-blue/20 p-12 sm:p-16"
           rotateX={12}
         >
           {/* Strata accent lines */}
@@ -470,7 +470,7 @@ export function CTASection() {
               Custom Prints
             </motion.p>
             <motion.h2
-              className="text-3xl sm:text-4xl font-bold text-white mb-4 leading-tight"
+              className="text-3xl sm:text-4xl font-display text-white mb-4 leading-tight"
               initial={{ opacity: 0, y: 10 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -496,7 +496,7 @@ export function CTASection() {
             >
               <Link
                 href="/recommendations"
-                className="group inline-flex items-center gap-3 px-8 py-4 bg-brand-blue text-white font-semibold rounded-lg hover:bg-brand-blue-dark transition-all shadow-blue hover:shadow-blue-lg"
+                className="group inline-flex items-center gap-3 px-8 py-4 bg-brand-blue text-white font-semibold rounded-sm hover:bg-brand-blue-dark transition-all hover:shadow-blue"
               >
                 Submit a Request
                 <span className="transition-transform duration-200 group-hover:translate-x-1">→</span>

@@ -136,36 +136,36 @@ export default function CostsPage() {
   return (
     <div className="p-8">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-xl font-bold text-brand-text">Cost Tracking</h1>
+        <h1 className="text-xl font-display text-brand-text">Cost Tracking</h1>
         <input
           type="month"
           value={month}
           onChange={(e) => setMonth(e.target.value)}
-          className="px-3 py-2 text-sm border border-brand-border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-blue/20 bg-brand-surface text-brand-text"
+          className="px-3 py-2 text-sm border border-brand-border rounded-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/20 bg-brand-surface text-brand-text"
         />
       </div>
 
       {/* Summary Cards */}
       {data && (
         <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 mb-8">
-          <div className="bg-brand-surface border border-brand-border rounded-2xl p-5 shadow-card">
+          <div className="bg-brand-surface border border-brand-border rounded-sm p-5 shadow-card">
             <p className="text-xs text-brand-muted uppercase tracking-widest mb-1">Labour Time</p>
             <p className="text-2xl font-bold text-brand-text">{Math.floor(data.labourMinutes / 60)}h {data.labourMinutes % 60}m</p>
           </div>
-          <div className="bg-brand-surface border border-brand-border rounded-2xl p-5 shadow-card">
+          <div className="bg-brand-surface border border-brand-border rounded-sm p-5 shadow-card">
             <p className="text-xs text-brand-muted uppercase tracking-widest mb-1">Print Time</p>
             <p className="text-2xl font-bold text-brand-text">{Math.floor(data.printMinutes / 60)}h {data.printMinutes % 60}m</p>
           </div>
-          <div className="bg-brand-surface border border-brand-border rounded-2xl p-5 shadow-card">
+          <div className="bg-brand-surface border border-brand-border rounded-sm p-5 shadow-card">
             <p className="text-xs text-brand-muted uppercase tracking-widest mb-1">Labour Cost</p>
             <p className="text-2xl font-bold text-brand-text">{formatPrice(data.labourCostPence)}</p>
             <p className="text-xs text-brand-muted">@ {formatPrice(data.hourlyRatePence)}/hr</p>
           </div>
-          <div className="bg-brand-surface border border-brand-border rounded-2xl p-5 shadow-card">
+          <div className="bg-brand-surface border border-brand-border rounded-sm p-5 shadow-card">
             <p className="text-xs text-brand-muted uppercase tracking-widest mb-1">Material Costs</p>
             <p className="text-2xl font-bold text-brand-text">{formatPrice(data.totalCostsPence)}</p>
           </div>
-          <div className="bg-brand-surface border border-brand-border rounded-2xl p-5 shadow-card">
+          <div className="bg-brand-surface border border-brand-border rounded-sm p-5 shadow-card">
             <p className="text-xs text-brand-muted uppercase tracking-widest mb-1">Total Cost</p>
             <p className="text-2xl font-bold text-red-600 dark:text-red-400">{formatPrice(data.labourCostPence + data.totalCostsPence)}</p>
           </div>
@@ -174,21 +174,21 @@ export default function CostsPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         {/* Log Time */}
-        <div className="bg-brand-surface border border-brand-border rounded-2xl p-5 shadow-card">
+        <div className="bg-brand-surface border border-brand-border rounded-sm p-5 shadow-card">
           <h2 className="text-sm font-bold text-brand-text mb-4">Log Time</h2>
           <form onSubmit={submitTime} className="space-y-3">
             <input
               placeholder="Description (e.g. Print run for order #123)"
               value={timeForm.description}
               onChange={(e) => setTimeForm((p) => ({ ...p, description: e.target.value }))}
-              className="w-full px-3 py-2 text-sm border border-brand-border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-blue/20 bg-brand-surface text-brand-text"
+              className="w-full px-3 py-2 text-sm border border-brand-border rounded-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/20 bg-brand-surface text-brand-text"
             />
             {/* Category toggle */}
             <div className="flex gap-2">
               <button
                 type="button"
                 onClick={() => setTimeForm((p) => ({ ...p, category: 'labour' }))}
-                className={`flex-1 px-3 py-2 text-sm rounded-xl border font-medium transition-colors ${
+                className={`flex-1 px-3 py-2 text-sm rounded-sm border font-medium transition-colors ${
                   timeForm.category === 'labour'
                     ? 'bg-brand-blue text-white border-brand-blue'
                     : 'bg-brand-surface text-brand-text border-brand-border hover:border-brand-blue/40'
@@ -199,7 +199,7 @@ export default function CostsPage() {
               <button
                 type="button"
                 onClick={() => setTimeForm((p) => ({ ...p, category: 'print_time' }))}
-                className={`flex-1 px-3 py-2 text-sm rounded-xl border font-medium transition-colors ${
+                className={`flex-1 px-3 py-2 text-sm rounded-sm border font-medium transition-colors ${
                   timeForm.category === 'print_time'
                     ? 'bg-brand-blue text-white border-brand-blue'
                     : 'bg-brand-surface text-brand-text border-brand-border hover:border-brand-blue/40'
@@ -215,7 +215,7 @@ export default function CostsPage() {
                 placeholder="Hours"
                 value={timeForm.hours}
                 onChange={(e) => setTimeForm((p) => ({ ...p, hours: e.target.value }))}
-                className="flex-1 px-3 py-2 text-sm border border-brand-border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-blue/20 bg-brand-surface text-brand-text"
+                className="flex-1 px-3 py-2 text-sm border border-brand-border rounded-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/20 bg-brand-surface text-brand-text"
               />
               <input
                 type="number"
@@ -224,9 +224,9 @@ export default function CostsPage() {
                 placeholder="Minutes"
                 value={timeForm.minutes}
                 onChange={(e) => setTimeForm((p) => ({ ...p, minutes: e.target.value }))}
-                className="flex-1 px-3 py-2 text-sm border border-brand-border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-blue/20 bg-brand-surface text-brand-text"
+                className="flex-1 px-3 py-2 text-sm border border-brand-border rounded-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/20 bg-brand-surface text-brand-text"
               />
-              <button type="submit" disabled={saving} className="px-4 py-2 text-sm font-semibold bg-brand-blue text-white rounded-xl hover:bg-brand-blue/90 disabled:opacity-50">
+              <button type="submit" disabled={saving} className="px-4 py-2 text-sm font-semibold bg-brand-blue text-white rounded-sm hover:bg-brand-blue/90 disabled:opacity-50">
                 Add
               </button>
             </div>
@@ -234,7 +234,7 @@ export default function CostsPage() {
         </div>
 
         {/* Log Cost */}
-        <div className="bg-brand-surface border border-brand-border rounded-2xl p-5 shadow-card">
+        <div className="bg-brand-surface border border-brand-border rounded-sm p-5 shadow-card">
           <h2 className="text-sm font-bold text-brand-text mb-4">Log Cost</h2>
           <form onSubmit={submitCost} className="space-y-3">
             <Select
@@ -248,7 +248,7 @@ export default function CostsPage() {
                 <select
                   value={costForm.filamentId}
                   onChange={(e) => setCostForm((p) => ({ ...p, filamentId: e.target.value }))}
-                  className="w-full px-3 py-2 text-sm border border-brand-border rounded-xl focus:outline-none bg-brand-surface text-brand-text"
+                  className="w-full px-3 py-2 text-sm border border-brand-border rounded-sm focus:outline-none bg-brand-surface text-brand-text"
                 >
                   <option value="">Select filament...</option>
                   {filamentOptions.map((f) => (
@@ -265,7 +265,7 @@ export default function CostsPage() {
                     placeholder="Grams used"
                     value={costForm.gramsUsed}
                     onChange={(e) => setCostForm((p) => ({ ...p, gramsUsed: e.target.value }))}
-                    className="flex-1 px-3 py-2 text-sm border border-brand-border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-blue/20 bg-brand-surface text-brand-text"
+                    className="flex-1 px-3 py-2 text-sm border border-brand-border rounded-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/20 bg-brand-surface text-brand-text"
                   />
                   {calculatedFilamentCost > 0 && (
                     <span className="text-sm font-medium text-brand-blue whitespace-nowrap">
@@ -282,7 +282,7 @@ export default function CostsPage() {
                 placeholder="Amount (£)"
                 value={costForm.amountPounds}
                 onChange={(e) => setCostForm((p) => ({ ...p, amountPounds: e.target.value }))}
-                className="w-full px-3 py-2 text-sm border border-brand-border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-blue/20 bg-brand-surface text-brand-text"
+                className="w-full px-3 py-2 text-sm border border-brand-border rounded-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/20 bg-brand-surface text-brand-text"
               />
             )}
 
@@ -291,9 +291,9 @@ export default function CostsPage() {
                 placeholder="Description"
                 value={costForm.description}
                 onChange={(e) => setCostForm((p) => ({ ...p, description: e.target.value }))}
-                className="flex-1 px-3 py-2 text-sm border border-brand-border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-blue/20 bg-brand-surface text-brand-text"
+                className="flex-1 px-3 py-2 text-sm border border-brand-border rounded-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/20 bg-brand-surface text-brand-text"
               />
-              <button type="submit" disabled={saving} className="px-4 py-2 text-sm font-semibold bg-brand-blue text-white rounded-xl hover:bg-brand-blue/90 disabled:opacity-50">
+              <button type="submit" disabled={saving} className="px-4 py-2 text-sm font-semibold bg-brand-blue text-white rounded-sm hover:bg-brand-blue/90 disabled:opacity-50">
                 Add
               </button>
             </div>
@@ -304,7 +304,7 @@ export default function CostsPage() {
       {/* Recent entries */}
       {data && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="bg-brand-surface border border-brand-border rounded-2xl shadow-card">
+          <div className="bg-brand-surface border border-brand-border rounded-sm shadow-card">
             <div className="p-4 border-b border-brand-border">
               <h2 className="text-sm font-bold text-brand-text">Time Entries</h2>
             </div>
@@ -334,7 +334,7 @@ export default function CostsPage() {
             )}
           </div>
 
-          <div className="bg-brand-surface border border-brand-border rounded-2xl shadow-card">
+          <div className="bg-brand-surface border border-brand-border rounded-sm shadow-card">
             <div className="p-4 border-b border-brand-border">
               <h2 className="text-sm font-bold text-brand-text">Cost Entries</h2>
             </div>

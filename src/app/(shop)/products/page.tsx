@@ -35,7 +35,7 @@ export default function ProductsPage() {
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
             {[...Array(8)].map((_, i) => (
-              <div key={i} className="rounded-2xl bg-brand-surface border border-brand-border overflow-hidden">
+              <div key={i} className="rounded-sm bg-brand-surface border border-brand-border overflow-hidden">
                 <div className="skeleton aspect-square" />
                 <div className="p-4 space-y-2">
                   <div className="skeleton h-4 rounded w-3/4" />
@@ -162,10 +162,10 @@ function ProductsPageContent() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
-          <p className="text-xs font-semibold text-brand-blue uppercase tracking-widest mb-2">
+          <p className="text-[10px] font-mono text-brand-blue uppercase tracking-[0.2em] mb-2">
             Browse
           </p>
-          <h1 className="text-3xl font-bold text-brand-text">All Prints</h1>
+          <h1 className="text-3xl sm:text-4xl font-display text-brand-text">All Prints</h1>
           {total > 0 && (
             <p className="text-brand-muted text-sm mt-2">
               {total} product{total !== 1 ? 's' : ''}
@@ -182,7 +182,7 @@ function ProductsPageContent() {
               placeholder="Search prints..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-10 pr-10 py-2.5 bg-brand-surface border border-brand-border rounded-xl text-sm text-brand-text placeholder:text-brand-muted focus:outline-none focus:ring-2 focus:ring-brand-blue focus:border-transparent transition-colors"
+              className="w-full pl-10 pr-10 py-2.5 bg-brand-surface border border-brand-border rounded-sm text-sm text-brand-text placeholder:text-brand-muted focus:outline-none focus:ring-2 focus:ring-brand-blue focus:border-transparent transition-colors"
             />
             {search && (
               <button
@@ -198,7 +198,7 @@ function ProductsPageContent() {
           <button
             onClick={() => setFiltersOpen((o) => !o)}
             className={cn(
-              'flex items-center gap-2 px-4 py-2.5 border rounded-xl text-sm font-medium transition-colors',
+              'flex items-center gap-2 px-4 py-2.5 border rounded-sm text-sm font-medium transition-colors',
               hasActiveFilters
                 ? 'bg-brand-blue-light border-brand-blue text-brand-blue'
                 : 'bg-brand-surface border-brand-border text-brand-text hover:border-brand-slate'
@@ -217,7 +217,7 @@ function ProductsPageContent() {
           <div className="relative">
             <button
               onClick={() => setSortOpen((o) => !o)}
-              className="flex items-center gap-2 px-4 py-2.5 bg-brand-surface border border-brand-border rounded-xl text-sm text-brand-text hover:border-brand-slate transition-colors min-w-[180px] justify-between"
+              className="flex items-center gap-2 px-4 py-2.5 bg-brand-surface border border-brand-border rounded-sm text-sm text-brand-text hover:border-brand-slate transition-colors min-w-[180px] justify-between"
             >
               <span>{currentSortLabel}</span>
               <ChevronDownIcon
@@ -226,7 +226,7 @@ function ProductsPageContent() {
             </button>
 
             {sortOpen && (
-              <div className="absolute right-0 mt-1 w-full min-w-[200px] bg-brand-surface border border-brand-border rounded-xl shadow-card-lg overflow-hidden z-10 animate-fade-in">
+              <div className="absolute right-0 mt-1 w-full min-w-[200px] bg-brand-surface border border-brand-border rounded-sm shadow-card-lg overflow-hidden z-10 animate-fade-in">
                 {SORT_OPTIONS.map((option) => (
                   <button
                     key={option.value}
@@ -251,7 +251,7 @@ function ProductsPageContent() {
 
         {/* Filter panel */}
         {filtersOpen && filterData && (
-          <div className="mb-6 p-5 bg-brand-surface border border-brand-border rounded-2xl shadow-card animate-fade-in">
+          <div className="mb-6 p-5 bg-brand-surface border border-brand-border rounded-sm shadow-card animate-fade-in">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-sm font-bold text-brand-text">Filters</h3>
               {hasActiveFilters && (
@@ -301,7 +301,7 @@ function ProductsPageContent() {
                         key={tag}
                         onClick={() => setSelectedTag(selectedTag === tag ? '' : tag)}
                         className={cn(
-                          'px-2.5 py-1 rounded-lg text-xs font-medium transition-colors border',
+                          'px-2.5 py-1 rounded-sm text-xs font-medium transition-colors border',
                           selectedTag === tag
                             ? 'bg-brand-blue text-white border-brand-blue'
                             : 'bg-brand-surface text-brand-text border-brand-border hover:border-brand-slate'
@@ -347,7 +347,7 @@ function ProductsPageContent() {
             {selectedMaterials.map((mat) => (
               <span
                 key={mat}
-                className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-brand-blue-light text-brand-blue text-xs font-medium rounded-lg"
+                className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-brand-blue-light text-brand-blue text-xs font-medium rounded-sm"
               >
                 {mat}
                 <button onClick={() => setSelectedMaterials((prev) => prev.filter((m) => m !== mat))}>
@@ -356,7 +356,7 @@ function ProductsPageContent() {
               </span>
             ))}
             {inStock && (
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-brand-blue-light text-brand-blue text-xs font-medium rounded-lg">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-brand-blue-light text-brand-blue text-xs font-medium rounded-sm">
                 In stock
                 <button onClick={() => setInStock(false)}>
                   <Cross1Icon className="w-3 h-3" />
@@ -364,7 +364,7 @@ function ProductsPageContent() {
               </span>
             )}
             {selectedTag && (
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-brand-blue-light text-brand-blue text-xs font-medium rounded-lg">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-brand-blue-light text-brand-blue text-xs font-medium rounded-sm">
                 #{selectedTag}
                 <button onClick={() => setSelectedTag('')}>
                   <Cross1Icon className="w-3 h-3" />
@@ -378,7 +378,7 @@ function ProductsPageContent() {
         {loading && products.length === 0 ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
             {[...Array(8)].map((_, i) => (
-              <div key={i} className="rounded-2xl bg-brand-surface border border-brand-border overflow-hidden">
+              <div key={i} className="rounded-sm bg-brand-surface border border-brand-border overflow-hidden">
                 <div className="skeleton aspect-square" />
                 <div className="p-4 space-y-2">
                   <div className="skeleton h-4 rounded w-3/4" />

@@ -30,7 +30,7 @@ export function DuplicateProductButton({ productId }: { productId: string }) {
       onClick={handleDuplicate}
       disabled={loading}
       title="Duplicate"
-      className="p-1.5 text-brand-muted hover:text-brand-blue hover:bg-brand-arctic rounded-lg transition-colors disabled:opacity-50"
+      className="p-1.5 text-brand-muted hover:text-brand-blue hover:bg-brand-arctic rounded-sm transition-colors disabled:opacity-50"
     >
       {loading
         ? <div className="w-3.5 h-3.5 border-2 border-brand-blue border-t-transparent rounded-full animate-spin" />

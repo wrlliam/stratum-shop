@@ -294,14 +294,14 @@ export function BulkOrdersTable({ orders }: Props) {
       </div>
 
       {selected.size > 0 && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-[#1a1a2e] text-white px-6 py-3 rounded-2xl shadow-xl flex items-center gap-4 z-50 border border-white/10">
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-[#1a1a2e] text-white px-6 py-3 rounded-sm shadow-xl flex items-center gap-4 z-50 border border-white/10">
           <span className="text-sm font-semibold">{selected.size} selected</span>
           <span className="text-white/30">—</span>
           <span className="text-sm text-white/70">Update status:</span>
           <select
             value={bulkStatus}
             onChange={(e) => setBulkStatus(e.target.value)}
-            className="bg-brand-surface/10 border border-white/20 rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-brand-blue/50"
+            className="bg-brand-surface/10 border border-white/20 rounded-sm px-3 py-1.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-brand-blue/50"
           >
             {ORDER_STATUSES.map((s) => (
               <option key={s} value={s} className="bg-[#1a1a2e]">
@@ -312,14 +312,14 @@ export function BulkOrdersTable({ orders }: Props) {
           <button
             onClick={applyBulk}
             disabled={applying}
-            className="bg-brand-blue text-white px-4 py-1.5 rounded-lg text-sm font-semibold hover:bg-brand-blue/90 disabled:opacity-50 transition-colors"
+            className="bg-brand-blue text-white px-4 py-1.5 rounded-sm text-sm font-semibold hover:bg-brand-blue/90 disabled:opacity-50 transition-colors"
           >
             {applying ? 'Applying...' : 'Apply'}
           </button>
           <span className="text-white/30">|</span>
           <button
             onClick={handlePrintLabels}
-            className="bg-white/10 text-white px-4 py-1.5 rounded-lg text-sm font-semibold hover:bg-white/20 transition-colors"
+            className="bg-white/10 text-white px-4 py-1.5 rounded-sm text-sm font-semibold hover:bg-white/20 transition-colors"
           >
             Print Labels
           </button>
@@ -330,7 +330,7 @@ export function BulkOrdersTable({ orders }: Props) {
                 .map((o) => ({ id: o.id, orderNumber: o.orderNumber }))
               printBulkBarcodes(selectedOrders)
             }}
-            className="bg-white/10 text-white px-4 py-1.5 rounded-lg text-sm font-semibold hover:bg-white/20 transition-colors"
+            className="bg-white/10 text-white px-4 py-1.5 rounded-sm text-sm font-semibold hover:bg-white/20 transition-colors"
           >
             Print Barcodes
           </button>

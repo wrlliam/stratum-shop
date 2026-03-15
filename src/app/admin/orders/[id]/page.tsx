@@ -53,13 +53,13 @@ export default async function AdminOrderDetailPage({ params }: Props) {
       <div className="flex items-center gap-4 mb-8">
         <Link
           href="/admin/orders"
-          className="p-2 rounded-xl text-brand-muted hover:text-brand-text hover:bg-brand-arctic transition-colors"
+          className="p-2 rounded-sm text-brand-muted hover:text-brand-text hover:bg-brand-arctic transition-colors"
         >
           <ArrowLeftIcon className="w-5 h-5" />
         </Link>
         <div>
           <div className="flex items-center gap-3">
-            <h1 className="text-xl font-bold text-brand-text">{order.orderNumber}</h1>
+            <h1 className="text-xl font-display text-brand-text">{order.orderNumber}</h1>
             <StatusBadge status={order.status} />
           </div>
           <p className="text-brand-muted text-sm mt-0.5">{order.email}</p>
@@ -81,7 +81,7 @@ export default async function AdminOrderDetailPage({ params }: Props) {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Items */}
         <div className="lg:col-span-2 space-y-4">
-          <div className="bg-brand-surface border border-brand-border rounded-2xl p-6 shadow-card">
+          <div className="bg-brand-surface border border-brand-border rounded-sm p-6 shadow-card">
             <h2 className="text-sm font-bold text-brand-text mb-4">Order Items</h2>
 
             <div className="space-y-4">
@@ -91,7 +91,7 @@ export default async function AdminOrderDetailPage({ params }: Props) {
                 return (
                   <div key={item.id}>
                     <div className="flex items-center gap-4">
-                      <div className="relative w-14 h-14 rounded-xl overflow-hidden bg-brand-arctic shrink-0 border border-brand-border">
+                      <div className="relative w-14 h-14 rounded-sm overflow-hidden bg-brand-arctic shrink-0 border border-brand-border">
                         {item.imageUrl ? (
                           <Image src={item.imageUrl} alt={item.name} fill className="object-cover" sizes="56px" />
                         ) : (
@@ -127,7 +127,7 @@ export default async function AdminOrderDetailPage({ params }: Props) {
           </div>
 
           {address && (
-            <div className="bg-brand-surface border border-brand-border rounded-2xl p-6 shadow-card">
+            <div className="bg-brand-surface border border-brand-border rounded-sm p-6 shadow-card">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-sm font-bold text-brand-text">Delivery Address</h2>
                 <PrintLabelButton
@@ -152,12 +152,12 @@ export default async function AdminOrderDetailPage({ params }: Props) {
             </div>
           )}
 
-          <div className="bg-brand-surface border border-brand-border rounded-2xl p-6 shadow-card">
+          <div className="bg-brand-surface border border-brand-border rounded-sm p-6 shadow-card">
             <h2 className="text-sm font-bold text-brand-text mb-4">Tracking</h2>
             <TrackingForm orderId={order.id} initialTrackingNumber={order.trackingNumber} />
           </div>
 
-          <div className="bg-brand-surface border border-brand-border rounded-2xl p-6 shadow-card">
+          <div className="bg-brand-surface border border-brand-border rounded-sm p-6 shadow-card">
             <h2 className="text-sm font-bold text-brand-text mb-4">
               Messages
               {order.messages.length > 0 && (
@@ -172,7 +172,7 @@ export default async function AdminOrderDetailPage({ params }: Props) {
 
         {/* Summary */}
         <div className="space-y-4">
-          <div className="bg-brand-surface border border-brand-border rounded-2xl p-6 shadow-card">
+          <div className="bg-brand-surface border border-brand-border rounded-sm p-6 shadow-card">
             <h2 className="text-sm font-bold text-brand-text mb-4">Order Summary</h2>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
@@ -204,7 +204,7 @@ export default async function AdminOrderDetailPage({ params }: Props) {
             </div>
           </div>
 
-          <div className="bg-brand-surface border border-brand-border rounded-2xl p-6 shadow-card">
+          <div className="bg-brand-surface border border-brand-border rounded-sm p-6 shadow-card">
             <h2 className="text-sm font-bold text-brand-text mb-3">Details</h2>
             <div className="space-y-2 text-xs">
               <div className="flex justify-between">

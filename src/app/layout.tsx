@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { DM_Sans, DM_Mono } from 'next/font/google'
+import localFont from 'next/font/local'
 import './globals.css'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
@@ -21,6 +22,12 @@ const dmMono = DM_Mono({
   subsets: ['latin'],
   weight: ['400', '500'],
   variable: '--font-dm-mono',
+  display: 'swap',
+})
+
+const calSans = localFont({
+  src: '../../public/fonts/CalSans-SemiBold.woff2',
+  variable: '--font-display',
   display: 'swap',
 })
 
@@ -57,7 +64,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={`${dmSans.variable} ${dmMono.variable}`} suppressHydrationWarning>
+    <html lang="en" className={`${dmSans.variable} ${dmMono.variable} ${calSans.variable}`} suppressHydrationWarning>
       <body className="bg-brand-bg text-brand-text antialiased font-sans">
         <ThemeProvider>
         <ConfirmProvider>
@@ -75,7 +82,7 @@ export default function RootLayout({
                 background: 'rgb(var(--brand-surface))',
                 color: 'rgb(var(--brand-text))',
                 border: '1px solid rgb(var(--brand-border))',
-                borderRadius: '10px',
+                borderRadius: '4px',
                 boxShadow: '0 4px 12px rgba(0,0,0,0.4)',
                 fontSize: '14px',
               },

@@ -28,7 +28,7 @@ export function ThemeToggle() {
     <button
       onClick={toggle}
       aria-label={`Switch to ${isDark ? 'light' : 'dark'} mode`}
-      className="p-2.5 rounded-xl text-brand-muted hover:text-brand-blue hover:bg-brand-arctic transition-all duration-200"
+      className="p-2.5 rounded-sm text-brand-muted hover:text-brand-blue hover:bg-brand-arctic transition-all duration-200"
     >
       <AnimatePresence mode="wait" initial={false}>
         {isDark ? (

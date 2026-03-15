@@ -37,27 +37,27 @@ export default async function SupportPage() {
           <Link href="/" className="text-sm text-brand-muted hover:text-brand-blue transition-colors mb-4 inline-block">
             ← Back to shop
           </Link>
-          <h1 className="text-2xl font-bold text-brand-text">Support Tickets</h1>
+          <h1 className="text-2xl font-display text-brand-text">Support Tickets</h1>
           <p className="text-brand-muted text-sm mt-1">
             {tickets.length === 0 ? 'No tickets yet' : `${tickets.length} ticket${tickets.length !== 1 ? 's' : ''}`}
           </p>
         </div>
         <Link
           href="/contact"
-          className="px-4 py-2.5 bg-brand-blue text-white font-semibold rounded-xl text-sm hover:bg-brand-blue-dark transition-colors shadow-blue-sm"
+          className="px-4 py-2.5 bg-brand-blue text-white font-semibold rounded-sm text-sm hover:bg-brand-blue-dark transition-colors shadow-blue-sm"
         >
           New Ticket
         </Link>
       </div>
 
       {tickets.length === 0 ? (
-        <div className="text-center py-20 bg-brand-surface rounded-2xl border border-brand-border">
+        <div className="text-center py-20 bg-brand-surface rounded-sm border border-brand-border">
           <div className="text-4xl mb-4">💬</div>
           <h3 className="font-semibold text-brand-text mb-2">No support tickets</h3>
           <p className="text-brand-muted text-sm mb-6">Need help? Open a support ticket and we'll get back to you.</p>
           <Link
             href="/contact"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-brand-blue text-white font-semibold rounded-xl hover:bg-brand-blue-dark transition-colors shadow-blue-sm"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-brand-blue text-white font-semibold rounded-sm hover:bg-brand-blue-dark transition-colors shadow-blue-sm"
           >
             Get Support →
           </Link>
@@ -68,7 +68,7 @@ export default async function SupportPage() {
             <Link
               key={ticket.id}
               href={`/support/${ticket.id}`}
-              className="flex items-center justify-between gap-4 bg-brand-surface border border-brand-border rounded-2xl p-5 hover:shadow-card transition-shadow group"
+              className="flex items-center justify-between gap-4 bg-brand-surface border border-brand-border rounded-sm p-5 hover:shadow-card transition-shadow group"
             >
               <div className="flex-1 min-w-0">
                 <p className="font-semibold text-brand-text group-hover:text-brand-blue transition-colors truncate">
