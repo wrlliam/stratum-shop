@@ -1,8 +1,8 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import { ArrowLeftIcon } from '@radix-ui/react-icons'
-import { db, orders, customOrderSubmissions } from '@/lib/db'
+import { ArrowLeftIcon, ExternalLinkIcon } from '@radix-ui/react-icons'
+import { db, orders, customOrderSubmissions, recommendations } from '@/lib/db'
 import { eq, inArray } from 'drizzle-orm'
 import { formatPrice } from '@/lib/utils'
 import { StatusBadge } from '@/components/ui/Badge'
@@ -44,6 +44,11 @@ export default async function AdminOrderDetailPage({ params }: Props) {
     ? await db.select().from(customOrderSubmissions).where(inArray(customOrderSubmissions.orderItemId, itemIds))
     : []
   const submissionsByItemId = Object.fromEntries(submissions.map((s) => [s.orderItemId, s.fields as Record<string, string>]))
+
+  // Check if this order is linked to a print request
+  const linkedRec = await db.query.recommendations.findFirst({
+    where: eq(recommendations.orderId, id),
+  })
 
   const deliveryOption = getDeliveryOption(order.deliveryMethod)
   const address = order.deliveryAddress as DeliveryAddress | null
@@ -227,6 +232,76 @@ export default async function AdminOrderDetailPage({ params }: Props) {
               )}
             </div>
           </div>
+
+          {linkedRec && (
+            <div className="bg-brand-surface border border-brand-border rounded-sm p-6 shadow-card">
+              <h2 className="text-sm font-bold text-brand-text mb-3">Print Request</h2>
+              <div className="space-y-3 text-xs">
+                <div>
+                  <span className="text-brand-muted block mb-0.5">Requested by</span>
+                  <span className="text-brand-text">{linkedRec.name}</span>
+                  <span className="text-brand-muted ml-1">({linkedRec.email})</span>
+                </div>
+                {linkedRec.description && (
+                  <div>
+                    <span className="text-brand-muted block mb-0.5">Description</span>
+                    <p className="text-brand-text leading-relaxed">{linkedRec.description}</p>
+                  </div>
+                )}
+                {linkedRec.estimatedVolumeCm3 && (
+                  <div className="flex justify-between">
+                    <span className="text-brand-muted">Estimated volume</span>
+                    <span className="text-brand-text">{linkedRec.estimatedVolumeCm3} cm³</span>
+                  </div>
+                )}
+                {linkedRec.adminNotes && (
+                  <div>
+                    <span className="text-brand-muted block mb-0.5">Admin notes</span>
+                    <p className="text-brand-text leading-relaxed">{linkedRec.adminNotes}</p>
+                  </div>
+                )}
+                <div className="flex flex-wrap gap-3 pt-1">
+                  {linkedRec.modelFileUrl && (
+                    <a
+                      href={`/api/admin/recommendations/files?path=${encodeURIComponent(linkedRec.modelFileUrl)}`}
+                      className="inline-flex items-center gap-1 text-brand-blue hover:underline"
+                    >
+                      <ExternalLinkIcon className="w-3 h-3" />
+                      Download model
+                    </a>
+                  )}
+                  {linkedRec.referenceUrl && (
+                    <a
+                      href={linkedRec.referenceUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-brand-blue hover:underline"
+                    >
+                      <ExternalLinkIcon className="w-3 h-3" />
+                      Reference
+                    </a>
+                  )}
+                  {linkedRec.imageUrl && (
+                    <a
+                      href={linkedRec.imageUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-brand-blue hover:underline"
+                    >
+                      <ExternalLinkIcon className="w-3 h-3" />
+                      Reference image
+                    </a>
+                  )}
+                  <Link
+                    href="/admin/recommendations"
+                    className="inline-flex items-center gap-1 text-purple-400 hover:underline"
+                  >
+                    View request
+                  </Link>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

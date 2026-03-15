@@ -203,9 +203,7 @@ function RecCard({
             )}
             {rec.modelFileUrl && (
               <a
-                href={rec.modelFileUrl}
-                target="_blank"
-                rel="noopener noreferrer"
+                href={`/api/admin/recommendations/files?path=${encodeURIComponent(rec.modelFileUrl)}`}
                 className="inline-flex items-center gap-1 text-xs text-brand-blue hover:underline"
               >
                 <ExternalLinkIcon className="w-3 h-3" />
