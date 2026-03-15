@@ -115,8 +115,21 @@ Configure your Stripe webhook to point to `https://yourdomain.com/api/stripe/web
 ## Database Management
 
 ```bash
-bun run db:push      # Push schema changes
-bun run db:studio    # Open Drizzle Studio
-bun run db:generate  # Generate migration files
-bun run db:migrate   # Run migrations
+bun run db:push           # Push schema changes (direct, no safety checks)
+bun run db:safe-push      # Safe push — previews changes, blocks destructive ones
+bun run db:studio         # Open Drizzle Studio
+bun run db:generate       # Generate migration files
+bun run db:migrate        # Run migrations
 ```
+
+### Safe Push
+
+`db:safe-push` analyses your schema changes before applying them. It generates a migration dry-run, flags any destructive statements (DROP TABLE, DROP COLUMN), and only applies safe changes by default.
+
+```bash
+bun run db:safe-push                     # Apply safe changes, skip destructive
+bun run db:safe-push --dry-run           # Preview changes without applying
+bun run db:safe-push --allow-destructive # Apply everything including drops
+```
+
+Use `db:safe-push` instead of `db:push` when working with a production database to avoid accidental data loss.
