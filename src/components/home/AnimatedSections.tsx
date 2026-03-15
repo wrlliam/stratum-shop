@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import * as motion from 'motion/react-client'
+import { cn } from '@/lib/utils'
 import { ProductCard } from '@/components/shop/ProductCard'
 import { BundleCard } from '@/components/shop/BundleCard'
 import { ScrollReveal3D } from '@/components/ui/ScrollReveal3D'
@@ -178,15 +179,40 @@ export function ProcessSection() {
 }
 
 // ─── Materials ──────────────────────────────────────────────────────────────────
+
+// Add new materials here — they'll automatically appear in the section
+const MATERIALS = [
+  {
+    name: 'PLA',
+    subtitle: 'Plant-based thermoplastic',
+    color: 'bg-brand-blue',
+    properties: [
+      'Smooth surface finish',
+      'Eco-friendly & biodegradable',
+      'Excellent detail reproduction',
+      'Wide colour range available',
+      'Low warping & easy to print',
+      'Great for decorative & functional items',
+    ],
+  },
+  // To add PETG, uncomment below:
+  // {
+  //   name: 'PETG',
+  //   subtitle: 'Tough & chemical-resistant',
+  //   color: 'bg-emerald-500',
+  //   properties: [
+  //     'High impact resistance',
+  //     'Chemical & moisture resistant',
+  //     'Food-safe options available',
+  //     'Semi-flexible with good strength',
+  //     'UV resistant for outdoor use',
+  //     'Great for functional & mechanical parts',
+  //   ],
+  // },
+]
+
 export function MaterialsSection() {
-  const properties = [
-    'Smooth surface finish',
-    'Eco-friendly & biodegradable',
-    'Excellent detail reproduction',
-    'Wide colour range available',
-    'Low warping & easy to print',
-    'Great for decorative & functional items',
-  ]
+  const materialNames = MATERIALS.map((m) => m.name).join(' & ')
 
   return (
     <section className="py-20 border-t border-brand-border">
@@ -199,43 +225,49 @@ export function MaterialsSection() {
           transition={{ duration: 0.5 }}
         >
           <p className="text-[10px] font-mono text-brand-blue uppercase tracking-[0.2em] mb-2">
-            Material
+            {MATERIALS.length === 1 ? 'Material' : 'Materials'}
           </p>
           <h2 className="text-3xl sm:text-4xl font-display text-brand-text mb-3">
-            Printed with PLA
+            Printed with {materialNames}
           </h2>
           <p className="text-brand-muted text-sm leading-relaxed">
-            All our prints use PLA — a plant-based, biodegradable thermoplastic sourced
-            from trusted brands. It delivers a smooth finish with excellent detail, and
-            is available in a wide range of colours.
+            {MATERIALS.length === 1
+              ? 'All our prints use PLA — a plant-based, biodegradable thermoplastic sourced from trusted brands. It delivers a smooth finish with excellent detail, and is available in a wide range of colours.'
+              : `We use ${materialNames} — high-quality thermoplastics sourced from trusted brands. Each material is chosen for its specific strengths to deliver the best result for your print.`}
           </p>
         </motion.div>
 
-        <motion.div
-          className="bg-brand-surface border border-brand-border rounded-sm p-8 hover:border-brand-blue/30 hover:shadow-card-hover transition-all duration-300"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-30px' }}
-          transition={{ duration: 0.45 }}
-        >
-          <div className="flex items-center gap-4 mb-6">
-            <div
-              className="w-12 h-12 rounded-sm shadow-inner bg-brand-blue"
-            />
-            <div>
-              <h3 className="text-xl font-bold text-brand-text">PLA Filament</h3>
-              <p className="text-xs text-brand-muted">Plant-based thermoplastic</p>
-            </div>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-            {properties.map((prop) => (
-              <div key={prop} className="flex items-center gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-brand-blue shrink-0" />
-                <span className="text-sm text-brand-muted">{prop}</span>
+        <div className={cn(
+          'grid gap-6',
+          MATERIALS.length === 1 ? 'grid-cols-1' : 'grid-cols-1 lg:grid-cols-2'
+        )}>
+          {MATERIALS.map((material, i) => (
+            <motion.div
+              key={material.name}
+              className="bg-brand-surface border border-brand-border rounded-sm p-8 hover:border-brand-blue/30 hover:shadow-card-hover transition-all duration-300"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-30px' }}
+              transition={{ duration: 0.45, delay: i * 0.1 }}
+            >
+              <div className="flex items-center gap-4 mb-6">
+                <div className={cn('w-12 h-12 rounded-sm shadow-inner', material.color)} />
+                <div>
+                  <h3 className="text-xl font-bold text-brand-text">{material.name} Filament</h3>
+                  <p className="text-xs text-brand-muted">{material.subtitle}</p>
+                </div>
               </div>
-            ))}
-          </div>
-        </motion.div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                {material.properties.map((prop) => (
+                  <div key={prop} className="flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 rounded-full bg-brand-blue shrink-0" />
+                    <span className="text-sm text-brand-muted">{prop}</span>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          ))}
+        </div>
       </div>
     </section>
   )
