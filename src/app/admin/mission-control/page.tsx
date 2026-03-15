@@ -83,6 +83,7 @@ interface MissionStats {
   weekRevenue: number
   weekOrders: number
   readyToPrint: number
+  pendingRequests: number
 }
 
 const TABS = [
@@ -511,7 +512,15 @@ function OverviewTab({
 
       {/* Alert cards */}
       {adminStats && (
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <AlertCard
+            label="Print Requests"
+            value={missionStats?.pendingRequests || 0}
+            icon={<LightningBoltIcon className="w-4 h-4" />}
+            type={(missionStats?.pendingRequests || 0) > 0 ? 'warning' : 'success'}
+            sub={(missionStats?.pendingRequests || 0) > 0 ? 'pending review' : 'all reviewed'}
+            href="/admin/recommendations"
+          />
           <AlertCard
             label="Support Tickets"
             value={adminStats.openTickets}

@@ -7,7 +7,7 @@ import { z } from 'zod'
 const createSchema = z.object({
   name: z.string().min(1),
   email: z.string().email(),
-  description: z.string().min(10),
+  description: z.string().optional().default(''),
   imageUrl: z.string().optional(),
   referenceUrl: z.string().url().optional(),
   modelFileUrl: z.string().optional(),

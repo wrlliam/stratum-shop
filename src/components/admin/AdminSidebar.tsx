@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
@@ -33,12 +33,15 @@ interface NavItem {
   label: string
   icon: React.ReactNode
   exact?: boolean
+  badgeKey?: 'orders' | 'requests' | 'tickets'
 }
 
 interface NavGroup {
   label: string
   items: NavItem[]
 }
+
+type BadgeCounts = { orders: number; requests: number; tickets: number }
 
 const NAV_GROUPS: NavGroup[] = [
   {
@@ -55,14 +58,14 @@ const NAV_GROUPS: NavGroup[] = [
       { href: '/admin/bundles', label: 'Bundles', icon: <LayersIcon className="w-4 h-4" /> },
       { href: '/admin/inventory', label: 'Inventory', icon: <BarChartIcon className="w-4 h-4" /> },
       { href: '/admin/filaments', label: 'Filaments', icon: <StackIcon className="w-4 h-4" /> },
-      { href: '/admin/recommendations', label: 'Requests', icon: <LightningBoltIcon className="w-4 h-4" /> },
+      { href: '/admin/recommendations', label: 'Requests', icon: <LightningBoltIcon className="w-4 h-4" />, badgeKey: 'requests' },
       { href: '/admin/pricing', label: 'Pricing', icon: <RulerSquareIcon className="w-4 h-4" /> },
     ],
   },
   {
     label: 'Sales',
     items: [
-      { href: '/admin/orders', label: 'Orders', icon: <BackpackIcon className="w-4 h-4" /> },
+      { href: '/admin/orders', label: 'Orders', icon: <BackpackIcon className="w-4 h-4" />, badgeKey: 'orders' },
       { href: '/admin/coupons', label: 'Coupons', icon: <DiscIcon className="w-4 h-4" /> },
     ],
   },
@@ -77,7 +80,7 @@ const NAV_GROUPS: NavGroup[] = [
   {
     label: 'Support',
     items: [
-      { href: '/admin/support', label: 'Support Tickets', icon: <ChatBubbleIcon className="w-4 h-4" /> },
+      { href: '/admin/support', label: 'Support Tickets', icon: <ChatBubbleIcon className="w-4 h-4" />, badgeKey: 'tickets' },
     ],
   },
   {
@@ -89,9 +92,10 @@ const NAV_GROUPS: NavGroup[] = [
   },
 ]
 
-function NavLink({ item }: { item: NavItem }) {
+function NavLink({ item, badgeCounts }: { item: NavItem; badgeCounts: BadgeCounts }) {
   const pathname = usePathname()
   const isActive = item.exact ? pathname === item.href : pathname.startsWith(item.href)
+  const count = item.badgeKey ? badgeCounts[item.badgeKey] : 0
   return (
     <Link
       href={item.href}
@@ -106,37 +110,48 @@ function NavLink({ item }: { item: NavItem }) {
         {item.icon}
       </span>
       {item.label}
-      {isActive && (
+      {count > 0 ? (
+        <span className="ml-auto min-w-[18px] h-[18px] flex items-center justify-center rounded-full bg-brand-blue text-white text-[10px] font-bold leading-none flex-shrink-0 px-1">
+          {count > 99 ? '99+' : count}
+        </span>
+      ) : isActive ? (
         <span className="ml-auto w-1.5 h-1.5 rounded-full bg-brand-blue flex-shrink-0" />
-      )}
+      ) : null}
     </Link>
   )
 }
 
-function CollapsedNavLink({ item }: { item: NavItem }) {
+function CollapsedNavLink({ item, badgeCounts }: { item: NavItem; badgeCounts: BadgeCounts }) {
   const pathname = usePathname()
   const isActive = item.exact ? pathname === item.href : pathname.startsWith(item.href)
+  const count = item.badgeKey ? badgeCounts[item.badgeKey] : 0
   return (
     <Link
       href={item.href}
-      title={item.label}
+      title={`${item.label}${count > 0 ? ` (${count})` : ''}`}
       className={cn(
-        'flex items-center justify-center p-2 rounded-sm transition-all duration-150',
+        'relative flex items-center justify-center p-2 rounded-sm transition-all duration-150',
         isActive
           ? 'bg-brand-blue/10 text-brand-blue'
           : 'text-brand-muted hover:text-brand-text hover:bg-brand-arctic'
       )}
     >
       {item.icon}
+      {count > 0 && (
+        <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-brand-blue border-2 border-brand-surface" />
+      )}
     </Link>
   )
 }
 
-function NavGroup({ group }: { group: NavGroup }) {
+function NavGroup({ group, badgeCounts }: { group: NavGroup; badgeCounts: BadgeCounts }) {
   const pathname = usePathname()
   const hasActive = group.items.some((item) =>
     item.exact ? pathname === item.href : pathname.startsWith(item.href)
   )
+  const groupBadgeTotal = group.items.reduce((sum, item) => {
+    return sum + (item.badgeKey ? badgeCounts[item.badgeKey] : 0)
+  }, 0)
   const [open, setOpen] = useState(true)
 
   return (
@@ -145,7 +160,12 @@ function NavGroup({ group }: { group: NavGroup }) {
         onClick={() => setOpen((o) => !o)}
         className="w-full flex items-center justify-between px-3 py-1.5 text-[10px] font-bold text-brand-muted uppercase tracking-widest hover:text-brand-text transition-colors"
       >
-        {group.label}
+        <span className="flex items-center gap-2">
+          {group.label}
+          {!open && groupBadgeTotal > 0 && (
+            <span className="w-2 h-2 rounded-full bg-brand-blue animate-pulse" />
+          )}
+        </span>
         <ChevronDownIcon
           className={cn(
             'w-3 h-3 transition-transform duration-200',
@@ -162,7 +182,7 @@ function NavGroup({ group }: { group: NavGroup }) {
       >
         <div className="space-y-0.5 pb-1">
           {group.items.map((item) => (
-            <NavLink key={item.href} item={item} />
+            <NavLink key={item.href} item={item} badgeCounts={badgeCounts} />
           ))}
         </div>
       </div>
@@ -177,12 +197,34 @@ export function AdminSidebar() {
     if (typeof window === 'undefined') return false
     return localStorage.getItem(COLLAPSED_KEY) === 'true'
   })
+  const [badgeCounts, setBadgeCounts] = useState<BadgeCounts>({ orders: 0, requests: 0, tickets: 0 })
+
+  const fetchCounts = useCallback(async () => {
+    try {
+      const res = await fetch('/api/admin/counts')
+      if (res.ok) {
+        const data = await res.json()
+        setBadgeCounts(data)
+      }
+    } catch {}
+  }, [])
+
+  useEffect(() => {
+    fetchCounts()
+    const interval = setInterval(fetchCounts, 30_000)
+    // Listen for SSE-driven refreshes
+    const handler = () => setTimeout(fetchCounts, 1000)
+    window.addEventListener('admin-stats-refresh', handler)
+    return () => {
+      clearInterval(interval)
+      window.removeEventListener('admin-stats-refresh', handler)
+    }
+  }, [fetchCounts])
 
   const toggle = () => {
     const next = !collapsed
     setCollapsed(next)
     localStorage.setItem(COLLAPSED_KEY, next ? 'true' : 'false')
-    // Dispatch event so layout can react
     window.dispatchEvent(new CustomEvent('sidebar-toggle', { detail: { collapsed: next } }))
   }
 
@@ -215,12 +257,12 @@ export function AdminSidebar() {
         {collapsed ? (
           <div className="space-y-1">
             {NAV_GROUPS.flatMap((g) => g.items).map((item) => (
-              <CollapsedNavLink key={item.href} item={item} />
+              <CollapsedNavLink key={item.href} item={item} badgeCounts={badgeCounts} />
             ))}
           </div>
         ) : (
           NAV_GROUPS.map((group) => (
-            <NavGroup key={group.label} group={group} />
+            <NavGroup key={group.label} group={group} badgeCounts={badgeCounts} />
           ))
         )}
       </nav>

@@ -35,12 +35,14 @@ export async function POST(
     if (!rec) {
       return NextResponse.json({ error: 'Recommendation not found' }, { status: 404 })
     }
-    if (!['pending', 'reviewing'].includes(rec.status)) {
+    if (!['pending', 'reviewing', 'quoted', 'awaiting_payment'].includes(rec.status)) {
       return NextResponse.json(
         { error: `Cannot quote a recommendation with status "${rec.status}"` },
         { status: 400 }
       )
     }
+
+    const isResend = ['quoted', 'awaiting_payment'].includes(rec.status)
 
     // Calculate pricing
     const deliveryOption = data.deliveryMethodId
@@ -56,36 +58,58 @@ export async function POST(
     const preTaxTotal = subtotal + deliveryPrice
     const taxAmount = Math.round(preTaxTotal * VAT_RATE)
     const total = preTaxTotal + taxAmount
-
-    const orderNumber = generateOrderNumber()
-
-    // Create pending order
-    const [order] = await db
-      .insert(orders)
-      .values({
-        orderNumber,
-        email: rec.email,
-        status: 'pending',
-        subtotal,
-        deliveryPrice,
-        taxAmount,
-        total,
-        discountAmount: 0,
-        deliveryMethod: deliveryOption.id,
-        notes: `Custom print request: ${rec.name}`,
-      })
-      .returning()
-
-    // Create order item
     const itemName = `Custom 3D Print: ${rec.name.length > 80 ? rec.name.slice(0, 80) + '…' : rec.name}`
-    await db.insert(orderItems).values({
-      orderId: order.id,
-      name: itemName,
-      price: itemPrice,
-      quantity: 1,
-      isBundle: false,
-      imageUrl: rec.imageUrl,
-    })
+
+    let order: typeof orders.$inferSelect
+
+    if (isResend && rec.orderId) {
+      // Expire old Stripe session if possible
+      if (rec.paymentSessionId) {
+        try { await stripe.checkout.sessions.expire(rec.paymentSessionId) } catch { /* may already be expired */ }
+      }
+
+      // Update existing order with new pricing
+      const [updated] = await db
+        .update(orders)
+        .set({ subtotal, deliveryPrice, taxAmount, total, deliveryMethod: deliveryOption.id })
+        .where(eq(orders.id, rec.orderId))
+        .returning()
+      order = updated
+
+      // Update order item price
+      await db
+        .update(orderItems)
+        .set({ price: itemPrice, name: itemName })
+        .where(eq(orderItems.orderId, order.id))
+    } else {
+      // Create new order
+      const orderNumber = generateOrderNumber()
+      const [created] = await db
+        .insert(orders)
+        .values({
+          orderNumber,
+          email: rec.email,
+          status: 'pending',
+          subtotal,
+          deliveryPrice,
+          taxAmount,
+          total,
+          discountAmount: 0,
+          deliveryMethod: deliveryOption.id,
+          notes: `Custom print request: ${rec.name}`,
+        })
+        .returning()
+      order = created
+
+      await db.insert(orderItems).values({
+        orderId: order.id,
+        name: itemName,
+        price: itemPrice,
+        quantity: 1,
+        isBundle: false,
+        imageUrl: rec.imageUrl,
+      })
+    }
 
     // Build Stripe line items
     const stripeLineItems = [
@@ -124,7 +148,7 @@ export async function POST(
       line_items: stripeLineItems,
       metadata: {
         orderId: order.id,
-        orderNumber,
+        orderNumber: order.orderNumber,
         recommendationId: rec.id,
       },
       success_url: `${appUrl}/recommendations/success?session_id={CHECKOUT_SESSION_ID}`,
@@ -184,13 +208,14 @@ export async function POST(
         pricePence: data.pricePence,
         total,
         orderId: order.id,
-        orderNumber,
+        orderNumber: order.orderNumber,
+        isResend,
       },
     })
 
     return NextResponse.json({
       ...updated,
-      order: { id: order.id, orderNumber, total },
+      order: { id: order.id, orderNumber: order.orderNumber, total },
       paymentUrl: stripeSession.url,
     })
   } catch (error) {

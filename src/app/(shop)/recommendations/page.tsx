@@ -174,8 +174,8 @@ export default function RecommendationsPage() {
     if (!form.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
       newErrors.email = 'Valid email is required'
     }
-    if (!form.description.trim() || form.description.trim().length < 10) {
-      newErrors.description = 'Please provide at least 10 characters'
+    if (form.description.trim() && form.description.trim().length < 10) {
+      newErrors.description = 'Please provide at least 10 characters or leave blank'
     }
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
@@ -279,7 +279,7 @@ export default function RecommendationsPage() {
           </div>
 
           <Textarea
-            label="What would you like us to print?"
+            label="What would you like us to print? (optional)"
             placeholder="Describe what you have in mind — dimensions, material preferences, colour, quantity, and any other details..."
             rows={4}
             value={form.description}

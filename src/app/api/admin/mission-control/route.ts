@@ -69,6 +69,12 @@ export async function GET() {
       .from(recommendations)
       .where(eq(recommendations.status, 'paid'))
 
+    // Pending requests (new submissions needing review)
+    const [pendingRequests] = await db
+      .select({ count: sql<number>`COUNT(*)` })
+      .from(recommendations)
+      .where(inArray(recommendations.status, ['pending', 'reviewing']))
+
     return NextResponse.json({
       orders: activeOrders.map((o) => ({
         id: o.id,
@@ -91,6 +97,7 @@ export async function GET() {
         pendingOrders: Number(todayStats.pendingOrders),
         avgFulfillmentHours: Number(fulfillmentResult.avgHours),
         readyToPrint: Number(readyToPrint.count),
+        pendingRequests: Number(pendingRequests.count),
       },
     })
   } catch (error) {

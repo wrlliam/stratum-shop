@@ -113,7 +113,8 @@ function RecCard({
   const [adminNotes, setAdminNotes] = useState(rec.adminNotes || '')
   const [deliveryMethodId, setDeliveryMethodId] = useState('royal_mail_tracked_48')
 
-  const canQuote = ['pending', 'reviewing'].includes(rec.status)
+  const canQuote = ['pending', 'reviewing', 'quoted', 'awaiting_payment'].includes(rec.status)
+  const isResend = ['quoted', 'awaiting_payment'].includes(rec.status)
 
   const handleSendQuote = async () => {
     if (pricePence <= 0) {
@@ -228,16 +229,21 @@ function RecCard({
           {canQuote && (
             <button
               onClick={onToggleQuote}
-              className="mt-3 px-3 py-1.5 text-xs font-semibold bg-brand-blue text-white rounded-sm hover:bg-brand-blue-dark transition-colors"
+              className={cn(
+                'mt-3 px-3 py-1.5 text-xs font-semibold text-white rounded-sm transition-colors',
+                isResend
+                  ? 'bg-amber-600 hover:bg-amber-700'
+                  : 'bg-brand-blue hover:bg-brand-blue-dark'
+              )}
             >
-              {isQuoteOpen ? 'Close Quote Panel' : 'Quote & Send Payment Link'}
+              {isQuoteOpen ? 'Close Quote Panel' : isResend ? 'Resend Quote' : 'Quote & Send Payment Link'}
             </button>
           )}
         </div>
       </div>
 
       {/* Quote panel */}
-      {isQuoteOpen && canQuote && (
+      {isQuoteOpen && (
         <div className="border-t border-brand-border p-6 bg-brand-arctic/30 dark:bg-brand-arctic/5 rounded-b-2xl">
           <h3 className="text-sm font-bold text-brand-text mb-4">Send Quote & Payment Link</h3>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -293,7 +299,7 @@ function RecCard({
               disabled={sending || pricePence <= 0}
               className="px-4 py-2 text-sm font-semibold bg-green-600 text-white rounded-sm hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {sending ? 'Sending…' : 'Send Quote & Payment Link'}
+              {sending ? 'Sending…' : isResend ? 'Resend Quote & Payment Link' : 'Send Quote & Payment Link'}
             </button>
             <span className="text-xs text-brand-muted">
               Customer will receive an email with a payment link
