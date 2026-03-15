@@ -295,6 +295,8 @@ function CostRow({
 export default function AdminPricingPage() {
   const [inputs, setInputs] = useState<PricingInputs>(hardDefaults);
   const [loaded, setLoaded] = useState(false);
+  const [emailTo, setEmailTo] = useState("");
+  const [sendingEmail, setSendingEmail] = useState(false);
 
   // Load saved defaults from localStorage on mount
   useEffect(() => {
@@ -522,6 +524,53 @@ export default function AdminPricingPage() {
             >
               Export as Invoice
             </button>
+
+            {/* Email invoice */}
+            <div className="mt-3 pt-3 border-t border-brand-border">
+              <label className="block text-xs font-medium text-brand-muted mb-1.5">
+                Email Invoice To
+              </label>
+              <div className="flex gap-2">
+                <input
+                  type="email"
+                  value={emailTo}
+                  onChange={(e) => setEmailTo(e.target.value)}
+                  placeholder="customer@example.com"
+                  className="flex-1 px-3 py-2 text-sm bg-brand-surface border border-brand-border rounded-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all"
+                />
+                <button
+                  onClick={async () => {
+                    if (!emailTo.trim() || !emailTo.includes("@")) {
+                      toast.error("Enter a valid email address");
+                      return;
+                    }
+                    setSendingEmail(true);
+                    try {
+                      const invoiceHtml = generateInvoiceHtml(inputs, result);
+                      const res = await fetch("/api/admin/pricing/send-invoice", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                          email: emailTo.trim(),
+                          invoiceHtml,
+                        }),
+                      });
+                      const data = await res.json();
+                      if (!res.ok) throw new Error(data.error || "Failed to send");
+                      toast.success(`Invoice sent to ${emailTo.trim()}`);
+                    } catch (err) {
+                      toast.error(err instanceof Error ? err.message : "Failed to send invoice");
+                    } finally {
+                      setSendingEmail(false);
+                    }
+                  }}
+                  disabled={sendingEmail || !emailTo.trim()}
+                  className="px-4 py-2 text-sm font-semibold bg-green-600 text-white rounded-sm hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                >
+                  {sendingEmail ? "Sending..." : "Send"}
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
