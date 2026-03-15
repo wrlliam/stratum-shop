@@ -40,9 +40,10 @@ vi.mock('@/lib/db', () => {
         costEntries: { findMany: (...args: unknown[]) => mockCostFindMany(...args) },
       },
     },
-    timeEntries: { minutes: 'minutes', createdAt: 'createdAt' },
+    timeEntries: { minutes: 'minutes', createdAt: 'createdAt', category: 'category' },
     costEntries: { amountPence: 'amountPence', createdAt: 'createdAt' },
     settings: { key: 'key' },
+    filaments: { id: 'id', weightRemainingGrams: 'weightRemainingGrams', pricePerKgPence: 'pricePerKgPence' },
     user: {},
   }
 })
@@ -75,10 +76,11 @@ describe('GET /api/admin/costs', () => {
 
   it('returns aggregated costs for current month', async () => {
     mockGetSession.mockResolvedValue(adminSession)
-    // sum(minutes) and sum(amountPence) calls
+    // sum(minutes) calls: labourMinutes, printMinutes, then sum(amountPence) for totalCosts
     mockSelectFromWhere
-      .mockResolvedValueOnce([{ total: '120' }])   // totalMinutes
-      .mockResolvedValueOnce([{ total: '5000' }])   // totalCosts
+      .mockResolvedValueOnce([{ total: '80' }])    // labourMinutes
+      .mockResolvedValueOnce([{ total: '40' }])    // printMinutes
+      .mockResolvedValueOnce([{ total: '5000' }])  // totalCosts
     mockTimeFindMany.mockResolvedValue([])
     mockCostFindMany.mockResolvedValue([])
     mockSettingsFindFirst.mockResolvedValue({ key: 'hourly_rate_pence', value: '2000' })
@@ -91,13 +93,15 @@ describe('GET /api/admin/costs', () => {
     expect(data.totalMinutes).toBe(120)
     expect(data.totalCostsPence).toBe(5000)
     expect(data.hourlyRatePence).toBe(2000)
-    expect(data.labourCostPence).toBe(Math.round((120 / 60) * 2000))
+    expect(data.labourCostPence).toBe(Math.round((80 / 60) * 2000))
   })
 
   it('filters by month query param', async () => {
     mockGetSession.mockResolvedValue(adminSession)
+    // labourMinutes, printMinutes, totalCosts
     mockSelectFromWhere
-      .mockResolvedValueOnce([{ total: '60' }])
+      .mockResolvedValueOnce([{ total: '40' }])
+      .mockResolvedValueOnce([{ total: '20' }])
       .mockResolvedValueOnce([{ total: '1000' }])
     mockTimeFindMany.mockResolvedValue([])
     mockCostFindMany.mockResolvedValue([])

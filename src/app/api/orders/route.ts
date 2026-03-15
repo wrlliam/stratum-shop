@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
   try {
     const isAdmin = session.user.role === 'admin'
     const { searchParams } = new URL(request.url)
-    const validStatuses = ['pending', 'paid', 'processing', 'shipped', 'delivered', 'cancelled', 'refunded']
+    const validStatuses = ['pending', 'paid', 'processing', 'preparing', 'prepared', 'shipped', 'delivered', 'cancelled', 'refunded']
     const statusParam = searchParams.get('status')
     const status = statusParam && validStatuses.includes(statusParam) ? statusParam : null
     const limit = Math.min(Math.max(parseInt(searchParams.get('limit') || '50') || 50, 1), 100)

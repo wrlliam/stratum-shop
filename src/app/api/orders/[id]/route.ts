@@ -52,7 +52,7 @@ export async function PATCH(
   try {
     const body = await request.json()
     const updateSchema = z.object({
-      status: z.enum(['pending', 'paid', 'processing', 'prepared', 'shipped', 'delivered', 'cancelled', 'refunded']).optional(),
+      status: z.enum(['pending', 'paid', 'processing', 'preparing', 'prepared', 'shipped', 'delivered', 'cancelled', 'refunded']).optional(),
       trackingNumber: z.string().max(200).nullable().optional(),
       notes: z.string().max(2000).nullable().optional(),
     })

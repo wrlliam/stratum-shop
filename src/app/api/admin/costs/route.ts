@@ -140,11 +140,13 @@ export async function POST(request: NextRequest) {
           return NextResponse.json({ error: 'Filament not found' }, { status: 404 })
         }
 
+        const gramsUsed = Math.round(data.gramsUsed)
         const amountPence = Math.round((data.gramsUsed / 1000) * filament.pricePerKgPence)
 
         // Decrement filament stock
+        const newWeight = Math.max(0, filament.weightRemainingGrams - gramsUsed)
         await db.update(filaments).set({
-          weightRemainingGrams: sql`${filaments.weightRemainingGrams} - ${Math.round(data.gramsUsed)}`,
+          weightRemainingGrams: newWeight,
           updatedAt: new Date(),
         }).where(eq(filaments.id, data.filamentId))
 
@@ -154,7 +156,7 @@ export async function POST(request: NextRequest) {
           description: data.description,
           amountPence,
           filamentId: data.filamentId,
-          gramsUsed: Math.round(data.gramsUsed),
+          gramsUsed,
           orderId: data.orderId ?? null,
         }).returning()
         return NextResponse.json(entry)
