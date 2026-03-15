@@ -11,6 +11,7 @@ import { formatPrice, cn } from '@/lib/utils'
 import type { Recommendation } from '@/lib/db/schema'
 
 const DELIVERY_OPTIONS = [
+  { id: 'free', name: 'Free Shipping', price: 0 },
   { id: 'royal_mail_2nd', name: 'Royal Mail 2nd Class', price: 285 },
   { id: 'royal_mail_1st', name: 'Royal Mail 1st Class', price: 385 },
   { id: 'royal_mail_tracked_48', name: 'Royal Mail Tracked 48', price: 350 },

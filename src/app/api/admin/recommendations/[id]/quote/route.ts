@@ -45,15 +45,18 @@ export async function POST(
     const isResend = ['quoted', 'awaiting_payment'].includes(rec.status)
 
     // Calculate pricing
-    const deliveryOption = data.deliveryMethodId
-      ? getDeliveryOption(data.deliveryMethodId)
-      : getDeliveryOption('royal_mail_tracked_48') // default for custom prints
-    if (!deliveryOption) {
+    const isFreeShipping = data.deliveryMethodId === 'free'
+    const deliveryOption = isFreeShipping
+      ? null
+      : (data.deliveryMethodId
+          ? getDeliveryOption(data.deliveryMethodId)
+          : getDeliveryOption('royal_mail_tracked_48'))
+    if (!isFreeShipping && !deliveryOption) {
       return NextResponse.json({ error: 'Invalid delivery method' }, { status: 400 })
     }
 
     const itemPrice = data.pricePence
-    const deliveryPrice = deliveryOption.price
+    const deliveryPrice = isFreeShipping ? 0 : deliveryOption!.price
     const subtotal = itemPrice
     const preTaxTotal = subtotal + deliveryPrice
     const taxAmount = Math.round(preTaxTotal * VAT_RATE)
@@ -71,7 +74,7 @@ export async function POST(
       // Update existing order with new pricing
       const [updated] = await db
         .update(orders)
-        .set({ subtotal, deliveryPrice, taxAmount, total, deliveryMethod: deliveryOption.id })
+        .set({ subtotal, deliveryPrice, taxAmount, total, deliveryMethod: data.deliveryMethodId || 'free' })
         .where(eq(orders.id, rec.orderId))
         .returning()
       order = updated
@@ -95,7 +98,7 @@ export async function POST(
           taxAmount,
           total,
           discountAmount: 0,
-          deliveryMethod: deliveryOption.id,
+          deliveryMethod: data.deliveryMethodId || 'free',
           notes: `Custom print request: ${rec.name}`,
         })
         .returning()
@@ -112,6 +115,7 @@ export async function POST(
     }
 
     // Build Stripe line items
+    const deliveryName = isFreeShipping ? 'Free Shipping' : deliveryOption!.name
     const stripeLineItems = [
       {
         price_data: {
@@ -121,14 +125,16 @@ export async function POST(
         },
         quantity: 1,
       },
-      {
-        price_data: {
-          currency: 'gbp',
-          product_data: { name: `Delivery: ${deliveryOption.name}` },
-          unit_amount: deliveryPrice,
-        },
-        quantity: 1,
-      },
+      ...(deliveryPrice > 0
+        ? [{
+            price_data: {
+              currency: 'gbp',
+              product_data: { name: `Delivery: ${deliveryName}` },
+              unit_amount: deliveryPrice,
+            },
+            quantity: 1,
+          }]
+        : []),
       {
         price_data: {
           currency: 'gbp',
