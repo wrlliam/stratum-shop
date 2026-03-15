@@ -133,11 +133,19 @@ function RecCard({
           deliveryMethodId,
         }),
       })
+      const result = await res.json()
       if (!res.ok) {
-        const data = await res.json()
-        throw new Error(data.error || 'Failed to send quote')
+        throw new Error(result.error || 'Failed to send quote')
       }
-      toast.success('Quote sent! Payment link emailed to customer.')
+      if (result.emailSent) {
+        toast.success('Quote sent! Payment link emailed to customer.')
+      } else {
+        toast.error(`Quote created but email failed: ${result.emailError || 'unknown error'}. Copy the payment link manually.`)
+        if (result.paymentUrl) {
+          navigator.clipboard.writeText(result.paymentUrl).catch(() => {})
+          toast.success('Payment link copied to clipboard')
+        }
+      }
       router.refresh()
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Failed to send quote')

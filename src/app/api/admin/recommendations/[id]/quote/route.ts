@@ -185,24 +185,36 @@ export async function POST(
       .where(eq(recommendations.id, id))
       .returning()
 
-    // Send approval email
-    const html = await renderAsync(
-      PrintRequestApprovedEmail({
-        name: rec.name,
-        description: rec.description,
-        finalPricePence: total,
-        adminNotes: data.adminNotes,
-        paymentUrl: stripeSession.url,
-        appUrl: APP_URL,
-      }) as React.ReactElement
-    )
+    // Send approval email (non-blocking — don't fail the quote if email fails)
+    let emailSent = false
+    let emailError: string | null = null
+    try {
+      const html = await renderAsync(
+        PrintRequestApprovedEmail({
+          name: rec.name,
+          description: rec.description || '',
+          finalPricePence: total,
+          adminNotes: data.adminNotes,
+          paymentUrl: stripeSession.url,
+          appUrl: APP_URL,
+        }) as React.ReactElement
+      )
 
-    await getResend().emails.send({
-      from: FROM_EMAIL,
-      to: rec.email,
-      subject: 'Your Print Request Has Been Approved — Stratum',
-      html,
-    })
+      const emailResult = await getResend().emails.send({
+        from: FROM_EMAIL,
+        to: rec.email,
+        subject: isResend
+          ? 'Updated Quote — Your Print Request — Stratum'
+          : 'Your Print Request Has Been Approved — Stratum',
+        html,
+      })
+
+      console.log('Quote email result:', JSON.stringify(emailResult), 'to:', rec.email)
+      emailSent = true
+    } catch (err) {
+      emailError = err instanceof Error ? err.message : 'Unknown email error'
+      console.error('Quote email failed:', emailError, 'to:', rec.email, 'from:', FROM_EMAIL)
+    }
 
     // Audit log
     await logAuditEvent({
@@ -223,6 +235,8 @@ export async function POST(
       ...updated,
       order: { id: order.id, orderNumber: order.orderNumber, total },
       paymentUrl: stripeSession.url,
+      emailSent,
+      emailError,
     })
   } catch (error) {
     if (error instanceof z.ZodError) {
