@@ -108,7 +108,6 @@ export default function RootLayout({
           src="https://analytics.bnhm.systems/api/script.js"
           data-site-id="43b5cc5d7ae3"
           defer
-          strategy="afterInteractive"
         />
       </body>
     </html>
