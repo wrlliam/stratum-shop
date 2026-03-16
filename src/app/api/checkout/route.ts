@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import type Stripe from 'stripe'
-import { stripe, getDeliveryOption, VAT_RATE } from '@/lib/stripe'
+import { stripe, getDeliveryOption, calculateDeliveryPrice, VAT_RATE } from '@/lib/stripe'
 import { db, products, bundles, orders, orderItems, productOptionGroups, productOptionChoices, coupons, couponProducts } from '@/lib/db'
 import { eq, asc, sql, and, inArray } from 'drizzle-orm'
 import { auth } from '@/lib/auth'
@@ -61,6 +61,7 @@ export async function POST(request: NextRequest) {
       imageUrl?: string
       productId?: string
       bundleId?: string
+      weightGrams?: number
       selectedOptions?: { groupName: string; choiceLabel: string; priceModifier: number }[]
     }[] = []
 
@@ -134,6 +135,7 @@ export async function POST(request: NextRequest) {
           quantity: item.quantity,
           imageUrl: product.images[0]?.url,
           productId: product.id,
+          weightGrams: product.weight ?? 500,
           selectedOptions: verifiedOptions.length > 0 ? verifiedOptions : undefined,
         })
       } else if (item.bundleId) {
@@ -177,7 +179,10 @@ export async function POST(request: NextRequest) {
     }
 
     const subtotal = lineItems.reduce((sum, item) => sum + item.price * item.quantity, 0)
-    const deliveryPrice = deliveryOption.price
+
+    // Compute total cart weight for weight-based delivery pricing (500g default if no weight set)
+    const totalWeightGrams = lineItems.reduce((sum, item) => sum + (item.weightGrams ?? 500) * item.quantity, 0)
+    const deliveryPrice = calculateDeliveryPrice(data.deliveryMethodId, totalWeightGrams)
 
     // Validate and apply coupon
     let discountAmount = 0

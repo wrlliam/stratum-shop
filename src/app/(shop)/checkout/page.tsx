@@ -6,7 +6,7 @@ import Image from 'next/image'
 import { ArrowRightIcon, CheckIcon, LockClosedIcon } from '@radix-ui/react-icons'
 import { useCart } from '@/components/providers/CartProvider'
 import { formatPrice } from '@/lib/utils'
-import { DELIVERY_OPTIONS, VAT_RATE } from '@/lib/delivery'
+import { DELIVERY_OPTIONS, DELIVERY_DISCLAIMER, VAT_RATE } from '@/lib/delivery'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { cn } from '@/lib/utils'
@@ -194,7 +194,7 @@ export default function CheckoutPage() {
                               isSelected ? 'text-brand-blue' : 'text-brand-text'
                             )}
                           >
-                            {formatPrice(option.price)}
+                            from {formatPrice(option.price)}
                           </span>
                         </div>
                         <p className="text-xs text-brand-muted mt-0.5">{option.description}</p>
@@ -203,6 +203,7 @@ export default function CheckoutPage() {
                   )
                 })}
               </div>
+              <p className="text-xs text-brand-muted mt-3">{DELIVERY_DISCLAIMER}</p>
             </div>
 
             {/* Security note */}
@@ -278,7 +279,7 @@ export default function CheckoutPage() {
                 )}
                 <div className="flex justify-between text-sm">
                   <span className="text-brand-muted">Delivery ({deliveryOption.name})</span>
-                  <span className="text-brand-text">{formatPrice(deliveryPrice)}</span>
+                  <span className="text-brand-text">~{formatPrice(deliveryPrice)}*</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-brand-muted">VAT (20%)</span>

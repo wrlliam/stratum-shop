@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { DELIVERY_OPTIONS } from '@/lib/delivery'
+import { DELIVERY_OPTIONS, DELIVERY_DISCLAIMER } from '@/lib/delivery'
 
 export const metadata: Metadata = {
   title: 'Shipping Policy',
@@ -43,10 +43,13 @@ export default function ShippingPage() {
                     <p className="text-xs text-brand-muted">{option.description}</p>
                   </div>
                 </div>
-                <span className="text-sm font-bold text-brand-blue">{formatPence(option.price)}</span>
+                <span className="text-sm font-bold text-brand-blue">from {formatPence(option.price)}</span>
               </div>
             ))}
           </div>
+          <p className="text-xs text-brand-muted mt-3">
+            * {DELIVERY_DISCLAIMER} Prices shown are for small parcels up to 2 kg.
+          </p>
 
           <h2 className="text-lg font-bold text-brand-text mt-10 mb-4">Processing Time</h2>
           <p>

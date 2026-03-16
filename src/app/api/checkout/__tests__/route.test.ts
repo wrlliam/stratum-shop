@@ -32,10 +32,17 @@ vi.mock('@/lib/stripe', () => ({
   },
   getDeliveryOption: (id: string) => {
     const options: Record<string, { id: string; name: string; price: number }> = {
-      royal_mail_2nd: { id: 'royal_mail_2nd', name: 'Royal Mail 2nd Class', price: 285 },
-      royal_mail_1st: { id: 'royal_mail_1st', name: 'Royal Mail 1st Class', price: 385 },
+      royal_mail_2nd: { id: 'royal_mail_2nd', name: 'Royal Mail 2nd Class', price: 335 },
+      royal_mail_1st: { id: 'royal_mail_1st', name: 'Royal Mail 1st Class', price: 455 },
     }
     return options[id] || null
+  },
+  calculateDeliveryPrice: (id: string) => {
+    const prices: Record<string, number> = {
+      royal_mail_2nd: 335,
+      royal_mail_1st: 455,
+    }
+    return prices[id] ?? 335
   },
   VAT_RATE: 0.2,
 }))

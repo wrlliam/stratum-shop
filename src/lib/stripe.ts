@@ -19,7 +19,7 @@ export const stripe = new Proxy({} as Stripe, {
   }
 })
 
-export { DELIVERY_OPTIONS, getDeliveryOption, VAT_RATE, calculateTax } from './delivery'
+export { DELIVERY_OPTIONS, getDeliveryOption, calculateDeliveryPrice, VAT_RATE, calculateTax } from './delivery'
 export type { DeliveryOptionId } from './delivery'
 export function formatPrice(pence: number): string {
   return new Intl.NumberFormat('en-GB', {
